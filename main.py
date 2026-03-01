@@ -154,11 +154,11 @@ def login(body: dict):
 
 @app.post("/api/login/agente")
 def login_agente(body: dict):
-    nick=body.get("discord","").strip().lower()
+    cf=body.get("cf","").strip().upper()
     pwd=body.get("pwd","").strip()
-    if not nick: raise HTTPException(status_code=400,detail="Nick mancante")
-    row=db_fetchone("SELECT * FROM agents WHERE lower(discord)=?",(nick,))
-    if not row: raise HTTPException(status_code=404,detail="Nick non trovato")
+    if not cf: raise HTTPException(status_code=400,detail="Codice Fiscale mancante")
+    row=db_fetchone("SELECT * FROM agents WHERE upper(cf)=?",(cf,))
+    if not row: raise HTTPException(status_code=404,detail="Codice Fiscale non trovato")
     if row.get("stato")=="Congedato": raise HTTPException(status_code=403,detail="Account congedato")
     agent_pwd=row.get("agent_pwd")
     if not agent_pwd:
@@ -168,10 +168,10 @@ def login_agente(body: dict):
 
 @app.post("/api/agente/set-password")
 def set_agente_password(body: dict):
-    nick=body.get("discord","").strip().lower()
+    cf=body.get("cf","").strip().upper()
     pwd=body.get("pwd","").strip()
-    if not nick or not pwd: raise HTTPException(status_code=400,detail="Dati mancanti")
-    db_execute("UPDATE agents SET agent_pwd=? WHERE lower(discord)=?",(pwd,nick))
+    if not cf or not pwd: raise HTTPException(status_code=400,detail="Dati mancanti")
+    db_execute("UPDATE agents SET agent_pwd=? WHERE upper(cf)=?",(pwd,cf))
     return {"ok":True}
 
 @app.get("/api/agenti/passwords", dependencies=[Depends(check_auth)])
