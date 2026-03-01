@@ -275,11 +275,11 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
       </div>
     </div>
     <div id="loginFormAgente" style="display:none">
-      <!-- Step 1: Nick + Password -->
+      <!-- Step 1: CF + Password -->
       <div id="agenteStep1">
         <div class="login-field">
-          <label class="login-lbl">Nick Minecraft</label>
-          <input class="login-input" type="text" id="nickAgente" placeholder="il_tuo_nick_mc" onkeydown="if(event.key==='Enter')doLogin()">
+          <label class="login-lbl">Codice Fiscale</label>
+          <input class="login-input" type="text" id="nickAgente" placeholder="RSSMRA85M01H501Z" onkeydown="if(event.key==='Enter')doLogin()" style="text-transform:uppercase">
         </div>
         <div class="login-field" id="agentePasswordField">
           <label class="login-lbl">Password</label>
@@ -785,8 +785,8 @@ async function confermaSetPassword(){
   if(p1!==p2){err.textContent='❌ Le password non coincidono.';return;}
   err.textContent='';
   try{
-    await apiFetch('/api/agente/set-password',{method:'POST',body:JSON.stringify({discord:_pendingNick.toLowerCase(),pwd:p1})});
-    const ag2=await apiFetch('/api/login/agente',{method:'POST',body:JSON.stringify({discord:_pendingNick,pwd:p1})});
+    await apiFetch('/api/agente/set-password',{method:'POST',body:JSON.stringify({cf:_pendingNick,pwd:p1})});
+    const ag2=await apiFetch('/api/login/agente',{method:'POST',body:JSON.stringify({cf:_pendingNick,pwd:p1})});
     currentUser={tipo:'agente',nick:ag2.discord,agentId:ag2.id};
     _pendingNick='';
     _showLoginStep(1);
@@ -808,11 +808,11 @@ async function doLogin(){
       currentUser={tipo:'dirigenza',nick:'Dirigenza'};
     }catch(e){err.textContent='❌ Password errata.';return;}
   } else {
-    const nick=document.getElementById('nickAgente').value.trim();
+    const nick=document.getElementById('nickAgente').value.trim().toUpperCase();
     const pwd=document.getElementById('pwdAgente').value.trim();
-    if(!nick){err.textContent='❌ Inserisci il tuo Nick Minecraft.';return;}
+    if(!nick){err.textContent='❌ Inserisci il tuo Codice Fiscale.';return;}
     try{
-      const ag=await apiFetch('/api/login/agente',{method:'POST',body:JSON.stringify({discord:nick,pwd})});
+      const ag=await apiFetch('/api/login/agente',{method:'POST',body:JSON.stringify({cf:nick,pwd})});
       if(ag.first_access){
         // Primo accesso: mostra step 2 inline
         _pendingNick=nick;
@@ -2159,3 +2159,4 @@ function openSetPwdAgente(id,nome){
 </script>
 </body>
 </html>
+
