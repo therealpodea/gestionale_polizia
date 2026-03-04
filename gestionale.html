@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestionale — Polizia d'Estovia</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+:root{--bg0:#040d18;--bg1:#071528;--bg2:#0c1e38;--bg3:#102444;--bg4:#142c50;--glass:rgba(12,30,56,.75);--glass2:rgba(8,18,36,.85);--accent:#4db8ff;--accent2:#7dd4ff;--accent-dim:rgba(77,184,255,.12);--accent-glow:rgba(77,184,255,.18);--teal:#2de8cc;--teal-dim:rgba(45,232,204,.12);--warn:#f5a623;--warn-dim:rgba(245,166,35,.12);--danger:#ff6b6b;--danger-dim:rgba(255,107,107,.12);--green:#2ecc8a;--green-dim:rgba(46,204,138,.12);--purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);--text:#dff0ff;--text2:#92b8d8;--text3:#5a7d9a;--border:rgba(77,184,255,.15);--border2:rgba(77,184,255,.07);--shadow:0 20px 60px rgba(0,0,0,.6);--shadow-sm:0 4px 24px rgba(0,0,0,.4);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg0);color:var(--text);font-family:'EB Garamond',serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% 15%,rgba(77,184,255,.07) 0%,transparent 55%),radial-gradient(ellipse 50% 40% at 85% 80%,rgba(45,232,204,.05) 0%,transparent 50%);pointer-events:none;z-index:0;animation:meshPulse 10s ease-in-out infinite alternate;}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(77,184,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(77,184,255,.025) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+@keyframes meshPulse{0%{opacity:.6;}100%{opacity:1;}}
+@keyframes chromeShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+@keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes shimmer{0%{transform:translateX(-150%);}100%{transform:translateX(150%);}}
+@keyframes spinSlow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes spinSlowRev{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
+@keyframes floatUp{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(77,184,255,.3),0 0 40px rgba(77,184,255,.1);}50%{box-shadow:0 0 40px rgba(77,184,255,.6),0 0 80px rgba(77,184,255,.2);}}
+@keyframes scanDown{0%{top:-5%;opacity:0;}5%{opacity:.4;}95%{opacity:.4;}100%{top:105%;opacity:0;}}
+@keyframes particleFall{0%{transform:translateY(-20px) translateX(0) rotate(0);opacity:0;}10%{opacity:.6;}90%{opacity:.3;}100%{transform:translateY(100vh) translateX(var(--dx)) rotate(var(--rot));opacity:0;}}
+@keyframes ripple{0%{transform:scale(0);opacity:.5;}100%{transform:scale(4);opacity:0;}}
+@keyframes toastIn{from{transform:translateX(32px) scale(.95);opacity:0;}to{transform:none;opacity:1;}}
+@keyframes countUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.chrome-gradient{background:linear-gradient(135deg,#0a4a8f,#4db8ff,#2de8cc,#7dd4ff,#0a4a8f);background-size:300% 300%;animation:chromeShift 4s ease infinite;}
+.glow-cursor{position:fixed;width:20px;height:20px;border-radius:50%;background:transparent;border:none;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen;}
+.glow-cursor.big{width:60px;height:60px;background:rgba(77,184,255,.08);}
+.inst{font-family:'Cinzel',serif;}.inst-deco{font-family:'Cinzel Decorative',serif;}.body-font{font-family:'EB Garamond',serif;}
+#loginScreen{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse 100% 100% at 50% 50%,#061220 0%,#020810 100%);}
+.login-orbit{position:absolute;border-radius:50%;border:1px solid rgba(77,184,255,.06);pointer-events:none;}
+.login-orbit:nth-child(1){width:500px;height:500px;top:50%;left:50%;margin:-250px 0 0 -250px;animation:spinSlow 25s linear infinite;}
+.login-orbit:nth-child(2){width:700px;height:700px;top:50%;left:50%;margin:-350px 0 0 -350px;animation:spinSlowRev 35s linear infinite;border-color:rgba(45,232,204,.04);}
+.login-orbit:nth-child(3){width:900px;height:900px;top:50%;left:50%;margin:-450px 0 0 -450px;animation:spinSlow 50s linear infinite;border-color:rgba(167,139,250,.03);}
+.login-scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(77,184,255,.4),transparent);animation:scanDown 6s ease-in-out infinite;pointer-events:none;z-index:0;}
+.login-box{position:relative;z-index:2;background:rgba(6,18,34,.9);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid rgba(77,184,255,.2);border-radius:24px;padding:48px 44px;width:100%;max-width:480px;text-align:center;box-shadow:0 0 0 1px rgba(77,184,255,.04),0 30px 100px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.04);animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both;transition:border-color .3s;}
+.login-box:hover{border-color:rgba(77,184,255,.35);}
+.login-box::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(77,184,255,.8),rgba(45,232,204,.6),rgba(77,184,255,.8),transparent);animation:chromeShift 3s ease infinite;background-size:300% 100%;}
+.login-corner{position:absolute;width:20px;height:20px;}
+.login-corner::before,.login-corner::after{content:'';position:absolute;background:var(--accent);}
+.login-corner::before{width:100%;height:2px;top:0;left:0;}
+.login-corner::after{width:2px;height:100%;top:0;left:0;}
+.login-corner.tr{top:16px;right:16px;transform:rotate(90deg);}
+.login-corner.bl{bottom:16px;left:16px;transform:rotate(270deg);}
+.login-corner.br{bottom:16px;right:16px;transform:rotate(180deg);}
+.login-corner.tl{top:16px;left:16px;}
+.login-logo-wrap{position:relative;display:inline-block;margin-bottom:22px;animation:floatUp 5s ease-in-out infinite;}
+.login-logo-img{width:100px;height:100px;object-fit:contain;border-radius:50%;border:2px solid rgba(77,184,255,.5);box-shadow:0 0 40px rgba(77,184,255,.35);display:block;}
+.login-logo-emoji{width:100px;height:100px;display:flex;align-items:center;justify-content:center;font-size:56px;border-radius:50%;border:2px solid rgba(77,184,255,.4);background:rgba(77,184,255,.05);animation:glowPulse 3s ease-in-out infinite;}
+.login-logo-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .2s;}
+.login-logo-edit:hover{background:var(--accent);transform:scale(1.15);}
+.login-title{font-family:'Cinzel Decorative',serif;font-size:19px;font-weight:700;color:var(--text);letter-spacing:3px;margin-bottom:3px;line-height:1.3;text-shadow:0 0 30px rgba(77,184,255,.4);}
+.login-nation{font-family:'Cinzel',serif;font-size:9px;letter-spacing:8px;text-transform:uppercase;color:var(--accent);opacity:.8;margin-bottom:5px;}
+.login-divider{display:flex;align-items:center;gap:12px;margin:16px 0 24px;}
+.login-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(77,184,255,.4),transparent);}
+.login-divider-gem{color:var(--accent);font-size:9px;opacity:.7;animation:pulse 2s ease-in-out infinite;}
+.login-tabs{display:flex;gap:4px;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:12px;padding:4px;margin-bottom:26px;}
+.ltab{flex:1;padding:10px;border-radius:9px;font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--text3);transition:all .22s;}
+.ltab.active{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(77,184,255,.3);box-shadow:0 0 16px rgba(77,184,255,.1);}
+.login-field{display:flex;flex-direction:column;gap:6px;text-align:left;margin-bottom:15px;}
+.login-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);font-weight:600;}
+.login-input{background:rgba(255,255,255,.03);border:1px solid rgba(77,184,255,.18);color:var(--text);border-radius:10px;padding:13px 18px;font-family:'EB Garamond',serif;font-size:16px;outline:none;transition:all .22s;width:100%;}
+.login-input:focus{border-color:var(--accent);background:rgba(77,184,255,.07);box-shadow:0 0 0 4px rgba(77,184,255,.08);}
+.login-input::placeholder{color:var(--text3);}
+.login-btn{width:100%;padding:15px;border-radius:12px;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;cursor:pointer;border:none;position:relative;overflow:hidden;background:linear-gradient(135deg,#0a4a8f,#4db8ff,#2de8cc,#4db8ff,#0a4a8f);background-size:300% 300%;animation:chromeShift 3s ease infinite;color:#fff;box-shadow:0 4px 30px rgba(77,184,255,.35),inset 0 1px 0 rgba(255,255,255,.15);margin-top:10px;transition:transform .15s,box-shadow .15s;}
+.login-btn::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shimmer 3s ease-in-out 1s infinite;}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(77,184,255,.5);}
+.login-btn:active{transform:none;}
+.ripple-effect{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);animation:ripple .6s ease-out forwards;pointer-events:none;}
+.login-err{font-family:'EB Garamond',serif;font-size:13px;color:var(--danger);margin-top:12px;min-height:18px;}
+.login-hint{font-family:'EB Garamond',serif;font-size:12px;color:var(--text3);margin-top:14px;font-style:italic;}
+.login-discord-btn{width:100%;padding:15px;border-radius:12px;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border:none;position:relative;overflow:hidden;background:#5865F2;color:#fff;box-shadow:0 4px 24px rgba(88,101,242,.45),inset 0 1px 0 rgba(255,255,255,.15);margin-bottom:0;transition:transform .15s,box-shadow .15s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.login-discord-btn:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(88,101,242,.65);}
+.login-discord-btn:active{transform:none;}
+.login-discord-btn svg{width:20px;height:20px;fill:#fff;flex-shrink:0;}
+.login-or-divider{display:flex;align-items:center;gap:10px;margin:16px 0;}
+.login-or-divider span{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--text3);text-transform:uppercase;}
+.login-or-divider::before,.login-or-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.login-err-discord{font-family:'EB Garamond',serif;font-size:13px;color:var(--danger);margin-top:8px;min-height:18px;text-align:center;}
+.app{position:relative;z-index:1;display:flex;min-height:100vh;}
+.sidebar{width:244px;flex-shrink:0;background:rgba(4,10,20,.97);backdrop-filter:blur(24px);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;box-shadow:6px 0 40px rgba(0,0,0,.4);}
+.sidebar::after{content:'';position:absolute;top:0;right:-1px;width:1px;height:100%;background:linear-gradient(180deg,transparent 0%,var(--accent) 20%,var(--teal) 50%,var(--accent) 80%,transparent 100%);opacity:.25;}
+.sb-logo{padding:22px 18px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sb-logo-img{width:42px;height:42px;object-fit:contain;border-radius:50%;border:1px solid rgba(77,184,255,.4);box-shadow:0 0 14px rgba(77,184,255,.25);flex-shrink:0;}
+.sb-logo-emoji{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0a4a8f,#4db8ff,#2de8cc,#0a4a8f);background-size:300% 300%;animation:chromeShift 4s ease infinite;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 0 18px rgba(77,184,255,.4);}
+.sb-logo-name{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--text);letter-spacing:1.5px;line-height:1.25;}
+.sb-logo-sub{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:var(--text3);}
+.sb-mode{margin:10px 10px 4px;padding:7px 12px;border-radius:8px;font-family:'Cinzel',serif;font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;text-align:center;transition:all .2s;}
+.sb-mode.dirigenza{background:rgba(77,184,255,.08);color:var(--accent);border:1px solid rgba(77,184,255,.2);}
+.sb-mode.agente{background:rgba(45,232,204,.08);color:var(--teal);border:1px solid rgba(45,232,204,.2);}
+.sb-sec{padding:16px 16px 5px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:3.5px;text-transform:uppercase;color:var(--text3);font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:1px 8px;border-radius:9px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15px;font-weight:500;color:var(--text2);transition:all .2s;border:1px solid transparent;user-select:none;position:relative;overflow:hidden;}
+.nav-item::after{content:'';position:absolute;left:0;top:20%;bottom:20%;width:0;background:var(--accent);border-radius:0 3px 3px 0;transition:width .2s cubic-bezier(.22,1,.36,1);box-shadow:0 0 8px var(--accent);}
+.nav-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(77,184,255,.06),transparent);opacity:0;transition:opacity .2s;border-radius:9px;}
+.nav-item:hover{color:var(--text);border-color:var(--border2);}
+.nav-item:hover::before{opacity:1;}
+.nav-item.active{background:rgba(77,184,255,.1);border-color:rgba(77,184,255,.2);color:var(--accent);box-shadow:0 0 20px rgba(77,184,255,.06);}
+.nav-item.active::after{width:3px;}
+.nav-item .ni{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;font-family:'Cinzel',serif;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--danger);color:#fff;animation:pulse 2s ease-in-out infinite;}
+.nav-badge.b{background:var(--accent);animation:none;}.nav-badge.g{background:var(--green);animation:none;}
+.sb-bottom{margin-top:auto;padding:12px 9px;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;background:rgba(77,184,255,.04);border:1px solid var(--border2);cursor:pointer;transition:all .2s;}
+.sb-user:hover{background:rgba(77,184,255,.09);border-color:var(--border);}
+.sb-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0a4a8f,#4db8ff,#2de8cc,#0a4a8f);background-size:300% 300%;animation:chromeShift 4s ease infinite;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 0 12px rgba(77,184,255,.35);}
+.sb-uname{font-family:'Cinzel',serif;font-size:11px;font-weight:600;color:var(--text);}
+.sb-urank{font-family:'EB Garamond',serif;font-size:11px;color:var(--text3);font-style:italic;}
+.sb-logout{font-family:'EB Garamond',serif;font-size:10px;color:var(--danger);margin-top:1px;}
+.main{margin-left:244px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{height:64px;border-bottom:1px solid var(--border);background:rgba(4,10,20,.92);backdrop-filter:blur(24px);display:flex;align-items:center;gap:14px;padding:0 28px;position:sticky;top:0;z-index:40;box-shadow:0 2px 24px rgba(0,0,0,.3);}
+.tb-title{font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--text);letter-spacing:3px;}
+.tb-sub{font-family:'EB Garamond',serif;font-size:13px;color:var(--text3);margin-left:8px;font-style:italic;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tb-btn{background:rgba(77,184,255,.05);border:1px solid var(--border);color:var(--text2);padding:8px 15px;border-radius:8px;font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.tb-btn:hover{background:rgba(77,184,255,.12);border-color:var(--accent);color:var(--text);box-shadow:0 0 14px rgba(77,184,255,.1);}
+.tb-btn.primary{background:linear-gradient(135deg,#0a4a8f,#4db8ff,#2de8cc,#0a4a8f);background-size:300% 300%;animation:chromeShift 4s ease infinite;border-color:transparent;color:#fff;box-shadow:0 2px 20px rgba(77,184,255,.3),inset 0 1px 0 rgba(255,255,255,.1);}
+.tb-btn.primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(77,184,255,.45);}
+.content{padding:26px;display:flex;flex-direction:column;gap:22px;}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.kpi{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden;cursor:default;box-shadow:var(--shadow-sm);transform-style:preserve-3d;transition:box-shadow .3s,border-color .3s;will-change:transform;animation:fadeUp .5s ease-out both;}
+.kpi:nth-child(1){animation-delay:.05s;}.kpi:nth-child(2){animation-delay:.1s;}.kpi:nth-child(3){animation-delay:.15s;}.kpi:nth-child(4){animation-delay:.2s;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#0a4a8f,#4db8ff,#2de8cc,#4db8ff,#0a4a8f);background-size:300% 100%;animation:chromeShift 3s ease infinite;}
+.kpi-glow{position:absolute;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(77,184,255,.12),transparent 70%);pointer-events:none;transform:translate(-50%,-50%);transition:opacity .3s;opacity:0;}
+.kpi:hover .kpi-glow{opacity:1;}
+.kpi-icon{font-size:22px;margin-bottom:2px;}
+.kpi-val{font-family:'Cinzel',serif;font-size:34px;font-weight:700;line-height:1;color:var(--accent);text-shadow:0 0 24px rgba(77,184,255,.5);animation:countUp .6s ease-out both;}
+.kpi-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);}
+.kpi.c-teal .kpi-val{color:var(--teal);text-shadow:0 0 24px rgba(45,232,204,.5);}
+.kpi.c-green .kpi-val{color:var(--green);text-shadow:0 0 24px rgba(46,204,138,.5);}
+.kpi.c-warn .kpi-val{color:var(--warn);text-shadow:0 0 24px rgba(245,166,35,.5);}
+.kpi.c-danger .kpi-val{color:var(--danger);text-shadow:0 0 24px rgba(255,107,107,.5);}
+.kpi.c-purple .kpi-val{color:var(--purple);text-shadow:0 0 24px rgba(167,139,250,.5);}
+.kpi.c-blue .kpi-val{color:var(--accent);text-shadow:0 0 24px rgba(77,184,255,.5);}
+.card{background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);animation:fadeUp .4s ease-out both;transform-style:preserve-3d;transition:box-shadow .3s,border-color .3s;will-change:transform;position:relative;}
+.card:hover{border-color:rgba(77,184,255,.3);box-shadow:0 12px 50px rgba(0,0,0,.5),0 0 30px rgba(77,184,255,.06);}
+.card::after{content:'';position:absolute;top:0;left:-100%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(77,184,255,.04),transparent);transition:left .6s ease;pointer-events:none;z-index:1;}
+.card:hover::after{left:120%;}
+.card-head{display:flex;align-items:center;gap:10px;padding:16px 22px;border-bottom:1px solid var(--border2);background:rgba(77,184,255,.02);}
+.card-head h3{font-family:'Cinzel',serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--text);text-transform:uppercase;}
+.ch-right{margin-left:auto;display:flex;gap:6px;align-items:center;}
+.tag{font-family:'Cinzel',serif;font-size:8px;font-weight:700;padding:3px 10px;border-radius:5px;letter-spacing:1.5px;text-transform:uppercase;}
+.tag.ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,204,138,.25);}
+.tag.warn{background:var(--warn-dim);color:var(--warn);border:1px solid rgba(245,166,35,.25);}
+.tag.danger{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,107,107,.25);}
+.tag.blue{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(77,184,255,.25);}
+.tag.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+.tag.gold{background:var(--warn-dim);color:var(--warn);border:1px solid rgba(245,166,35,.25);}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);padding:11px 20px;text-align:left;border-bottom:1px solid var(--border2);font-weight:600;cursor:pointer;user-select:none;white-space:nowrap;transition:color .15s;}
+.tbl th:hover{color:var(--accent);}
+.tbl td{padding:13px 20px;font-family:'EB Garamond',serif;font-size:15px;border-bottom:1px solid var(--border2);vertical-align:middle;}
+.tbl tr.dr{transition:background .15s;cursor:pointer;}
+.tbl tr.dr:last-child td{border-bottom:none;}
+.tbl tr.dr:hover td{background:rgba(77,184,255,.04);}
+.badge{display:inline-flex;align-items:center;gap:3px;font-family:'Cinzel',serif;font-size:8px;font-weight:700;padding:3px 10px;border-radius:5px;white-space:nowrap;letter-spacing:1.5px;}
+.badge.g{background:var(--green-dim);color:var(--green);}.badge.w{background:var(--warn-dim);color:var(--warn);}.badge.d{background:var(--danger-dim);color:var(--danger);}.badge.b{background:var(--accent-dim);color:var(--accent);}.badge.p{background:var(--purple-dim);color:var(--purple);}.badge.t{background:var(--teal-dim);color:var(--teal);}
+.av-cell{display:flex;align-items:center;gap:10px;}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.filter-bar{display:flex;gap:9px;align-items:center;padding:13px 20px;border-bottom:1px solid var(--border2);flex-wrap:wrap;}
+.f-input{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 15px;font-family:'EB Garamond',serif;font-size:14px;outline:none;width:230px;transition:all .2s;}
+.f-input:focus{border-color:var(--accent);background:rgba(77,184,255,.06);box-shadow:0 0 0 3px rgba(77,184,255,.08);}
+.f-input::placeholder{color:var(--text3);}
+.f-select{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text2);border-radius:9px;padding:8px 13px;font-family:'EB Garamond',serif;font-size:13px;outline:none;cursor:pointer;}
+.f-select option{background:var(--bg2);}
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(2,6,14,.75);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:16px;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:rgba(6,14,26,.96);backdrop-filter:blur(24px);border:1px solid rgba(77,184,255,.18);border-radius:18px;width:100%;max-height:88vh;overflow-y:auto;transform:translateY(24px) scale(0.96);transition:transform .27s cubic-bezier(.22,1,.36,1);box-shadow:0 30px 100px rgba(0,0,0,.6),0 0 50px rgba(77,184,255,.06);}
+.modal::before{content:'';display:block;height:2px;background:linear-gradient(90deg,transparent,#4db8ff,#2de8cc,#4db8ff,transparent);background-size:300% 100%;animation:chromeShift 3s ease infinite;}
+.overlay.open .modal{transform:none;}
+.modal.sm{max-width:460px;}.modal.md{max-width:630px;}.modal.lg{max-width:820px;}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;padding:22px 26px 18px;border-bottom:1px solid var(--border2);}
+.modal-title{font-family:'Cinzel',serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:2.5px;}
+.modal-sub{font-family:'EB Garamond',serif;font-size:13px;color:var(--text3);margin-top:3px;font-style:italic;}
+.m-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;transition:all .15s;padding:3px 7px;border-radius:7px;}
+.m-close:hover{color:var(--text);background:rgba(255,255,255,.05);}
+.modal-body{padding:24px 26px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:15px;}.fg{display:flex;flex-direction:column;gap:6px;}.fg.full{grid-column:1/-1;}
+.flbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);font-weight:600;}
+.finput,.fselect,.ftextarea{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:11px 14px;font-family:'EB Garamond',serif;font-size:15px;outline:none;transition:all .2s;width:100%;}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--accent);background:rgba(77,184,255,.06);box-shadow:0 0 0 3px rgba(77,184,255,.08);}
+.finput::placeholder,.ftextarea::placeholder{color:var(--text3);}
+.ftextarea{resize:vertical;min-height:72px;}
+.fselect option{background:var(--bg2);}
+.form-actions{display:flex;gap:9px;margin-top:20px;}
+.fbtn{padding:12px 22px;border-radius:9px;font-family:'Cinzel',serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;position:relative;overflow:hidden;}
+.fbtn.primary{background:linear-gradient(135deg,#0a4a8f,#4db8ff,#2de8cc,#0a4a8f);background-size:300% 300%;animation:chromeShift 4s ease infinite;color:#fff;box-shadow:0 2px 18px rgba(77,184,255,.3);}
+.fbtn.danger{background:var(--danger);color:#fff;}.fbtn.warn{background:var(--warn);color:#fff;}
+.fbtn.secondary{background:rgba(255,255,255,.04);color:var(--text2);border:1px solid var(--border);}
+.fbtn:hover{opacity:.85;transform:translateY(-1px);}.fbtn:active{transform:none;}
+.dcard{background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:11px;padding:15px;transition:all .2s;position:relative;overflow:hidden;}
+.dcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(77,184,255,.3),transparent);opacity:0;transition:opacity .2s;}
+.dcard:hover{border-color:var(--border);}.dcard:hover::before{opacity:1;}
+.dcard-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.dcard-val{font-family:'EB Garamond',serif;font-size:16px;font-weight:500;color:var(--text);}
+.dcard-val.accent{color:var(--accent);}.dcard-val.purple{color:var(--accent);}
+.tl-item{display:flex;gap:13px;padding:12px 0;border-bottom:1px solid var(--border2);}.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:6px;box-shadow:0 0 8px currentColor;}
+.tl-text{font-family:'EB Garamond',serif;font-size:15px;color:var(--text);}
+.tl-text b{font-family:'Cinzel',serif;font-size:12px;color:var(--accent);letter-spacing:1px;}
+.tl-meta{font-family:'EB Garamond',serif;font-size:12px;color:var(--text3);margin-top:2px;font-style:italic;}
+.bar-chart{display:flex;flex-direction:column;gap:12px;padding:16px 20px;}
+.bar-row{display:flex;align-items:center;gap:12px;}
+.bar-lbl{font-family:'EB Garamond',serif;font-size:14px;color:var(--text2);width:140px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-wrap{flex:1;height:5px;background:rgba(77,184,255,.07);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#0a4a8f,#4db8ff,#2de8cc);background-size:200% 100%;animation:chromeShift 3s ease infinite;transition:width 1s cubic-bezier(.22,1,.36,1);}
+.bar-num{font-family:'Cinzel',serif;font-size:13px;font-weight:700;width:28px;text-align:right;flex-shrink:0;color:var(--accent);}
+.feed-item{display:flex;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border2);transition:background .15s;}
+.feed-item:last-child{border-bottom:none;}.feed-item:hover{background:rgba(77,184,255,.03);}
+.feed-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;box-shadow:0 0 8px currentColor;}
+.feed-txt{font-family:'EB Garamond',serif;font-size:14px;color:var(--text);}
+.feed-txt b{font-family:'Cinzel',serif;font-size:11px;color:var(--accent);letter-spacing:.5px;}
+.feed-meta{font-family:'EB Garamond',serif;font-size:12px;color:var(--text3);margin-top:2px;font-style:italic;}
+.comun-item{padding:15px 20px;border-bottom:1px solid var(--border2);transition:background .15s;cursor:pointer;}
+.comun-item:last-child{border-bottom:none;}.comun-item:hover{background:rgba(77,184,255,.04);}
+.comun-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.comun-title{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--text);flex:1;letter-spacing:1px;}
+.comun-body{font-family:'EB Garamond',serif;font-size:14px;color:var(--text2);line-height:1.6;}
+.comun-meta{font-family:'EB Garamond',serif;font-size:11px;color:var(--text3);margin-top:5px;font-style:italic;}
+.comun-unread{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 10px rgba(77,184,255,.7);animation:pulse 2s ease-in-out infinite;}
+.profile-hero{background:linear-gradient(135deg,rgba(12,30,56,.9) 0%,rgba(4,10,20,.95) 100%);border:1px solid var(--border);border-radius:18px;padding:32px;display:flex;align-items:center;gap:26px;position:relative;overflow:hidden;}
+.profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#4db8ff,#2de8cc,#4db8ff,transparent);background-size:300% 100%;animation:chromeShift 3s ease infinite;}
+.profile-av{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid rgba(77,184,255,.5);box-shadow:0 0 30px rgba(77,184,255,.3);animation:glowPulse 3s ease-in-out infinite;}
+.profile-name{font-family:'Cinzel Decorative',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:1px;}
+.profile-grado{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;margin-top:5px;color:var(--accent);}
+.profile-meta{font-family:'EB Garamond',serif;font-size:13px;color:var(--text3);margin-top:5px;font-style:italic;}
+.ger-item{display:flex;align-items:center;gap:15px;padding:12px 20px;border-bottom:1px solid var(--border2);transition:background .15s;}
+.ger-item:last-child{border-bottom:none;}.ger-item:hover{background:rgba(77,184,255,.04);}
+.ger-pos{font-family:'Cinzel',serif;font-size:18px;font-weight:700;width:32px;text-align:center;flex-shrink:0;color:var(--accent);}
+.ger-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.ger-info{flex:1;}.ger-name{font-family:'EB Garamond',serif;font-size:15px;font-weight:600;color:var(--text);}
+.ger-grado{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text3);}
+.logo-preview-area{display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:13px;margin-bottom:18px;}
+.logo-preview-big{width:120px;height:120px;object-fit:contain;border-radius:50%;border:2px solid rgba(77,184,255,.4);}
+.logo-preview-big-emoji{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:64px;background:rgba(77,184,255,.04);border:2px solid rgba(77,184,255,.3);}
+.logo-drop{border:2px dashed rgba(77,184,255,.22);border-radius:11px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;font-family:'EB Garamond',serif;font-size:14px;color:var(--text3);}
+.logo-drop:hover{border-color:var(--accent);color:var(--text);}
+.confirm-box{background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.22);border-radius:11px;padding:15px;margin-bottom:16px;font-family:'EB Garamond',serif;font-size:14px;color:var(--danger);}
+.toast-wrap{position:fixed;bottom:26px;right:26px;z-index:999;display:flex;flex-direction:column;gap:9px;}
+.toast{background:rgba(6,14,26,.97);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:11px;padding:13px 20px;font-family:'EB Garamond',serif;font-size:14px;color:var(--text);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.22,1,.36,1);display:flex;align-items:center;gap:10px;min-width:250px;}
+.toast.success{border-left:3px solid var(--green);}.toast.danger{border-left:3px solid var(--danger);}.toast.info{border-left:3px solid var(--accent);}
+.ani{animation:fadeUp .38s ease-out both;}
+.av0{background:linear-gradient(135deg,#0a4a8f,#4db8ff);}.av1{background:linear-gradient(135deg,#2de8cc,#0a4a8f);}.av2{background:linear-gradient(135deg,#7dd4ff,#2de8cc);}.av3{background:linear-gradient(135deg,#a78bfa,#4db8ff);}.av4{background:linear-gradient(135deg,#2ecc8a,#2de8cc);}.av5{background:linear-gradient(135deg,#4db8ff,#a78bfa);}.av6{background:linear-gradient(135deg,#2de8cc,#2ecc8a);}.av7{background:linear-gradient(135deg,#0a4a8f,#2de8cc);}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg0);}::-webkit-scrollbar-thumb{background:rgba(77,184,255,.2);border-radius:3px;}::-webkit-scrollbar-thumb:hover{background:rgba(77,184,255,.35);}
+#logoFileInput{display:none;}
+</style>
+</head>
+<body>
+<input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(event)">
+<div class="glow-cursor" id="glowCursor"></div>
+<!-- ══ LOGIN ══ -->
+<div id="loginScreen">
+  <div class="login-orbit"></div>
+  <div class="login-orbit"></div>
+  <div class="login-orbit"></div>
+  <div class="login-scan"></div>
+  <div class="login-box">
+    <div class="login-corner tl"></div>
+    <div class="login-corner tr"></div>
+    <div class="login-corner bl"></div>
+    <div class="login-corner br"></div>
+    <div class="login-logo-wrap">
+      <div id="loginLogoDisplay"></div>
+      <div class="login-logo-edit" onclick="triggerLogoUpload()" title="Cambia logo">✏️</div>
+    </div>
+    <div class="login-nation">Stato di Estovia</div>
+    <div class="login-title">Polizia d'Estovia</div>
+    <div class="login-divider">
+      <div class="login-divider-line"></div>
+      <div class="login-divider-gem">◆</div>
+      <div class="login-divider-line"></div>
+    </div>
+    <!-- DISCORD LOGIN -->
+    <button class="login-discord-btn" onclick="loginDiscord()" id="discordLoginBtn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Accedi con Discord
+    </button>
+    <div class="login-err-discord" id="loginErrDiscord"></div>
+    <div class="login-or-divider"><span>oppure</span></div>
+    <div class="login-tabs">
+      <button class="ltab active" onclick="switchLoginTab('dirigenza')">👮 Dirigenza</button>
+      <button class="ltab" onclick="switchLoginTab('agente')">🔵 Agente</button>
+    </div>
+    <div id="loginFormDirigenza">
+      <div class="login-field">
+        <label class="login-lbl">Password Dirigenza</label>
+        <input class="login-input" type="password" id="pwdDirigenza" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+    </div>
+    <div id="loginFormAgente" style="display:none">
+      <!-- Step 1: CF + Password -->
+      <div id="agenteStep1">
+        <div class="login-field">
+          <label class="login-lbl">Codice Fiscale</label>
+          <input class="login-input" type="text" id="nickAgente" placeholder="RSSMRA85M01H501Z" onkeydown="if(event.key==='Enter')doLogin()" style="text-transform:uppercase">
+        </div>
+        <div class="login-field" id="agentePasswordField">
+          <label class="login-lbl">Password</label>
+          <input class="login-input" type="password" id="pwdAgente" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <!-- Step 2: Imposta password (primo accesso) -->
+      <div id="agenteStep2" style="display:none">
+        <div style="background:rgba(77,184,255,.08);border:1px solid rgba(77,184,255,.25);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-family:'EB Garamond',serif;font-size:14px;color:var(--accent)">
+          🔐 Primo accesso — imposta la tua password personale
+        </div>
+        <div class="login-field">
+          <label class="login-lbl">Nuova Password</label>
+          <input class="login-input" type="password" id="pwdNuova" placeholder="minimo 3 caratteri" onkeydown="if(event.key==='Enter')confermaSetPassword()">
+        </div>
+        <div class="login-field">
+          <label class="login-lbl">Conferma Password</label>
+          <input class="login-input" type="password" id="pwdNuovaConferma" placeholder="ripeti la password" onkeydown="if(event.key==='Enter')confermaSetPassword()">
+        </div>
+      </div>
+    </div>
+    <button class="login-btn" id="loginBtnMain" onclick="doLogin()">Accedi al Sistema</button>
+    <button class="login-btn" id="loginBtnSetPwd" onclick="confermaSetPassword()" style="display:none">🔐 Imposta Password</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-hint" id="loginHint"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="app" id="appWrap" style="display:none">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div id="sbLogoDisplay"></div>
+      <div>
+        <div class="sb-logo-name">P.D. Estovia</div>
+        <div class="sb-logo-sub">Sistema Gestionale</div>
+      </div>
+    </div>
+    <div class="sb-mode" id="sbMode">—</div>
+    <div id="sidebarNav"></div>
+    <div class="sb-bottom">
+      <div class="sb-user" onclick="doLogout()">
+        <div class="sb-av" id="sbAv">?</div>
+        <div>
+          <div class="sb-uname" id="sbUname">—</div>
+          <div class="sb-urank" id="sbUrank">—</div>
+          <div class="sb-logout">← Disconnetti</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <span class="tb-title" id="tbTitle">—</span>
+        <span class="tb-sub" id="tbSub"></span>
+      </div>
+      <div class="tb-right" id="tbRight"></div>
+    </div>
+    <div class="content" id="pageContent"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- MODAL PEC DETTAGLIO -->
+<div class="overlay" id="pecDetailModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title">✉️ <span id="pecDetailSubject"></span></div><div class="modal-sub" id="pecDetailPrio"></div></div>
+      <button class="modal-close" onclick="closeModal('pecDetailModal')">✕</button>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="dcard"><div class="dcard-lbl">Da</div><div class="dcard-val" id="pecDetailFrom"></div></div>
+        <div class="dcard"><div class="dcard-lbl">A</div><div class="dcard-val" id="pecDetailTo"></div></div>
+        <div class="dcard"><div class="dcard-lbl">Data</div><div class="dcard-val" id="pecDetailDate"></div></div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:16px;font-family:'EB Garamond',serif;font-size:15px;color:var(--text2);line-height:1.75;white-space:pre-wrap;min-height:120px" id="pecDetailBody"></div>
+    </div>
+    <div class="form-actions">
+      <button class="fbtn primary" id="pecDetailRispondi">↩️ Rispondi</button>
+      <button class="fbtn secondary" onclick="closeModal('pecDetailModal')">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUOVA PEC -->
+<div class="overlay" id="pecModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title">✉️ Nuova PEC</div><div class="modal-sub">Posta Elettronica Certificata</div></div>
+      <button class="modal-close" onclick="closeModal('pecModal')">✕</button>
+    </div>
+    <div class="form-grid" style="padding:20px;gap:12px">
+      <div class="fg"><label class="flbl">Destinatario</label><select class="fselect" id="pecDestinatario"></select></div>
+      <div class="fg"><label class="flbl">Priorità</label>
+        <select class="fselect" id="pecPriorita">
+          <option value="normale">Normale</option>
+          <option value="urgente">🔴 Urgente</option>
+        </select>
+      </div>
+      <div class="fg full"><label class="flbl">Oggetto</label><input class="finput" id="pecOggetto" placeholder="Oggetto del messaggio..."></div>
+      <div class="fg full"><label class="flbl">Messaggio</label><textarea class="ftextarea" id="pecCorpo" style="min-height:160px" placeholder="Scrivi il messaggio..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="fbtn primary" onclick="savePec('inviata')">📤 Invia</button>
+      <button class="fbtn secondary" onclick="savePec('bozza')">💾 Salva bozza</button>
+      <button class="fbtn secondary" onclick="closeModal('pecModal')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DOCUMENTO -->
+<div class="overlay" id="docModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title">📄 Documento</div><div class="modal-sub">Aggiungi o modifica documento</div></div>
+      <button class="modal-close" onclick="closeModal('docModal')">✕</button>
+    </div>
+    <div class="form-grid" style="padding:20px;gap:12px">
+      <div class="fg"><label class="flbl">Icona (emoji)</label><input class="finput" id="docIcona" placeholder="📄" maxlength="4"></div>
+      <div class="fg"><label class="flbl">Categoria</label><select class="fselect" id="docCategoria"></select></div>
+      <div class="fg full"><label class="flbl">Titolo</label><input class="finput" id="docTitolo" placeholder="Nome del documento"></div>
+      <div class="fg full"><label class="flbl">Descrizione (opzionale)</label><input class="finput" id="docDescrizione" placeholder="Breve descrizione..."></div>
+      <div class="fg full"><label class="flbl">URL Google Docs (opzionale)</label><input class="finput" id="docUrl" placeholder="https://docs.google.com/..."></div>
+      <div class="fg full"><label class="flbl">Stato (se non disponibile, es: "In fase di emissione")</label><input class="finput" id="docStato" placeholder="Lascia vuoto se disponibile"></div>
+    </div>
+    <div class="form-actions">
+      <button class="fbtn primary" onclick="saveDoc()">💾 Salva</button>
+      <button class="fbtn secondary" onclick="closeModal('docModal')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PREVIEW DOCUMENTO -->
+<div class="overlay" id="docPreviewModal">
+  <div class="modal" style="width:90vw;max-width:1100px;height:90vh;display:flex;flex-direction:column">
+    <div class="modal-head">
+      <div><div class="modal-title" id="docPreviewTitle">Documento</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <a id="docPreviewLink" href="#" target="_blank" class="fbtn primary" style="font-size:12px;text-decoration:none">↗ Apri in Google Docs</a>
+        <button class="modal-close" onclick="closeModal('docPreviewModal')">✕</button>
+      </div>
+    </div>
+    <iframe id="docPreviewFrame" src="" style="flex:1;border:none;border-radius:0 0 12px 12px" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- MODAL SEGNALAZIONE -->
+<div class="overlay" id="segnalazioneModal">
+  <div class="modal sm">
+    <div class="modal-head">
+      <div><div class="modal-title">🚨 Nuova Segnalazione</div><div class="modal-sub">Invia una segnalazione alla dirigenza</div></div>
+      <button class="modal-close" onclick="closeModal('segnalazioneModal')">✕</button>
+    </div>
+    <div class="form-grid" style="padding:20px;gap:12px">
+      <div class="fg full"><label class="flbl">Titolo</label><input class="finput" id="segTitolo" placeholder="Breve titolo della segnalazione"></div>
+      <div class="fg"><label class="flbl">Priorità</label>
+        <select class="fselect" id="segPriorita">
+          <option value="normale">Normale</option>
+          <option value="alta">🔴 Alta priorità</option>
+        </select>
+      </div>
+      <div class="fg full"><label class="flbl">Descrizione</label><textarea class="ftextarea" id="segCorpo" style="min-height:120px" placeholder="Descrivi la segnalazione in dettaglio..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="fbtn primary" onclick="saveSegnalazione()">🚨 Invia Segnalazione</button>
+      <button class="fbtn secondary" onclick="closeModal('segnalazioneModal')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+<div class="overlay" id="agentModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title" id="agentModalTitle">Aggiungi Agente</div><div class="modal-sub">Compila tutti i campi obbligatori</div></div>
+      <button class="m-close" onclick="closeModal('agentModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg2">
+        <div class="fg"><label class="flbl">Nome *</label><input class="finput" id="f_nome" placeholder="Mario"></div>
+        <div class="fg"><label class="flbl">Cognome *</label><input class="finput" id="f_cognome" placeholder="Rossi"></div>
+        <div class="fg"><label class="flbl">Codice Fiscale *</label><input class="finput" id="f_cf" placeholder="RSSMRA85..." maxlength="16"></div>
+        <div class="fg"><label class="flbl">Nick Discord *</label><input class="finput" id="f_discord" placeholder="mario_rossi"></div>
+        <div class="fg"><label class="flbl">Grado *</label><select class="fselect" id="f_grado"><option value="">— Seleziona —</option></select></div>
+        <div class="fg"><label class="flbl">Stato</label>
+          <select class="fselect" id="f_stato"><option>Attivo</option><option>Sospeso</option><option>In Prova</option><option>Congedato</option></select>
+        </div>
+        <div class="fg full"><label class="flbl">Note</label><textarea class="ftextarea" id="f_note" placeholder="Note aggiuntive…"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="fbtn primary" onclick="saveAgent()">💾 Salva</button>
+        <button class="fbtn secondary" onclick="closeModal('agentModal')">Annulla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="actionModal">
+  <div class="modal sm">
+    <div class="modal-head">
+      <div><div class="modal-title" id="actTitle">Nuova Azione</div><div class="modal-sub" id="actSub"></div></div>
+      <button class="m-close" onclick="closeModal('actionModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="fg"><label class="flbl">Tipo Azione</label>
+          <select class="fselect" id="act_tipo" onchange="actTipoChange()">
+            <option>Promozione</option><option>Degrado</option><option>Sanzione</option><option>Cambio Stato</option><option>Rimozione Sanzione</option>
+          </select>
+        </div>
+        <div class="fg" id="act_grado_wrap"><label class="flbl">Nuovo Grado</label><select class="fselect" id="act_grado"></select></div>
+        <div class="fg" id="act_sanzione_wrap" style="display:none"><label class="flbl">Livello Sanzione</label><select class="fselect" id="act_sanzione"></select></div>
+        <div class="fg" id="act_stato_wrap" style="display:none"><label class="flbl">Nuovo Stato</label>
+          <select class="fselect" id="act_stato"><option>Attivo</option><option>Sospeso</option><option>In Prova</option><option>Congedato</option></select>
+        </div>
+        <div class="fg"><label class="flbl">Motivazione *</label><textarea class="ftextarea" id="act_motiv" placeholder="Motivazione…"></textarea></div>
+        <div class="fg"><label class="flbl">Data</label><input class="finput" type="date" id="act_data"></div>
+      </div>
+      <div class="form-actions">
+        <button class="fbtn primary" onclick="saveAction()">✅ Registra</button>
+        <button class="fbtn secondary" onclick="closeModal('actionModal')">Annulla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="detailModal">
+  <div class="modal lg">
+    <div class="modal-head">
+      <div><div class="modal-title" id="dmTitle"></div><div class="modal-sub" id="dmSub"></div></div>
+      <button class="m-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="dmBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="deleteModal">
+  <div class="modal sm">
+    <div class="modal-head">
+      <div><div class="modal-title">Elimina Agente</div><div class="modal-sub" id="delSub"></div></div>
+      <button class="m-close" onclick="closeModal('deleteModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-box">⚠️ Azione irreversibile. L'agente e tutto il suo storico verranno eliminati permanentemente.</div>
+      <div class="form-actions">
+        <button class="fbtn danger" onclick="confirmDelete()">🗑️ Elimina</button>
+        <button class="fbtn secondary" onclick="closeModal('deleteModal')">Annulla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="comunModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title" id="comunModalTitle">Nuovo Comunicato</div><div class="modal-sub">Visibile a tutti gli agenti</div></div>
+      <button class="m-close" onclick="closeModal('comunModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="fg"><label class="flbl">Titolo *</label><input class="finput" id="com_titolo" placeholder="Titolo comunicato…"></div>
+        <div class="fg"><label class="flbl">Priorità</label>
+          <select class="fselect" id="com_prio"><option value="normale">Normale</option><option value="importante">Importante</option><option value="urgente">Urgente</option></select>
+        </div>
+        <div class="fg"><label class="flbl">Contenuto *</label><textarea class="ftextarea" id="com_body" style="min-height:100px" placeholder="Testo del comunicato…"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="fbtn primary" onclick="saveComunicato()">📢 Pubblica</button>
+        <button class="fbtn secondary" onclick="closeModal('comunModal')">Annulla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title">Impostazioni</div><div class="modal-sub">Configurazione sistema</div></div>
+      <button class="m-close" onclick="closeModal('settingsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3)">Logo Dipartimento</div>
+        <div class="logo-preview-area">
+          <div id="settingsLogoPreview"></div>
+          <div style="display:flex;gap:8px">
+            <button class="fbtn primary" onclick="triggerLogoUpload()">📁 Carica Immagine</button>
+            <button class="fbtn secondary" onclick="resetLogo()">🔄 Reset Emoji</button>
+          </div>
+          <div style="font-family:'EB Garamond',serif;font-size:12px;color:var(--text3);font-style:italic">Formati supportati: PNG, JPG, SVG, WebP</div>
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3)">Sicurezza</div>
+        <div class="fg"><label class="flbl">Nuova Password Dirigenza</label><input class="finput" type="password" id="set_pwd" placeholder="Nuova password…"></div>
+        <div class="fg"><label class="flbl">Conferma Password</label><input class="finput" type="password" id="set_pwd2" placeholder="Ripeti…"></div>
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3)">Gradi</div>
+        <div class="fg"><label class="flbl">Gerarchia Gradi (uno per riga, dal più basso al più alto)</label>
+          <textarea class="ftextarea" id="set_gradi" style="min-height:130px;font-size:13px"></textarea>
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3)">Sanzioni</div>
+        <div class="fg"><label class="flbl">Scala Sanzioni (uno per riga, dalla meno grave alla più grave)</label>
+          <textarea class="ftextarea" id="set_sanzioni" style="min-height:100px;font-size:13px"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="fbtn primary" onclick="saveSettings()">💾 Salva Impostazioni</button>
+        <button class="fbtn secondary" onclick="closeModal('settingsModal')">Annulla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="comunDetailModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title" id="cdTitle"></div><div class="modal-sub" id="cdSub"></div></div>
+      <button class="m-close" onclick="closeModal('comunDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="cdBody"></div>
+  </div>
+</div>
+
+<script>
+// ══ API CLIENT ══
+// L'URL base è relativo: funziona sia in locale che su Railway
+const API = '';
+let API_KEY = '';  // viene impostata dopo il login dirigenza
+let SESSION_TOKEN = '';  // token sessione Discord OAuth
+
+async function apiFetch(path, options={}){
+  const headers={'Content-Type':'application/json',...(options.headers||{})};
+  if(API_KEY) headers['x-api-key']=API_KEY;
+  if(SESSION_TOKEN) headers['x-session-token']=SESSION_TOKEN;
+  const res=await fetch(API+path,{...options,headers});
+  if(!res.ok){
+    const err=await res.json().catch(()=>({detail:'Errore di rete'}));
+    throw new Error(err.detail||'Errore');
+  }
+  return res.json();
+}
+
+// Compat shim — non più usato direttamente ma mantenuto per sicurezza
+async function stGet(k){return null;}
+async function stSet(k,v){}
+
+// ══ STATE ══
+let agents=[],history=[],comunicati=[],settings={};
+let currentUser=null;
+let currentPage='';
+let editingId=null,actionTargetId=null,deleteTargetId=null,editComId=null;
+let agSort='cognome',agSortDir=1,agSearch='',agFilter='';
+let stSearch='',stFilter='';
+let logoData=null;
+let pecs=[]; let pecFilter='in'; let editPecId=null;
+let documenti_data=[]; let editDocId=null;
+let segnalazioni_data=[]; let editSegId=null; // base64 o null
+
+const DEFAULT_SETTINGS={
+  pwd:'estovia2026',
+  gradi:['Agente','Agente Scelto','Caporale','Sergente','Maresciallo','Ispettore','Vice Commissario','Commissario','Vice Questore','Questore','Comandante'],
+  sanzioni:['AVVISO FORMALE 1','AVVISO FORMALE 2','RICHIAMO 1','RICHIAMO 2','RICHIAMO 3','SOSPENSIONE'],
+};
+const GRADE_COLORS={
+  'Agente':'#7EA8C0','Agente Scelto':'#3AAEDC','Caporale':'#2EC4B6',
+  'Sergente':'#1A7AC4','Maresciallo':'#0EA5C9','Ispettore':'#2B5C88',
+  'Vice Commissario':'#1A9FDC','Commissario':'#1A7AC4','Vice Questore':'#2EC4E8',
+  'Questore':'#1A7AC4','Comandante':'#2EC4E8'
+};
+function gradi(){return settings.gradi||DEFAULT_SETTINGS.gradi;}
+function sanzioni(){return settings.sanzioni||DEFAULT_SETTINGS.sanzioni;}
+
+// ══ RELOAD DATI ══
+async function reloadData(){
+  try{
+    const [ags,hist,coms,pec,doc,seg]=await Promise.all([
+      apiFetch('/api/agents'),
+      apiFetch('/api/history'),
+      apiFetch('/api/comunicati'),
+      apiFetch('/api/pec'),
+      apiFetch('/api/documenti'),
+      apiFetch('/api/segnalazioni'),
+    ]);
+    agents=ags;history=hist;comunicati=coms;
+    pecs=pec;documenti_data=doc;segnalazioni_data=seg;
+    // Aggiorna badge dopo ogni reload
+    if(currentUser) updateBadges();
+  }catch(e){console.error('Errore reload:',e);}
+}
+
+// ══ LOGO ══
+function triggerLogoUpload(){document.getElementById('logoFileInput').click();}
+
+function handleLogoUpload(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    logoData=ev.target.result;
+    await apiFetch('/api/settings',{method:'PUT',body:JSON.stringify({logo:logoData})});
+    renderAllLogos();
+    toast('Logo aggiornato','success');
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+
+async function resetLogo(){
+  logoData=null;
+  await apiFetch('/api/settings',{method:'PUT',body:JSON.stringify({logo:''})});
+  renderAllLogos();
+  toast('Logo ripristinato','info');
+}
+
+function renderAllLogos(){
+  renderLoginLogo();
+  renderSbLogo();
+  renderSettingsLogoPreview();
+}
+
+function renderLoginLogo(){
+  const el=document.getElementById('loginLogoDisplay'); if(!el) return;
+  if(logoData){
+    el.innerHTML=`<img src="${logoData}" class="login-logo-img">`;
+  } else {
+    el.innerHTML=`<div class="login-logo-emoji">🛡️</div>`;
+  }
+}
+function renderSbLogo(){
+  const el=document.getElementById('sbLogoDisplay'); if(!el) return;
+  if(logoData){
+    el.innerHTML=`<img src="${logoData}" class="sb-logo-img">`;
+  } else {
+    el.innerHTML=`<div class="sb-logo-emoji">🛡️</div>`;
+  }
+}
+function renderSettingsLogoPreview(){
+  const el=document.getElementById('settingsLogoPreview'); if(!el) return;
+  if(logoData){
+    el.innerHTML=`<img src="${logoData}" class="logo-preview-big">`;
+  } else {
+    el.innerHTML=`<div class="logo-preview-big-emoji">🛡️</div>`;
+  }
+}
+
+// ══ INIT ══
+async function init(){
+  try{
+    const [ags,hist,coms,sett,pec,doc,seg]=await Promise.all([
+      apiFetch('/api/agents'),
+      apiFetch('/api/history'),
+      apiFetch('/api/comunicati'),
+      apiFetch('/api/settings'),
+      apiFetch('/api/pec'),
+      apiFetch('/api/documenti'),
+      apiFetch('/api/segnalazioni'),
+    ]);
+    agents=ags; history=hist; comunicati=coms;
+    settings={...DEFAULT_SETTINGS,...sett};
+    pecs=pec; documenti_data=doc; segnalazioni_data=seg;
+    if(sett.logo) logoData=sett.logo;
+    renderAllLogos();
+  }catch(e){
+    console.error('Errore caricamento dati:',e);
+    toast('Errore connessione al server','danger');
+  }
+}
+
+// ══ LOGIN ══
+let loginTab='dirigenza';
+let _pendingNick=''; // nick in attesa durante primo accesso
+function switchLoginTab(t){
+  loginTab=t;
+  document.querySelectorAll('.ltab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='dirigenza')||(i===1&&t==='agente')));
+  document.getElementById('loginFormDirigenza').style.display=t==='dirigenza'?'block':'none';
+  document.getElementById('loginFormAgente').style.display=t==='agente'?'block':'none';
+  document.getElementById('loginHint').style.display=t==='dirigenza'?'block':'none';
+  document.getElementById('loginErr').textContent='';
+  // Reset step
+  _showLoginStep(1);
+}
+function _showLoginStep(step){
+  const s1=document.getElementById('agenteStep1');
+  const s2=document.getElementById('agenteStep2');
+  const btnMain=document.getElementById('loginBtnMain');
+  const btnSetPwd=document.getElementById('loginBtnSetPwd');
+  if(step===1){
+    if(s1)s1.style.display='block';
+    if(s2)s2.style.display='none';
+    if(btnMain)btnMain.style.display='block';
+    if(btnSetPwd)btnSetPwd.style.display='none';
+  } else {
+    if(s1)s1.style.display='none';
+    if(s2)s2.style.display='block';
+    if(btnMain)btnMain.style.display='none';
+    if(btnSetPwd)btnSetPwd.style.display='block';
+    setTimeout(()=>{const f=document.getElementById('pwdNuova');if(f)f.focus();},100);
+  }
+}
+async function confermaSetPassword(){
+  const err=document.getElementById('loginErr');
+  const p1=(document.getElementById('pwdNuova')?.value||'').trim();
+  const p2=(document.getElementById('pwdNuovaConferma')?.value||'').trim();
+  if(p1.length<3){err.textContent='❌ Password troppo corta (minimo 3 caratteri).';return;}
+  if(p1!==p2){err.textContent='❌ Le password non coincidono.';return;}
+  err.textContent='';
+  try{
+    await apiFetch('/api/agente/set-password',{method:'POST',body:JSON.stringify({cf:_pendingNick,pwd:p1})});
+    const ag2=await apiFetch('/api/login/agente',{method:'POST',body:JSON.stringify({cf:_pendingNick,pwd:p1})});
+    currentUser={tipo:'agente',nick:ag2.discord,agentId:ag2.id};
+    _pendingNick='';
+    _showLoginStep(1);
+    await init();
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appWrap').style.display='flex';
+    setupSidebar();
+    goPage('mio_profilo');
+  }catch(e){err.textContent='❌ '+e.message;}
+}
+// ══ DISCORD OAUTH ══
+function loginDiscord(){
+  // Salva eventuale messaggio di errore e redirige
+  const errEl = document.getElementById('loginErrDiscord');
+  if(errEl) errEl.textContent = '';
+  window.location.href = '/auth/discord/login';
+}
+
+async function checkDiscordSession(){
+  // Legge parametri URL al caricamento
+  const params = new URLSearchParams(window.location.search);
+  const error = params.get('error');
+  const session = params.get('session');
+  const livello = params.get('livello');
+
+  // Pulisce URL
+  if(session || error) {
+    window.history.replaceState({}, document.title, '/');
+  }
+
+  if(error) {
+    const msgs = {
+      oauth_cancelled: 'Accesso Discord annullato.',
+      token_failed: 'Errore durante l'autenticazione Discord.',
+      user_failed: 'Impossibile ottenere i dati utente Discord.',
+      not_in_server: 'Non sei membro del server Discord del dipartimento.',
+      no_role: 'Non hai un ruolo riconosciuto nel server Discord.',
+      oauth_state_invalid: 'Sessione OAuth scaduta. Riprova.',
+    };
+    const errEl = document.getElementById('loginErrDiscord');
+    if(errEl) errEl.textContent = '❌ ' + (msgs[error] || 'Errore sconosciuto.');
+    return;
+  }
+
+  if(session && livello) {
+    SESSION_TOKEN = session;
+    // Salva sessione in sessionStorage per persistenza tab
+    sessionStorage.setItem('discord_session', session);
+    sessionStorage.setItem('discord_livello', livello);
+    await enterDiscordSession(session, livello);
+  }
+}
+
+async function enterDiscordSession(token, livello){
+  SESSION_TOKEN = token;
+  try {
+    // Ottieni info sessione dal backend
+    const info = await apiFetch('/auth/session');
+    // Imposta currentUser in base al livello
+    const isDirigenza = ['dirigenza','ispettorato','sovrintendenza'].includes(livello);
+    currentUser = {
+      tipo: isDirigenza ? 'dirigenza' : 'agente',
+      nick: info.discord_username,
+      agentId: info.agent_id,
+      livello: livello,
+      discordAvatar: info.discord_avatar,
+      discordName: info.discord_username,
+    };
+    // Se è dirigenza, imposta anche API_KEY per le operazioni privilegiate
+    if(livello === 'dirigenza') {
+      // La dirigenza usa sia session token che API key (legacy)
+      // La API key viene letta dalle impostazioni o hardcoded
+      API_KEY = 'estovia_dirigenza_2026';
+    }
+    await init();
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appWrap').style.display = 'flex';
+    setupSidebar();
+    const startPage = (livello === 'dirigenza') ? 'dashboard' : 'mio_profilo';
+    goPage(startPage);
+  } catch(e) {
+    SESSION_TOKEN = '';
+    sessionStorage.removeItem('discord_session');
+    sessionStorage.removeItem('discord_livello');
+    const errEl = document.getElementById('loginErrDiscord');
+    if(errEl) errEl.textContent = '❌ Sessione non valida. Riprova.';
+  }
+}
+
+async function doLogin(){
+  const err=document.getElementById('loginErr');
+  err.textContent='';
+  if(loginTab==='dirigenza'){
+    const pwd=document.getElementById('pwdDirigenza').value;
+    try{
+      await apiFetch('/api/login',{method:'POST',body:JSON.stringify({pwd})});
+      API_KEY=pwd;
+      currentUser={tipo:'dirigenza',nick:'Dirigenza'};
+    }catch(e){err.textContent='❌ Password errata.';return;}
+  } else {
+    const nick=document.getElementById('nickAgente').value.trim().toUpperCase();
+    const pwd=document.getElementById('pwdAgente').value.trim();
+    if(!nick){err.textContent='❌ Inserisci il tuo Codice Fiscale.';return;}
+    try{
+      const ag=await apiFetch('/api/login/agente',{method:'POST',body:JSON.stringify({cf:nick,pwd})});
+      if(ag.first_access){
+        // Primo accesso: mostra step 2 inline
+        _pendingNick=nick;
+        _showLoginStep(2);
+        return;
+      } else {
+        if(!pwd){err.textContent='❌ Inserisci la password.';return;}
+        currentUser={tipo:'agente',nick:ag.discord,agentId:ag.id};
+      }
+    }catch(e){err.textContent='❌ '+e.message;return;}
+  }
+  await init();
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appWrap').style.display='flex';
+  setupSidebar();
+  goPage(currentUser.tipo==='dirigenza'?'dashboard':'mio_profilo');
+}
+async function doLogout(){
+  // Logout Discord session se presente
+  if(SESSION_TOKEN){
+    try{ await apiFetch('/auth/logout',{method:'POST'}); }catch(e){}
+    SESSION_TOKEN='';
+    sessionStorage.removeItem('discord_session');
+    sessionStorage.removeItem('discord_livello');
+  }
+  API_KEY='';
+  currentUser=null;
+  _pendingNick='';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('appWrap').style.display='none';
+  document.getElementById('pwdDirigenza').value='';
+  document.getElementById('nickAgente').value='';
+  const pwdAg=document.getElementById('pwdAgente');if(pwdAg)pwdAg.value='';
+  const pwdN=document.getElementById('pwdNuova');if(pwdN)pwdN.value='';
+  const pwdNC=document.getElementById('pwdNuovaConferma');if(pwdNC)pwdNC.value='';
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('loginErrDiscord').textContent='';
+  _showLoginStep(1);
+}
+
+// ══ SIDEBAR ══
+function setupSidebar(){
+  const mode=document.getElementById('sbMode'),nav=document.getElementById('sidebarNav');
+  const av=document.getElementById('sbAv'),uname=document.getElementById('sbUname'),urank=document.getElementById('sbUrank');
+  renderSbLogo();
+  if(currentUser.tipo==='dirigenza'){
+    mode.className='sb-mode dirigenza';mode.textContent='👮 DIRIGENZA';
+    // Mostra avatar Discord se disponibile
+    if(currentUser.discordAvatar){
+      document.getElementById('sbAv').innerHTML='';
+      document.getElementById('sbAv').style.backgroundImage=`url(${currentUser.discordAvatar})`;
+      document.getElementById('sbAv').style.backgroundSize='cover';
+      document.getElementById('sbAv').style.animation='none';
+    } else {
+      av.textContent=currentUser.discordName?currentUser.discordName.slice(0,2).toUpperCase():'CO';
+    }
+    const livelloLabel={'dirigenza':'Dirigenza','ispettorato':'Ispettorato','sovrintendenza':'Sovrintendenza'}[currentUser.livello]||'Staff';
+    uname.textContent=currentUser.discordName||'Comandante';
+    urank.textContent=livelloLabel+' — Accesso privilegiato';
+    nav.innerHTML=`
+      <div class="sb-sec">Dipartimento</div>
+      <div class="nav-item" onclick="goPage('dashboard')"><span class="ni">📊</span>Dashboard</div>
+      <div class="nav-item" onclick="goPage('agenti')"><span class="ni">👮</span>Agenti<span class="nav-badge b" id="nbAgenti">0</span></div>
+      <div class="nav-item" onclick="goPage('storico')"><span class="ni">📋</span>Storico Azioni</div>
+      <div class="nav-item" onclick="goPage('statistiche')"><span class="ni">📈</span>Statistiche</div>
+      <div class="nav-item" onclick="goPage('comunicati')"><span class="ni">📢</span>Comunicati<span class="nav-badge g" id="nbComun">0</span></div>
+      <div class="nav-item" onclick="goPage('pec')"><span class="ni">✉️</span>PEC<span class="nav-badge b" id="nbPec">0</span></div>
+      <div class="nav-item" onclick="goPage('documenti')"><span class="ni">📁</span>Documentazione</div>
+      <div class="nav-item" onclick="goPage('segnalazioni')"><span class="ni">🚨</span>Segnalazioni<span class="nav-badge d" id="nbSeg">0</span></div>
+      <div class="sb-sec">Gestione</div>
+      <div class="nav-item" onclick="openAddModal()"><span class="ni">➕</span>Aggiungi Agente</div>
+      <div class="nav-item" onclick="goPage('password_agenti')"><span class="ni">🔑</span>Password Agenti</div>
+      <div class="sb-sec">Sistema</div>
+      <div class="nav-item" onclick="openSettings()"><span class="ni">⚙️</span>Impostazioni</div>`;
+    updateBadges();
+  } else {
+    const ag=agents.find(x=>x.id===currentUser.agentId);
+    mode.className='sb-mode agente';mode.textContent='🔵 AGENTE';
+    if(currentUser.discordAvatar){
+      document.getElementById('sbAv').innerHTML='';
+      document.getElementById('sbAv').style.backgroundImage=`url(${currentUser.discordAvatar})`;
+      document.getElementById('sbAv').style.backgroundSize='cover';
+      document.getElementById('sbAv').style.animation='none';
+    } else {
+      const init=ag?ag.nome[0]+ag.cognome[0]:'?';
+      av.textContent=init;
+    }
+    uname.textContent=ag?`${ag.nome} ${ag.cognome}`:(currentUser.discordName||'—');
+    urank.textContent=ag?ag.grado:'—';
+    nav.innerHTML=`
+      <div class="sb-sec">Il Mio Account</div>
+      <div class="nav-item" onclick="goPage('mio_profilo')"><span class="ni">👤</span>Il Mio Profilo</div>
+      <div class="nav-item" onclick="goPage('mio_storico')"><span class="ni">📋</span>Il Mio Storico</div>
+      <div class="sb-sec">Dipartimento</div>
+      <div class="nav-item" onclick="goPage('gerarchia')"><span class="ni">🏛️</span>Gerarchia</div>
+      <div class="nav-item" onclick="goPage('bacheca')"><span class="ni">📢</span>Bacheca<span class="nav-badge b" id="nbBacheca">0</span></div>
+      <div class="nav-item" onclick="goPage('pec')"><span class="ni">✉️</span>PEC<span class="nav-badge b" id="nbPecAg">0</span></div>
+      <div class="nav-item" onclick="goPage('documenti')"><span class="ni">📁</span>Documentazione</div>
+      <div class="nav-item" onclick="goPage('segnalazioni')"><span class="ni">🚨</span>Segnalazioni</div>
+      ${(currentUser.livello==='sovrintendenza')?'<div class=\"nav-item\" onclick=\"goPage(\'statistiche\')\""><span class=\"ni\">📈</span>Statistiche Squadra</div>':''}
+      ${(currentUser.livello==='ispettorato')?'<div class=\"nav-item\" onclick=\"goPage(\'statistiche\')\""><span class=\"ni\">📈</span>Statistiche</div><div class=\"nav-item\" onclick=\"goPage(\'agenti\')\""><span class=\"ni\">👮</span>Registro Agenti</div>':''}
+    `;
+    const unread=comunicati.filter(c=>!c.readBy?.includes(currentUser.agentId)).length;
+    const nb=document.getElementById('nbBacheca');if(nb)nb.textContent=unread;
+    const unreadPecAg=pecs.filter(p=>p.destinatarioId===currentUser.agentId&&!p.letta&&p.stato!=='bozza').length;
+    const npAg=document.getElementById('nbPecAg');if(npAg)npAg.textContent=unreadPecAg||'';
+  }
+}
+function updateBadges(){
+  const nb=document.getElementById('nbAgenti');if(nb)nb.textContent=agents.length;
+  const nc=document.getElementById('nbComun');if(nc)nc.textContent=comunicati.length;
+}
+
+// ══ NAVIGAZIONE ══
+const PAGES={
+  dashboard:{title:'Dashboard',sub:'Panoramica del Dipartimento'},
+  agenti:{title:'Registro Agenti',sub:'Elenco completo del personale'},
+  storico:{title:'Storico Azioni',sub:'Log completo delle operazioni'},
+  statistiche:{title:'Statistiche',sub:'Analisi del dipartimento'},
+  comunicati:{title:'Comunicati',sub:'Bacheca interna della dirigenza'},
+  pec:{title:'PEC',sub:'Posta Elettronica Certificata'},
+  documenti:{title:'Documentazione',sub:'Regolamenti, procedure e modulistica'},
+  segnalazioni:{title:'Segnalazioni',sub:'Bacheca segnalazioni interne'},
+  mio_profilo:{title:'Il Mio Profilo',sub:'Dati personali e carriera'},
+  mio_storico:{title:'Il Mio Storico',sub:'Promozioni, degradi e sanzioni'},
+  gerarchia:{title:'Gerarchia',sub:'Struttura del Dipartimento'},
+  bacheca:{title:'Bacheca',sub:'Comunicazioni della Dirigenza'},
+  password_agenti:{title:'Gestione Password Agenti',sub:'Visualizza, modifica e resetta le password degli agenti'},
+};
+function goPage(p){
+  currentPage=p;
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active',n.getAttribute('onclick')===`goPage('${p}')`);
+  });
+  document.getElementById('tbTitle').textContent=PAGES[p]?.title||p;
+  // Subtitle dinamico per segnalazioni
+  if(p==='segnalazioni'&&currentUser?.tipo==='agente'){
+    document.getElementById('tbSub').textContent='Le tue segnalazioni inviate alla dirigenza';
+  } else {
+    document.getElementById('tbSub').textContent=PAGES[p]?.sub||'';
+  }
+  const tr=document.getElementById('tbRight'); tr.innerHTML='';
+  if(p==='agenti'&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openAddModal()">➕ Aggiungi Agente</button>`;
+  if(p==='comunicati'&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openComunModal()">📢 Nuovo Comunicato</button>`;
+  if(p==='pec') tr.innerHTML=`<button class="tb-btn primary" onclick="openNuovaPec()">✉️ Nuova PEC</button>`;
+  if(p==='documenti'&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openDocModal()">📄 Aggiungi Documento</button>`;
+  if(p==='segnalazioni') tr.innerHTML=`<button class="tb-btn primary" onclick="openSegnalazioneModal()">🚨 Nuova Segnalazione</button>`;
+  renderPage();
+}
+function renderPage(){
+  const c=document.getElementById('pageContent'); c.innerHTML='';
+  if(currentPage==='dashboard') renderDashboard(c);
+  else if(currentPage==='agenti') renderAgenti(c);
+  else if(currentPage==='storico') renderStorico(c);
+  else if(currentPage==='statistiche') renderStatistiche(c);
+  else if(currentPage==='comunicati') renderComunicati(c);
+  else if(currentPage==='pec') renderPec(c);
+  else if(currentPage==='documenti') renderDocumenti(c);
+  else if(currentPage==='segnalazioni') renderSegnalazioni(c);
+  else if(currentPage==='mio_profilo') renderMioProfilo(c);
+  else if(currentPage==='mio_storico') renderMioStorico(c);
+  else if(currentPage==='gerarchia') renderGerarchia(c);
+  else if(currentPage==='bacheca') renderBacheca(c);
+  else if(currentPage==='password_agenti'){
+    c.innerHTML='<div style="padding:40px;text-align:center;font-family:\'Cinzel\',serif;font-size:12px;color:var(--text3);letter-spacing:2px">CARICAMENTO...</div>';
+    renderPasswordAgenti(c);
+  }
+}
+
+// ══ PAGINE DIRIGENZA ══
+function renderDashboard(c){
+  const att=agents.filter(a=>a.stato==='Attivo').length;
+  const sosp=agents.filter(a=>a.stato==='Sospeso').length;
+  const prom=history.filter(h=>h.tipo==='Promozione').length;
+  const gradeCount={};gradi().forEach(g=>{gradeCount[g]=agents.filter(a=>a.grado===g).length;});
+  c.innerHTML=`
+  <div class="kpi-strip ani">
+    <div class="kpi c-blue"><div class="kpi-icon">👮</div><div class="kpi-val">${agents.length}</div><div class="kpi-lbl">Organico Totale</div></div>
+    <div class="kpi c-green"><div class="kpi-icon">✅</div><div class="kpi-val">${att}</div><div class="kpi-lbl">In Servizio</div></div>
+    <div class="kpi c-warn"><div class="kpi-icon">⚠️</div><div class="kpi-val">${sosp}</div><div class="kpi-lbl">Sospesi</div></div>
+    <div class="kpi c-purple"><div class="kpi-icon">🔼</div><div class="kpi-val">${prom}</div><div class="kpi-lbl">Promozioni</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
+    <div class="card ani" style="animation-delay:.05s">
+      <div class="card-head"><span>📋</span><h3>Ultime Azioni</h3></div>
+      ${history.slice(0,7).length===0?'<div style="padding:20px 16px;font-family:\'EB Garamond\',serif;font-style:italic;color:var(--text3)">Nessuna azione registrata.</div>':
+        history.slice(0,7).map(h=>`
+        <div class="feed-item">
+          <div class="feed-dot" style="background:${tipoColor(h.tipo)}"></div>
+          <div><div class="feed-txt"><b>${h.agentNome}</b> — ${h.tipo}: ${h.vecchio} → ${h.nuovo}</div>
+          <div class="feed-meta">${h.motivo} · ${h.data}</div></div>
+        </div>`).join('')}
+    </div>
+    <div class="card ani" style="animation-delay:.08s">
+      <div class="card-head"><span>📊</span><h3>Distribuzione Gradi</h3></div>
+      <div class="bar-chart">
+        ${gradi().filter(g=>gradeCount[g]>0).reverse().map(g=>`
+        <div class="bar-row">
+          <div class="bar-lbl" style="color:${GRADE_COLORS[g]||'var(--text2)'}">${g}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(gradeCount[g]/Math.max(agents.length,1)*100)}%;background:${GRADE_COLORS[g]||'var(--accent)'}"></div></div>
+          <div class="bar-num" style="color:${GRADE_COLORS[g]||'var(--text2)'}">${gradeCount[g]}</div>
+        </div>`).join('')}
+        ${agents.length===0?'<div style="font-family:\'EB Garamond\',serif;font-style:italic;color:var(--text3)">Nessun agente.</div>':''}
+      </div>
+    </div>
+  </div>
+  <div class="card ani" style="animation-delay:.12s">
+    <div class="card-head"><span>📢</span><h3>Ultimi Comunicati</h3><div class="ch-right"><button class="tb-btn" onclick="goPage('comunicati')">Vedi tutti →</button></div></div>
+    ${comunicati.slice(0,3).length===0?'<div style="padding:16px;font-family:\'EB Garamond\',serif;font-style:italic;color:var(--text3)">Nessun comunicato.</div>':
+      comunicati.slice(0,3).map(co=>comunItem(co,false)).join('')}
+  </div>`;
+}
+
+function renderAgenti(c){
+  let data=[...agents];
+  if(agSearch) data=data.filter(a=>`${a.nome} ${a.cognome} ${a.cf} ${a.discord} ${a.grado}`.toLowerCase().includes(agSearch.toLowerCase()));
+  if(agFilter) data=data.filter(a=>a.stato===agFilter||a.grado===agFilter);
+  data.sort((a,b)=>((a[agSort]||'').localeCompare(b[agSort]||''))*agSortDir);
+  c.innerHTML=`
+  <div class="card ani">
+    <div class="filter-bar">
+      <input class="f-input" placeholder="🔍 Cerca nome, CF, discord…" value="${agSearch}" oninput="agSearch=this.value;renderPage()">
+      <select class="f-select" onchange="agFilter=this.value;renderPage()">
+        <option value="">Tutti gli stati</option>
+        <option ${agFilter==='Attivo'?'selected':''}>Attivo</option>
+        <option ${agFilter==='Sospeso'?'selected':''}>Sospeso</option>
+        <option ${agFilter==='In Prova'?'selected':''}>In Prova</option>
+        <option ${agFilter==='Congedato'?'selected':''}>Congedato</option>
+      </select>
+      <select class="f-select" onchange="agFilter=this.value;renderPage()">
+        <option value="">Tutti i gradi</option>
+        ${gradi().map(g=>`<option ${agFilter===g?'selected':''}>${g}</option>`).join('')}
+      </select>
+      <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text3)">${data.length} risultati</span>
+    </div>
+    <table class="tbl">
+      <thead><tr>
+        <th onclick="sortAg('cognome')">Agente ${agSort==='cognome'?(agSortDir===1?'↑':'↓'):''}</th>
+        <th onclick="sortAg('cf')">Cod. Fiscale</th>
+        <th>Discord</th>
+        <th onclick="sortAg('grado')">Grado</th>
+        <th>Stato</th>
+        <th>Sanzione</th>
+        <th onclick="sortAg('dataIngresso')">Ingresso</th>
+        <th>Azioni</th>
+      </tr></thead>
+      <tbody>
+        ${data.length===0?`<tr><td colspan="8" style="text-align:center;padding:28px;font-style:italic;color:var(--text3)">Nessun agente trovato.</td></tr>`:
+          data.map(a=>`
+          <tr class="dr" onclick="openDetailModal('${a.id}')">
+            <td><div class="av-cell"><div class="av ${avCls(a)}">${a.nome[0]}${a.cognome[0]}</div><b style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.5px">${a.cognome} ${a.nome}</b></div></td>
+            <td><span style="font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--text2);letter-spacing:1px">${a.cf}</span></td>
+            <td><span style="color:var(--accent);font-weight:600;font-size:13px">@${a.discord}</span></td>
+            <td><span style="color:${GRADE_COLORS[a.grado]||'var(--text)'};font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px">${a.grado}</span></td>
+            <td>${statoBadge(a.stato)}</td>
+            <td>${sanzioneBadge(a.sanzione)}</td>
+            <td style="color:var(--text3);font-size:13px;font-style:italic">${a.dataIngresso}</td>
+            <td onclick="event.stopPropagation()">
+              <div style="display:flex;gap:4px">
+                <button class="tb-btn" onclick="openActionModal('${a.id}')">📋</button>
+                <button class="tb-btn" onclick="openEditModal('${a.id}')">✏️</button>
+                <button class="tb-btn" onclick="openDeleteModal('${a.id}')">🗑️</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+function sortAg(col){agSort===col?agSortDir*=-1:(agSort=col,agSortDir=1);renderPage();}
+
+function renderStorico(c){
+  let data=[...history];
+  if(stSearch) data=data.filter(h=>`${h.agentNome} ${h.tipo} ${h.motivo}`.toLowerCase().includes(stSearch.toLowerCase()));
+  if(stFilter) data=data.filter(h=>h.tipo===stFilter);
+  c.innerHTML=`
+  <div class="card ani">
+    <div class="filter-bar">
+      <input class="f-input" placeholder="🔍 Cerca agente, motivazione…" value="${stSearch}" oninput="stSearch=this.value;renderPage()">
+      <select class="f-select" onchange="stFilter=this.value;renderPage()">
+        <option value="">Tutti i tipi</option>
+        <option ${stFilter==='Promozione'?'selected':''}>Promozione</option>
+        <option ${stFilter==='Degrado'?'selected':''}>Degrado</option>
+        <option ${stFilter==='Sanzione'?'selected':''}>Sanzione</option>
+        <option ${stFilter==='Licenziamento'?'selected':''}>Licenziamento</option>
+        <option ${stFilter==='Cambio Stato'?'selected':''}>Cambio Stato</option>
+        <option ${stFilter==='Ingresso'?'selected':''}>Ingresso</option>
+      </select>
+      <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:9px;color:var(--text3)">${data.length} voci</span>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Agente</th><th>Tipo</th><th>Da</th><th>A</th><th>Motivazione</th><th>Data</th></tr></thead>
+      <tbody>
+        ${data.length===0?`<tr><td colspan="6" style="text-align:center;padding:28px;font-style:italic;color:var(--text3)">Nessuna azione.</td></tr>`:
+          data.map(h=>`
+          <tr class="dr" onclick="openDetailModal('${h.agentId}')">
+            <td><b style="font-family:'Cinzel',serif;font-size:11px;color:var(--accent2);letter-spacing:0.5px">${h.agentNome}</b></td>
+            <td>${tipoBadge(h.tipo)}</td>
+            <td style="color:var(--text2);font-size:14px">${h.vecchio}</td>
+            <td style="font-weight:600;font-size:14px">${h.nuovo}</td>
+            <td style="color:var(--text2);font-size:13px;font-style:italic;max-width:200px">${h.motivo}</td>
+            <td style="color:var(--text3);font-size:13px;font-style:italic">${h.data}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function renderStatistiche(c){
+  const tot=agents.length||1;
+
+  // — Stato —
+  const byStato={Attivo:0,Sospeso:0,'In Prova':0,Congedato:0};
+  agents.forEach(a=>{if(byStato[a.stato]!==undefined)byStato[a.stato]++;});
+
+  // — Azioni per tipo —
+  const byTipo={Promozione:0,Degrado:0,Sanzione:0,'Rimozione Sanzione':0,Licenziamento:0,Ingresso:0};
+  history.forEach(h=>{if(byTipo[h.tipo]!==undefined)byTipo[h.tipo]++;});
+
+  // — Sanzioni attive —
+  const conSanzione=agents.filter(a=>a.sanzione);
+  const sanzioneCount={};
+  sanzioni().forEach(s=>{sanzioneCount[s]=agents.filter(a=>a.sanzione===s).length;});
+
+  // — Chi ha più sanzioni nello storico —
+  const sanByAgent={};
+  history.filter(h=>h.tipo==='Sanzione').forEach(h=>{
+    sanByAgent[h.agentId]=(sanByAgent[h.agentId]||{nome:h.agentNome,count:0});
+    sanByAgent[h.agentId].count++;
+  });
+  const topSanzionati=Object.entries(sanByAgent).map(([id,d])=>({id,...d}))
+    .sort((a,b)=>b.count-a.count).slice(0,8);
+
+  // — Sanzioni per tipo nello storico —
+  const sanTipoHist={};
+  history.filter(h=>h.tipo==='Sanzione').forEach(h=>{
+    sanTipoHist[h.nuovo]=(sanTipoHist[h.nuovo]||0)+1;
+  });
+
+  // — Trend mensile ultimi 6 mesi —
+  const mesi=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date();d.setMonth(d.getMonth()-i);
+    const key=d.toISOString().slice(0,7);
+    const label=d.toLocaleString('it',{month:'short',year:'2-digit'});
+    mesi.push({key,label,
+      prom:history.filter(h=>h.tipo==='Promozione'&&h.data?.startsWith(key)).length,
+      san:history.filter(h=>h.tipo==='Sanzione'&&h.data?.startsWith(key)).length,
+      deg:history.filter(h=>h.tipo==='Degrado'&&h.data?.startsWith(key)).length,
+    });
+  }
+  const maxMese=Math.max(...mesi.map(m=>Math.max(m.prom,m.san,m.deg)),1);
+
+  // — Top promotori (chi ha ricevuto più promozioni) —
+  const promByAgent={};
+  history.filter(h=>h.tipo==='Promozione').forEach(h=>{
+    promByAgent[h.agentId]=(promByAgent[h.agentId]||{nome:h.agentNome,count:0});
+    promByAgent[h.agentId].count++;
+  });
+  const topPromossi=Object.entries(promByAgent).map(([id,d])=>({id,...d}))
+    .sort((a,b)=>b.count-a.count).slice(0,5);
+
+  // — Agenti senza azioni (inattivi) —
+  const conAzioni=new Set(history.map(h=>h.agentId));
+  const inattivi=agents.filter(a=>!conAzioni.has(a.id)&&a.stato==='Attivo');
+
+  // — Gradi più popolosi —
+  const gradeCount={};
+  gradi().forEach(g=>{gradeCount[g]=agents.filter(a=>a.grado===g).length;});
+  const maxGrade=Math.max(...Object.values(gradeCount),1);
+
+  // — Tasso sanzione —
+  const tassoSan=agents.length>0?Math.round(conSanzione.length/agents.length*100):0;
+
+  c.innerHTML=`
+  <!-- KPI principali -->
+  <div class="kpi-strip ani">
+    <div class="kpi c-blue"><div class="kpi-icon">👮</div><div class="kpi-val">${agents.length}</div><div class="kpi-lbl">Organico Totale</div></div>
+    <div class="kpi c-green"><div class="kpi-icon">✅</div><div class="kpi-val">${byStato.Attivo}</div><div class="kpi-lbl">In Servizio</div></div>
+    <div class="kpi c-warn"><div class="kpi-icon">⚠️</div><div class="kpi-val">${conSanzione.length}</div><div class="kpi-lbl">Con Sanzione</div></div>
+    <div class="kpi c-danger"><div class="kpi-icon">🚨</div><div class="kpi-val">${tassoSan}%</div><div class="kpi-lbl">Tasso Sanzione</div></div>
+  </div>
+
+  <!-- Riga 1: Sanzioni attive + Chi ha più sanzioni nello storico -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card ani" style="animation-delay:.04s">
+      <div class="card-head"><span>🚨</span><h3>Sanzioni Attive per Livello</h3><div class="ch-right"><span class="tag ${conSanzione.length>0?'danger':'ok'}">${conSanzione.length} attive</span></div></div>
+      <div class="bar-chart">
+        ${sanzioni().length===0?'<div style="font-style:italic;color:var(--text3);padding:8px">Nessuna sanzione configurata.</div>':
+          sanzioni().map(s=>{
+            const n=sanzioneCount[s]||0;
+            const col=s==='SOSPENSIONE'?'var(--danger)':s.startsWith('RICHIAMO')?'var(--warn)':'#C07A10';
+            return `<div class="bar-row">
+              <div class="bar-lbl" style="color:${col};font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.5px">${s}</div>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(n/Math.max(agents.length,1)*100)}%;background:${col}"></div></div>
+              <div class="bar-num" style="color:${col}">${n}</div>
+            </div>`;
+          }).join('')}
+        ${conSanzione.length===0?'<div style="font-family:\'EB Garamond\',serif;font-style:italic;color:var(--green);font-size:13px;padding:4px 0">✅ Nessun agente sanzionato attualmente.</div>':''}
+      </div>
+    </div>
+
+    <div class="card ani" style="animation-delay:.06s">
+      <div class="card-head"><span>📊</span><h3>Più Sanzionati (storico)</h3><div class="ch-right"><span class="tag warn">${history.filter(h=>h.tipo==='Sanzione').length} totali</span></div></div>
+      <div style="padding:6px 0">
+        ${topSanzionati.length===0?'<div style="padding:16px;font-family:\'EB Garamond\',serif;font-style:italic;color:var(--text3)">Nessuna sanzione registrata.</div>':
+          topSanzionati.map((ag,i)=>`
+          <div class="ger-item" style="cursor:pointer" onclick="openDetailModal('${ag.id}')">
+            <div style="width:24px;text-align:center;font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:${i===0?'var(--danger)':i<3?'var(--warn)':'var(--text3)'}">${i+1}</div>
+            <div style="flex:1">
+              <div style="font-family:'EB Garamond',serif;font-size:15px;font-weight:600;color:var(--text)">${ag.nome}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:${ag.count>=5?'var(--danger)':ag.count>=3?'var(--warn)':'var(--text2)'}">${ag.count}</div>
+              <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--text3);letter-spacing:1px">SAN.</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- Riga 2: Agenti con sanzione attiva (lista dettagliata) -->
+  ${conSanzione.length>0?`
+  <div class="card ani" style="animation-delay:.08s">
+    <div class="card-head"><span>🔴</span><h3>Agenti con Sanzione Attiva</h3><div class="ch-right"><span class="tag danger">${conSanzione.length} agenti</span></div></div>
+    <table class="tbl">
+      <thead><tr><th>Agente</th><th>Grado</th><th>Sanzione Attiva</th><th>Stato</th><th>Ultima Sanzione</th></tr></thead>
+      <tbody>
+        ${conSanzione.sort((a,b)=>(sanzioni().indexOf(b.sanzione))-(sanzioni().indexOf(a.sanzione))).map(a=>{
+          const ultimaSan=history.find(h=>h.agentId===a.id&&h.tipo==='Sanzione');
+          const col=a.sanzione==='SOSPENSIONE'?'var(--danger)':a.sanzione?.startsWith('RICHIAMO')?'var(--warn)':'#C07A10';
+          return `<tr class="dr" onclick="openDetailModal('${a.id}')">
+            <td><div class="av-cell"><div class="av ${avCls(a)}">${a.nome[0]}${a.cognome[0]}</div><b style="font-family:'Cinzel',serif;font-size:12px">${a.cognome} ${a.nome}</b></div></td>
+            <td><span style="color:${GRADE_COLORS[a.grado]||'var(--text)'};font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px">${a.grado}</span></td>
+            <td><span style="color:${col};font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;font-weight:700">⚠️ ${a.sanzione}</span></td>
+            <td>${statoBadge(a.stato)}</td>
+            <td style="color:var(--text3);font-size:13px;font-style:italic">${ultimaSan?ultimaSan.data:'—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`:''}
+
+  <!-- Riga 3: Trend mensile + Distribuzione gradi -->
+  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px">
+    <div class="card ani" style="animation-delay:.10s">
+      <div class="card-head"><span>📈</span><h3>Trend Ultimi 6 Mesi</h3>
+        <div class="ch-right">
+          <span style="display:flex;align-items:center;gap:4px;font-family:'Cinzel',serif;font-size:9px;color:var(--accent)">■ Prom</span>
+          <span style="display:flex;align-items:center;gap:4px;font-family:'Cinzel',serif;font-size:9px;color:var(--warn);margin-left:6px">■ San</span>
+          <span style="display:flex;align-items:center;gap:4px;font-family:'Cinzel',serif;font-size:9px;color:var(--danger);margin-left:6px">■ Deg</span>
+        </div>
+      </div>
+      <div style="padding:16px 16px 8px">
+        <div style="display:flex;align-items:flex-end;gap:8px;height:110px">
+          ${mesi.map(m=>`
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:90px">
+              <div style="flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:${Math.round(m.prom/maxMese*90)}px;min-height:${m.prom>0?3:0}px;transition:height 0.8s" title="Promozioni: ${m.prom}"></div>
+              <div style="flex:1;background:var(--warn);border-radius:3px 3px 0 0;height:${Math.round(m.san/maxMese*90)}px;min-height:${m.san>0?3:0}px;transition:height 0.8s" title="Sanzioni: ${m.san}"></div>
+              <div style="flex:1;background:var(--danger);border-radius:3px 3px 0 0;height:${Math.round(m.deg/maxMese*90)}px;min-height:${m.deg>0?3:0}px;transition:height 0.8s" title="Degradi: ${m.deg}"></div>
+            </div>
+            <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">${m.label}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card ani" style="animation-delay:.12s">
+      <div class="card-head"><span>📊</span><h3>Distribuzione Gradi</h3></div>
+      <div class="bar-chart">
+        ${gradi().filter(g=>gradeCount[g]>0).reverse().map(g=>`
+        <div class="bar-row">
+          <div class="bar-lbl" style="color:${GRADE_COLORS[g]||'var(--text2)'};font-size:12px">${g}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(gradeCount[g]/maxGrade*100)}%;background:${GRADE_COLORS[g]||'var(--accent)'}"></div></div>
+          <div class="bar-num" style="color:${GRADE_COLORS[g]||'var(--text2)'}">${gradeCount[g]}</div>
+        </div>`).join('')}
+        ${agents.length===0?'<div style="font-style:italic;color:var(--text3)">Nessun agente.</div>':''}
+      </div>
+    </div>
+  </div>
+
+  <!-- Riga 4: Azioni per tipo + Top promossi + Inattivi -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+    <div class="card ani" style="animation-delay:.14s">
+      <div class="card-head"><span>🔄</span><h3>Azioni per Tipo</h3></div>
+      <div class="bar-chart">
+        ${Object.entries(byTipo).filter(([,n])=>n>0).map(([t,n])=>`
+        <div class="bar-row">
+          <div class="bar-lbl" style="font-size:12px">${t}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(n/Math.max(...Object.values(byTipo),1)*100)}%;background:${tipoColor(t)}"></div></div>
+          <div class="bar-num">${n}</div>
+        </div>`).join('')}
+        ${history.length===0?'<div style="font-style:italic;color:var(--text3)">Nessuna azione.</div>':''}
+      </div>
+    </div>
+
+    <div class="card ani" style="animation-delay:.16s">
+      <div class="card-head"><span>🔼</span><h3>Più Promossi</h3></div>
+      <div style="padding:6px 0">
+        ${topPromossi.length===0?'<div style="padding:16px;font-family:\'EB Garamond\',serif;font-style:italic;color:var(--text3)">Nessuna promozione.</div>':
+          topPromossi.map((ag,i)=>`
+          <div class="ger-item" style="cursor:pointer" onclick="openDetailModal('${ag.id}')">
+            <div style="width:24px;text-align:center;font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:${i===0?'#FFD700':i===1?'#C0C0C0':i===2?'#CD7F32':'var(--text3)'}">${i+1}</div>
+            <div style="flex:1"><div style="font-family:'EB Garamond',serif;font-size:15px;font-weight:600;color:var(--text)">${ag.nome}</div></div>
+            <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--accent)">${ag.count}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card ani" style="animation-delay:.18s">
+      <div class="card-head"><span>💤</span><h3>Attivi senza Azioni</h3><div class="ch-right"><span class="tag ${inattivi.length>0?'warn':'ok'}">${inattivi.length}</span></div></div>
+      <div style="padding:6px 0">
+        ${inattivi.length===0?'<div style="padding:16px;font-family:\'EB Garamond\',serif;font-style:italic;color:var(--green);font-size:13px">✅ Tutti gli agenti hanno attività registrata.</div>':
+          inattivi.slice(0,6).map(a=>`
+          <div class="ger-item" style="cursor:pointer" onclick="openDetailModal('${a.id}')">
+            <div class="ger-av ${avCls(a)}">${a.nome[0]}${a.cognome[0]}</div>
+            <div class="ger-info">
+              <div class="ger-name">${a.cognome} ${a.nome}</div>
+              <div class="ger-grado" style="color:${GRADE_COLORS[a.grado]||'var(--text3)'}">${a.grado}</div>
+            </div>
+          </div>`).join('')}
+        ${inattivi.length>6?`<div style="padding:8px 16px;font-family:'EB Garamond',serif;font-size:13px;color:var(--text3);font-style:italic">...e altri ${inattivi.length-6}</div>`:''}
+      </div>
+    </div>
+  </div>
+
+  <!-- Riga 5: Distribuzione stato + Sanzione per tipo storico -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card ani" style="animation-delay:.20s">
+      <div class="card-head"><span>🔵</span><h3>Distribuzione Stato</h3></div>
+      <div class="bar-chart">
+        ${Object.entries(byStato).map(([s,n])=>`
+        <div class="bar-row">
+          <div class="bar-lbl">${s}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(n/tot*100)}%;background:${s==='Attivo'?'var(--green)':s==='Sospeso'?'var(--danger)':s==='In Prova'?'var(--warn)':'var(--text3)'}"></div></div>
+          <div class="bar-num">${n}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card ani" style="animation-delay:.22s">
+      <div class="card-head"><span>⚠️</span><h3>Storico Sanzioni per Tipo</h3><div class="ch-right"><span class="tag warn">${history.filter(h=>h.tipo==='Sanzione').length} totali</span></div></div>
+      <div class="bar-chart">
+        ${Object.keys(sanTipoHist).length===0?'<div style="font-style:italic;color:var(--text3);padding:8px">Nessuna sanzione nello storico.</div>':
+          Object.entries(sanTipoHist).sort((a,b)=>b[1]-a[1]).map(([s,n])=>{
+            const col=s==='SOSPENSIONE'?'var(--danger)':s.startsWith('RICHIAMO')?'var(--warn)':'#C07A10';
+            return `<div class="bar-row">
+              <div class="bar-lbl" style="color:${col};font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.5px">${s}</div>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(n/Math.max(...Object.values(sanTipoHist),1)*100)}%;background:${col}"></div></div>
+              <div class="bar-num" style="color:${col}">${n}</div>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderComunicati(c){
+  c.innerHTML=`
+  <div class="card ani">
+    <div class="card-head"><span>📢</span><h3>Comunicati</h3>
+      <div class="ch-right"><button class="tb-btn primary" onclick="openComunModal()">📢 Nuovo</button></div>
+    </div>
+    ${comunicati.length===0?'<div style="padding:24px;font-family:\'EB Garamond\',serif;font-style:italic;color:var(--text3);text-align:center">Nessun comunicato pubblicato.</div>':
+      comunicati.map(co=>comunItemDirigenza(co)).join('')}
+  </div>`;
+}
+
+function comunItemDirigenza(co){
+  return `<div class="comun-item">
+    <div class="comun-head">${prioBadgeCom(co.priorita)}<div class="comun-title">${co.titolo}</div>
+      <div style="display:flex;gap:5px">
+        <button class="tb-btn" onclick="event.stopPropagation();openEditComunModal('${co.id}')">✏️</button>
+        <button class="tb-btn" onclick="event.stopPropagation();deleteComunicato('${co.id}')">🗑️</button>
+      </div>
+    </div>
+    <div class="comun-body">${co.corpo}</div>
+    <div class="comun-meta">Pubblicato il ${co.data} · Letto da ${co.readBy?.length||0} agenti</div>
+  </div>`;
+}
+function comunItem(co,showUnread){
+  const isUnread=showUnread&&!co.readBy?.includes(currentUser?.agentId);
+  const vistoCount=co.readBy?.length||0;
+  const hoVisto=co.readBy?.includes(currentUser?.agentId||currentUser?.nick);
+  return `<div class="comun-item" onclick="openComunDetail('${co.id}')">
+    <div class="comun-head">${isUnread?'<div class="comun-unread"></div>':''}${prioBadgeCom(co.priorita)}<div class="comun-title">${co.titolo}</div></div>
+    <div class="comun-body" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${co.corpo}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+      <div class="comun-meta">${co.data}</div>
+      <button onclick="event.stopPropagation();toggleVisto('${co.id}')" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid ${hoVisto?'var(--green)':'var(--border)'};background:${hoVisto?'var(--green-dim)':'var(--bg3)'};color:${hoVisto?'var(--green)':'var(--text3)'};font-size:12px;font-family:\'Cinzel\',serif;cursor:pointer;letter-spacing:.5px;transition:all .2s">
+        👁️ ${vistoCount} Visto
+      </button>
+    </div>
+  </div>`;
+}
+
+
+// ══ PAGINE AGENTE ══
+function renderMioProfilo(c){
+  const a=agents.find(x=>x.id===currentUser.agentId);
+  if(!a){c.innerHTML='<div style="padding:30px;color:var(--text3)">Profilo non trovato.</div>';return;}
+  const nProm=history.filter(h=>h.agentId===a.id&&h.tipo==='Promozione').length;
+  const nSan=history.filter(h=>h.agentId===a.id&&h.tipo==='Sanzione').length;
+  const nAzioni=history.filter(h=>h.agentId===a.id).length;
+  c.innerHTML=`
+  <div class="profile-hero ani">
+    <div class="profile-av ${avCls(a)}">${a.nome[0]}${a.cognome[0]}</div>
+    <div>
+      <div class="profile-name">${a.nome} ${a.cognome}</div>
+      <div class="profile-grado" style="color:${GRADE_COLORS[a.grado]||'var(--accent)'}">🎖️ ${a.grado}</div>
+      <div class="profile-meta">@${a.discord} · CF: ${a.cf} · Ingresso: ${a.dataIngresso}</div>
+      <div style="margin-top:8px">${statoBadge(a.stato)}</div>
+    </div>
+  </div>
+  <div class="kpi-strip ani" style="animation-delay:.05s;grid-template-columns:repeat(3,1fr)">
+    <div class="kpi c-blue"><div class="kpi-icon">📋</div><div class="kpi-val">${nAzioni}</div><div class="kpi-lbl">Azioni Totali</div></div>
+    <div class="kpi c-green"><div class="kpi-icon">🔼</div><div class="kpi-val">${nProm}</div><div class="kpi-lbl">Promozioni</div></div>
+    <div class="kpi c-warn"><div class="kpi-icon">⚠️</div><div class="kpi-val">${nSan}</div><div class="kpi-lbl">Sanzioni</div></div>
+  </div>
+  <div class="card ani" style="animation-delay:.1s">
+    <div class="card-head"><span>📄</span><h3>Dati Personali</h3></div>
+    <div class="fg2" style="padding:16px;gap:12px">
+      <div class="dcard"><div class="dcard-lbl">Nome Completo</div><div class="dcard-val">${a.nome} ${a.cognome}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Codice Fiscale</div><div class="dcard-val accent">${a.cf}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Nick Discord</div><div class="dcard-val purple">@${a.discord}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Grado</div><div class="dcard-val" style="color:${GRADE_COLORS[a.grado]||'var(--text)'};font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px">${a.grado}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Stato</div><div class="dcard-val">${a.stato}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Data Ingresso</div><div class="dcard-val">${a.dataIngresso}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Sanzione Attiva</div><div class="dcard-val">${a.sanzione?`<span style="color:var(--danger);font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px">⚠️ ${a.sanzione}</span>`:'<span style="color:var(--green);font-size:13px">✅ Nessuna</span>'}</div></div>
+      ${a.note?`<div class="dcard" style="grid-column:1/-1"><div class="dcard-lbl">Note</div><div class="dcard-val" style="font-size:14px;font-weight:400;color:var(--text2);font-style:italic">${a.note}</div></div>`:''}
+    </div>
+  </div>`;
+}
+
+function renderMioStorico(c){
+  const a=agents.find(x=>x.id===currentUser.agentId);
+  if(!a){c.innerHTML='';return;}
+  const data=history.filter(h=>h.agentId===a.id);
+  c.innerHTML=`
+  <div class="card ani">
+    <div class="card-head"><span>📋</span><h3>Storico Personale</h3><div class="ch-right"><span class="tag blue">${data.length} voci</span></div></div>
+    <div style="padding:8px 16px">
+      ${data.length===0?'<div style="padding:20px 0;font-style:italic;color:var(--text3)">Nessuna azione registrata.</div>':
+        data.map(h=>`
+        <div class="tl-item">
+          <div class="tl-dot" style="background:${tipoColor(h.tipo)}"></div>
+          <div>
+            <div class="tl-text"><b>${h.tipo}</b> — <span style="color:var(--text2)">${h.vecchio}</span> → <span style="color:${tipoColor(h.tipo)};font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px">${h.nuovo}</span></div>
+            <div class="tl-meta">${h.motivo} · ${h.data}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderGerarchia(c){
+  const sorted=[...agents].sort((a,b)=>gradi().indexOf(b.grado)-gradi().indexOf(a.grado));
+  c.innerHTML=`
+  <div class="card ani">
+    <div class="card-head"><span>🏛️</span><h3>Struttura Gerarchica del Dipartimento</h3><div class="ch-right"><span class="tag ok">${agents.length} agenti</span></div></div>
+    ${sorted.length===0?'<div style="padding:24px;font-style:italic;color:var(--text3);text-align:center">Nessun agente nel dipartimento.</div>':
+      sorted.map((a,i)=>`
+      <div class="ger-item">
+        <div class="ger-pos" style="color:${i<3?['#FFD700','#C0C0C0','#CD7F32'][i]:'var(--text3)'}">${i+1}</div>
+        <div class="ger-av ${avCls(a)}">${a.nome[0]}${a.cognome[0]}</div>
+        <div class="ger-info">
+          <div class="ger-name">${a.nome} ${a.cognome}</div>
+          <div class="ger-grado" style="color:${GRADE_COLORS[a.grado]||'var(--text2)'}">🎖️ ${a.grado}</div>
+        </div>
+        <div>${statoBadge(a.stato)}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderBacheca(c){
+  comunicati.forEach(co=>{
+    if(!co.readBy)co.readBy=[];
+    if(!co.readBy.includes(currentUser.agentId))co.readBy.push(currentUser.agentId);
+  });
+  stSet('comunicati',comunicati);
+  const nb=document.getElementById('nbBacheca');if(nb)nb.textContent='0';
+  c.innerHTML=`
+  <div class="card ani">
+    <div class="card-head"><span>📢</span><h3>Bacheca Comunicazioni</h3><div class="ch-right"><span class="tag blue">${comunicati.length} comunicati</span></div></div>
+    ${comunicati.length===0?'<div style="padding:24px;font-style:italic;color:var(--text3);text-align:center">Nessun comunicato dalla dirigenza.</div>':
+      comunicati.map(co=>comunItem(co,true)).join('')}
+  </div>`;
+}
+
+// ══ COMUNICATI CRUD ══
+function openComunModal(){
+  editComId=null;
+  document.getElementById('comunModalTitle').textContent='Nuovo Comunicato';
+  document.getElementById('com_titolo').value='';
+  document.getElementById('com_body').value='';
+  document.getElementById('com_prio').value='normale';
+  openModal('comunModal');
+}
+function openEditComunModal(id){
+  const co=comunicati.find(x=>x.id===id);if(!co)return;
+  editComId=id;
+  document.getElementById('comunModalTitle').textContent='Modifica Comunicato';
+  document.getElementById('com_titolo').value=co.titolo;
+  document.getElementById('com_body').value=co.corpo;
+  document.getElementById('com_prio').value=co.priorita||'normale';
+  openModal('comunModal');
+}
+async function saveComunicato(){
+  const titolo=document.getElementById('com_titolo').value.trim();
+  const corpo=document.getElementById('com_body').value.trim();
+  const priorita=document.getElementById('com_prio').value;
+  if(!titolo||!corpo){toast('Compila titolo e contenuto','danger');return;}
+  try{
+    if(editComId){
+      await apiFetch(`/api/comunicati/${editComId}`,{method:'PUT',body:JSON.stringify({titolo,corpo,priorita})});
+      toast('Comunicato aggiornato','success');
+    } else {
+      await apiFetch('/api/comunicati',{method:'POST',body:JSON.stringify({titolo,corpo,priorita})});
+      toast('Comunicato pubblicato','success');
+    }
+    await reloadData();
+    closeModal('comunModal');updateBadges();renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+async function deleteComunicato(id){
+  try{
+    await apiFetch(`/api/comunicati/${id}`,{method:'DELETE'});
+    await reloadData();
+    toast('Comunicato eliminato','info');updateBadges();renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+function openComunDetail(id){
+  const co=comunicati.find(x=>x.id===id);if(!co)return;
+  document.getElementById('cdTitle').textContent=co.titolo;
+  document.getElementById('cdSub').innerHTML=`${prioBadgeCom(co.priorita)} <span style="font-family:'EB Garamond',serif;font-style:italic">${co.data}</span>`;
+  document.getElementById('cdBody').innerHTML=`<div style="font-family:'EB Garamond',serif;font-size:15px;color:var(--text2);line-height:1.75;white-space:pre-wrap">${co.corpo}</div>`;
+  // Marca come letto
+  if(currentUser?.agentId){
+    apiFetch(`/api/comunicati/${id}/read`,{method:'POST',body:JSON.stringify({agentId:currentUser.agentId})})
+      .then(()=>reloadData()).catch(()=>{});
+  }
+  openModal('comunDetailModal');
+}
+
+// ══ AGENT CRUD ══
+function populateGradi(){
+  ['f_grado','act_grado'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const cur=el.value;
+    el.innerHTML=(id==='f_grado'?'<option value="">— Seleziona —</option>':'')+gradi().map(g=>`<option>${g}</option>`).join('');
+    el.value=cur;
+  });
+}
+function openAddModal(){
+  editingId=null;
+  document.getElementById('agentModalTitle').textContent='Aggiungi Agente';
+  ['f_nome','f_cognome','f_cf','f_discord','f_note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f_grado').value='';
+  document.getElementById('f_stato').value='Attivo';
+  populateGradi();openModal('agentModal');
+}
+function openEditModal(id){
+  const a=agents.find(x=>x.id===id);if(!a)return;
+  editingId=id;
+  document.getElementById('agentModalTitle').textContent='Modifica Agente';
+  document.getElementById('f_nome').value=a.nome;
+  document.getElementById('f_cognome').value=a.cognome;
+  document.getElementById('f_cf').value=a.cf;
+  document.getElementById('f_discord').value=a.discord;
+  document.getElementById('f_note').value=a.note||'';
+  populateGradi();
+  document.getElementById('f_grado').value=a.grado;
+  document.getElementById('f_stato').value=a.stato;
+  openModal('agentModal');
+}
+async function saveAgent(){
+  const nome=document.getElementById('f_nome').value.trim();
+  const cognome=document.getElementById('f_cognome').value.trim();
+  const cf=document.getElementById('f_cf').value.trim().toUpperCase();
+  const discord=document.getElementById('f_discord').value.trim();
+  const grado=document.getElementById('f_grado').value;
+  const stato=document.getElementById('f_stato').value;
+  const note=document.getElementById('f_note').value.trim();
+  if(!nome||!cognome||!cf||!discord||!grado){toast('Compila tutti i campi obbligatori','danger');return;}
+  try{
+    if(editingId){
+      const ag=agents.find(x=>x.id===editingId);
+      await apiFetch(`/api/agents/${editingId}`,{method:'PUT',body:JSON.stringify({...ag,nome,cognome,cf,discord,grado,stato,note})});
+      toast('Agente aggiornato','success');
+    } else {
+      await apiFetch('/api/agents',{method:'POST',body:JSON.stringify({nome,cognome,cf,discord,grado,stato,note})});
+      toast('Agente aggiunto','success');
+    }
+    await reloadData();
+    closeModal('agentModal');updateBadges();renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+function openActionModal(id){
+  actionTargetId=id;const a=agents.find(x=>x.id===id);if(!a)return;
+  document.getElementById('actTitle').textContent='Nuova Azione';
+  document.getElementById('actSub').textContent=`${a.nome} ${a.cognome} — ${a.grado}`;
+  document.getElementById('act_tipo').value='Promozione';
+  document.getElementById('act_motiv').value='';
+  document.getElementById('act_data').value=today();
+  populateGradi();document.getElementById('act_grado').value=a.grado;
+  actTipoChange();openModal('actionModal');
+}
+function actTipoChange(){
+  const t=document.getElementById('act_tipo').value;
+  document.getElementById('act_grado_wrap').style.display=(t==='Cambio Stato'||t==='Sanzione'||t==='Rimozione Sanzione')?'none':'flex';
+  document.getElementById('act_stato_wrap').style.display=t==='Cambio Stato'?'flex':'none';
+  document.getElementById('act_sanzione_wrap').style.display=t==='Sanzione'?'flex':'none';
+  if(t==='Sanzione'){
+    const sel=document.getElementById('act_sanzione');
+    const cur=sel.value;
+    sel.innerHTML=sanzioni().map(s=>`<option>${s}</option>`).join('');
+    if(cur)sel.value=cur;
+  }
+}
+async function saveAction(){
+  const a=agents.find(x=>x.id===actionTargetId);if(!a)return;
+  const tipo=document.getElementById('act_tipo').value;
+  const motivo=document.getElementById('act_motiv').value.trim();
+  const data=document.getElementById('act_data').value||today();
+  if(!motivo){toast('Inserisci una motivazione','danger');return;}
+  let vecchio,nuovo;
+  if(tipo==='Cambio Stato'){vecchio=a.stato;nuovo=document.getElementById('act_stato').value;}
+  else if(tipo==='Sanzione'){vecchio=a.sanzione||'Nessuna';nuovo=document.getElementById('act_sanzione').value;}
+  else if(tipo==='Rimozione Sanzione'){vecchio=a.sanzione||'Nessuna';nuovo='Nessuna';}
+  else{vecchio=a.grado;nuovo=document.getElementById('act_grado').value;}
+  try{
+    await apiFetch('/api/history',{method:'POST',body:JSON.stringify({
+      agentId:a.id,agentNome:`${a.nome} ${a.cognome}`,tipo,vecchio,nuovo,motivo,data
+    })});
+    await reloadData();
+    closeModal('actionModal');toast(`${tipo} registrata`,'success');renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+function openDeleteModal(id){
+  deleteTargetId=id;const a=agents.find(x=>x.id===id);
+  document.getElementById('delSub').textContent=a?`${a.nome} ${a.cognome} — ${a.grado}`:'';
+  openModal('deleteModal');
+}
+async function confirmDelete(){
+  try{
+    await apiFetch(`/api/agents/${deleteTargetId}`,{method:'DELETE'});
+    await reloadData();
+    closeModal('deleteModal');closeModal('detailModal');
+    updateBadges();toast('Agente eliminato','danger');renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+function openDetailModal(id){
+  const a=agents.find(x=>x.id===id);if(!a)return;
+  document.getElementById('dmTitle').textContent=`${a.nome} ${a.cognome}`;
+  document.getElementById('dmSub').textContent=`${a.grado} · ${a.stato} · Ingresso: ${a.dataIngresso}`;
+  const agHist=history.filter(h=>h.agentId===id);
+  const isDirigenza=currentUser.tipo==='dirigenza';
+  document.getElementById('dmBody').innerHTML=`
+    <div class="fg2" style="margin-bottom:18px">
+      <div class="dcard"><div class="dcard-lbl">Nome</div><div class="dcard-val">${a.nome} ${a.cognome}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Codice Fiscale</div><div class="dcard-val accent">${a.cf}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Discord</div><div class="dcard-val purple">@${a.discord}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Grado</div><div class="dcard-val" style="color:${GRADE_COLORS[a.grado]||'var(--text)'};font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px">${a.grado}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Stato</div><div class="dcard-val">${a.stato}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Ingresso</div><div class="dcard-val">${a.dataIngresso}</div></div>
+      <div class="dcard"><div class="dcard-lbl">Sanzione Attiva</div><div class="dcard-val">${a.sanzione?`<span style="color:var(--danger);font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px">⚠️ ${a.sanzione}</span>`:'<span style="color:var(--green);font-size:13px">✅ Nessuna</span>'}</div></div>
+      ${a.note?`<div class="dcard" style="grid-column:1/-1"><div class="dcard-lbl">Note</div><div class="dcard-val" style="font-size:14px;font-weight:400;color:var(--text2);font-style:italic">${a.note}</div></div>`:''}
+    </div>
+    ${isDirigenza?`<div style="display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap">
+      <button class="fbtn primary" onclick="openActionModal('${a.id}');closeModal('detailModal')">📋 Nuova Azione</button>
+      <button class="fbtn secondary" onclick="openEditModal('${a.id}');closeModal('detailModal')">✏️ Modifica</button>
+      <button class="fbtn danger" onclick="openDeleteModal('${a.id}');closeModal('detailModal')">🗑️ Elimina</button>
+    </div>`:''}
+    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Storico Azioni (${agHist.length})</div>
+    <div style="padding:4px 0">
+      ${agHist.length===0?'<div style="font-style:italic;color:var(--text3);font-size:14px;padding:8px 0">Nessuna azione registrata.</div>':
+        agHist.map(h=>`
+        <div class="tl-item">
+          <div class="tl-dot" style="background:${tipoColor(h.tipo)}"></div>
+          <div><div class="tl-text"><b>${h.tipo}</b> — ${h.vecchio} → ${h.nuovo}</div>
+          <div class="tl-meta">${h.motivo} · ${h.data}</div></div>
+        </div>`).join('')}
+    </div>`;
+  openModal('detailModal');
+}
+
+// ══ SETTINGS ══
+function openSettings(){
+  document.getElementById('set_pwd').value='';
+  document.getElementById('set_pwd2').value='';
+  document.getElementById('set_gradi').value=settings.gradi.join('\n');
+  document.getElementById('set_sanzioni').value=sanzioni().join('\n');
+  renderSettingsLogoPreview();
+  openModal('settingsModal');
+}
+async function saveSettings(){
+  const p1=document.getElementById('set_pwd').value;
+  const p2=document.getElementById('set_pwd2').value;
+  if(p1&&p1!==p2){toast('Le password non coincidono','danger');return;}
+  const gr=document.getElementById('set_gradi').value.trim().split('\n').map(x=>x.trim()).filter(Boolean);
+  const san=document.getElementById('set_sanzioni').value.trim().split('\n').map(x=>x.trim()).filter(Boolean);
+  const body={};
+  if(p1){body.pwd=p1;}
+  if(gr.length>0)body.gradi=gr;
+  if(san.length>0)body.sanzioni=san;
+  try{
+    await apiFetch('/api/settings',{method:'PUT',body:JSON.stringify(body)});
+    if(p1){API_KEY=p1;settings.pwd=p1;}
+    if(gr.length>0)settings.gradi=gr;
+    if(san.length>0)settings.sanzioni=san;
+    closeModal('settingsModal');toast('Impostazioni salvate','success');
+  }catch(e){toast(e.message,'danger');}
+}
+
+// ══ HELPERS ══
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function today(){return new Date().toISOString().slice(0,10);}
+function avCls(a){return 'av'+(gradi().indexOf(a.grado)%8);}
+function addHistory(e){history.unshift({id:uid(),...e});if(history.length>500)history=history.slice(0,500);}
+function sanzioneBadge(s){
+  if(!s)return `<span class="badge g">✅ Nessuna</span>`;
+  if(s==='SOSPENSIONE')return `<span class="badge d">🔴 ${s}</span>`;
+  if(s.startsWith('RICHIAMO'))return `<span class="badge w">🟡 ${s}</span>`;
+  return `<span class="badge w">🟠 ${s}</span>`;
+}
+function statoBadge(s){
+  if(s==='Attivo')   return `<span class="badge g">● Attivo</span>`;
+  if(s==='Sospeso')  return `<span class="badge d">● Sospeso</span>`;
+  if(s==='In Prova') return `<span class="badge w">● In Prova</span>`;
+  return `<span class="badge b">● Congedato</span>`;
+}
+function tipoBadge(t){
+  if(t==='Promozione')  return `<span class="badge g">🔼 Promozione</span>`;
+  if(t==='Degrado')     return `<span class="badge d">🔽 Degrado</span>`;
+  if(t==='Sanzione')    return `<span class="badge w">⚠️ Sanzione</span>`;
+  if(t==='Rimozione Sanzione') return `<span class="badge g">✅ Rim. Sanzione</span>`;
+  if(t==='Ingresso')    return `<span class="badge t">➕ Ingresso</span>`;
+  if(t==='Licenziamento') return `<span class="badge d">⛔ Licenz.</span>`;
+  return `<span class="badge b">🔄 ${t}</span>`;
+}
+function prioBadgeCom(p){
+  if(p==='urgente')    return `<span class="tag danger">🔴 URGENTE</span>`;
+  if(p==='importante') return `<span class="tag warn">🟡 IMPORTANTE</span>`;
+  return `<span class="tag blue">🔵 INFO</span>`;
+}
+function tipoColor(t){
+  if(t==='Promozione')return 'var(--accent)';
+  if(t==='Degrado'||t==='Licenziamento')return 'var(--danger)';
+  if(t==='Sanzione')return 'var(--warn)';
+  if(t==='Rimozione Sanzione')return 'var(--green)';
+  if(t==='Ingresso')return 'var(--teal)';
+  return 'var(--accent)';
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+function toast(msg,type='info'){
+  const w=document.getElementById('toastWrap');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${type==='success'?'✅':type==='danger'?'❌':'ℹ️'}</span> ${msg}`;
+  w.appendChild(t);
+  setTimeout(()=>{t.style.animation='toastIn 0.3s ease reverse';setTimeout(()=>t.remove(),300);},3200);
+}
+
+
+// ══ VISTO COMUNICATI ══
+async function toggleVisto(id){
+  const uid=currentUser?.agentId||currentUser?.nick;
+  if(!uid) return;
+  try{
+    await apiFetch(`/api/comunicati/${id}/read`,{method:'POST',body:JSON.stringify({agentId:uid})});
+    await reloadData();renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+
+// ══ PEC ══
+function myPecId(){if(currentUser?.tipo==='dirigenza')return 'dirigenza';return currentUser?.agentId||'dirigenza';}
+function myPecNome(){
+  if(currentUser?.tipo==='dirigenza') return 'Dirigenza';
+  const ag=agents.find(a=>a.id===currentUser?.agentId);
+  return ag?`${ag.nome} ${ag.cognome}`:currentUser?.nick||'?';
+}
+function renderPec(c){
+  const myId=myPecId();
+  const inbox=pecs.filter(p=>p.destinatarioId===myId&&p.stato!=='bozza');
+  const outbox=pecs.filter(p=>p.mittenteId===myId&&p.stato!=='bozza');
+  const bozze=pecs.filter(p=>p.mittenteId===myId&&p.stato==='bozza');
+  const unread=inbox.filter(p=>!p.letta).length;
+  const lista=pecFilter==='in'?inbox:pecFilter==='out'?outbox:bozze;
+  c.innerHTML=`
+  <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;height:calc(100vh - 160px)">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border2)">
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase">Cartelle</div>
+      </div>
+      ${[
+        {key:'in',icon:'📥',label:'In arrivo',count:unread},
+        {key:'out',icon:'📤',label:'Inviata',count:0},
+        {key:'bozze',icon:'📝',label:'Bozze',count:bozze.length},
+      ].map(f=>`
+      <div onclick="pecFilter='${f.key}';renderPage()" style="display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;background:${pecFilter===f.key?'var(--accent-glow)':'transparent'};border-left:3px solid ${pecFilter===f.key?'var(--accent)':'transparent'};transition:all .15s">
+        <span style="font-size:16px">${f.icon}</span>
+        <span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;color:${pecFilter===f.key?'var(--accent)':'var(--text2)'}">${f.label}</span>
+        ${f.count>0?`<span style="margin-left:auto;background:var(--accent);color:#fff;border-radius:10px;padding:2px 7px;font-size:10px;font-family:'Cinzel',serif">${f.count}</span>`:''}
+      </div>`).join('')}
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border2);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase">
+        ${pecFilter==='in'?'In Arrivo':pecFilter==='out'?'Posta Inviata':'Bozze'} · ${lista.length} messaggi
+      </div>
+      <div style="flex:1;overflow-y:auto">
+        ${lista.length===0?`<div style="padding:40px;text-align:center;font-family:'EB Garamond',serif;font-style:italic;color:var(--text3);font-size:16px">Nessun messaggio</div>`:
+          lista.map(p=>`
+          <div onclick="openPecDetail('${p.id}')" style="display:flex;flex-direction:column;gap:4px;padding:14px 18px;border-bottom:1px solid var(--border2);cursor:pointer;background:${!p.letta&&pecFilter==='in'?'rgba(77,184,255,0.04)':'transparent'};transition:background .15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='${!p.letta&&pecFilter==='in'?'rgba(77,184,255,0.04)':'transparent'}'">
+            <div style="display:flex;align-items:center;gap:8px">
+              ${!p.letta&&pecFilter==='in'?'<div style="width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0"></div>':'<div style="width:7px"></div>'}
+              <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--text)">${pecFilter==='in'?p.mittenteNome:p.destinatarioNome}</span>
+              <span style="margin-left:auto;font-family:'EB Garamond',serif;font-size:12px;color:var(--text3)">${p.data}</span>
+              ${p.priorita==='urgente'?'<span style="background:var(--danger);color:#fff;border-radius:4px;padding:1px 6px;font-size:10px;font-family:\'Cinzel\',serif">URGENTE</span>':''}
+            </div>
+            <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--text2);padding-left:15px">${p.oggetto}</div>
+            <div style="font-family:'EB Garamond',serif;font-size:13px;color:var(--text3);padding-left:15px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden">${p.corpo}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+function openPecDetail(id){
+  const p=pecs.find(x=>x.id===id);if(!p)return;
+  // Mark as read
+  if(!p.letta&&p.destinatarioId===myPecId()){
+    apiFetch(`/api/pec/${id}/leggi`,{method:'POST'}).then(()=>reloadData());
+    p.letta=true;
+  }
+  document.getElementById('pecDetailFrom').textContent=p.mittenteNome;
+  document.getElementById('pecDetailTo').textContent=p.destinatarioNome;
+  document.getElementById('pecDetailSubject').textContent=p.oggetto;
+  document.getElementById('pecDetailDate').textContent=p.data;
+  document.getElementById('pecDetailBody').textContent=p.corpo;
+  document.getElementById('pecDetailPrio').innerHTML=p.priorita==='urgente'?'<span style="background:var(--danger);color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;font-family:\'Cinzel\',serif;letter-spacing:1px">URGENTE</span>':'';
+  // Rispondi button
+  document.getElementById('pecDetailRispondi').onclick=()=>{
+    closeModal('pecDetailModal');
+    openNuovaPec(p.mittenteId,p.mittenteNome,'Re: '+p.oggetto);
+  };
+  openModal('pecDetailModal');
+}
+function openNuovaPec(destId='',destNome='',oggetto=''){
+  editPecId=null;
+  const myId=myPecId();
+  // Build destinatari options
+  const opzioni=[];
+  if(currentUser?.tipo!=='dirigenza') opzioni.push({id:'dirigenza',nome:'Dirigenza'});
+  agents.filter(a=>a.id!==myId&&a.stato!=='Congedato').forEach(a=>opzioni.push({id:a.id,nome:`${a.nome} ${a.cognome}`}));
+  document.getElementById('pecDestinatario').innerHTML=opzioni.map(o=>`<option value="${o.id}" ${o.id===destId?'selected':''}>${o.nome}</option>`).join('');
+  document.getElementById('pecOggetto').value=oggetto;
+  document.getElementById('pecCorpo').value='';
+  document.getElementById('pecPriorita').value='normale';
+  openModal('pecModal');
+}
+async function savePec(stato){
+  const destId=document.getElementById('pecDestinatario').value;
+  const oggetto=document.getElementById('pecOggetto').value.trim();
+  const corpo=document.getElementById('pecCorpo').value.trim();
+  const priorita=document.getElementById('pecPriorita').value;
+  if(stato==='inviata'&&(!oggetto||!corpo)){toast('Compila oggetto e messaggio','danger');return;}
+  const destAg=agents.find(a=>a.id===destId);
+  const destNome=destId==='dirigenza'?'Dirigenza':(destAg?`${destAg.nome} ${destAg.cognome}`:destId);
+  try{
+    const body={mittenteId:myPecId(),mittenteNome:myPecNome(),destinatarioId:destId,destinatarioNome:destNome,oggetto:oggetto||'(senza oggetto)',corpo,priorita,stato};
+    if(editPecId) await apiFetch(`/api/pec/${editPecId}`,{method:'PUT',body:JSON.stringify(body)});
+    else await apiFetch('/api/pec',{method:'POST',body:JSON.stringify(body)});
+    await reloadData();closeModal('pecModal');
+    toast(stato==='bozza'?'Bozza salvata':'PEC inviata','success');renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+async function eliminaPec(id){
+  if(!confirm('Eliminare questa PEC?'))return;
+  await apiFetch(`/api/pec/${id}`,{method:'DELETE'});
+  await reloadData();closeModal('pecDetailModal');renderPage();
+}
+
+// ══ DOCUMENTAZIONE ══
+const DOC_CATEGORIE_DEFAULT=[
+  {id:'regolamenti',nome:'Regolamenti e Procedure',icona:'📋',colore:'#1A7AC4'},
+  {id:'normative',nome:'Normativa di Garanzia',icona:'⚖️',colore:'#0D8FA8'},
+  {id:'fondamentale',nome:'Normativa Fondamentale',icona:'🏛️',colore:'#2B5C88'},
+  {id:'codici',nome:'Codici di Riferimento',icona:'📖',colore:'#1A9FDC'},
+  {id:'mandati',nome:'Mandati e Moduli',icona:'📄',colore:'#C07A10'},
+  {id:'altro',nome:'Altro',icona:'📁',colore:'#4A6A90'},
+];
+function getDocCategorie(){
+  try{return JSON.parse(settings.docCategorie||'null')||DOC_CATEGORIE_DEFAULT;}catch{return DOC_CATEGORIE_DEFAULT;}
+}
+function renderDocumenti(c){
+  const cat=getDocCategorie();
+  const filtro=window._docFiltro||'tutti';
+  const docs=filtro==='tutti'?documenti_data:documenti_data.filter(d=>d.categoria===filtro);
+  c.innerHTML=`
+  <div style="display:grid;grid-template-columns:220px 1fr;gap:16px">
+    <div class="card" style="padding:0;overflow:hidden;align-self:start">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border2)">
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text3)">CATEGORIE</div>
+      </div>
+      <div onclick="window._docFiltro='tutti';renderPage()" style="padding:11px 16px;cursor:pointer;font-family:'Cinzel',serif;font-size:11px;color:${filtro==='tutti'?'var(--accent)':'var(--text2)'};border-left:3px solid ${filtro==='tutti'?'var(--accent)':'transparent'};background:${filtro==='tutti'?'var(--accent-glow)':'transparent'}">📂 Tutti i documenti</div>
+      ${cat.map(cat=>(`
+      <div onclick="window._docFiltro='${cat.id}';renderPage()" style="padding:11px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:11px;color:${filtro===cat.id?cat.colore:'var(--text2)'};border-left:3px solid ${filtro===cat.id?cat.colore:'transparent'};background:${filtro===cat.id?'rgba(26,107,181,0.06)':'transparent'}">
+        <span>${cat.icona}</span>${cat.nome}
+        <span style="margin-left:auto;font-size:10px;color:var(--text3)">${documenti_data.filter(d=>d.categoria===cat.id).length}</span>
+      </div>`)).join('')}
+    </div>
+    <div>
+      ${docs.length===0?`<div class="card" style="padding:40px;text-align:center;font-family:'EB Garamond',serif;font-style:italic;color:var(--text3)">Nessun documento in questa categoria${currentUser?.tipo==='dirigenza'?'. Aggiungine uno con il pulsante in alto.':''}</div>`:''}
+      ${cat.filter(ct=>filtro==='tutti'||filtro===ct.id).map(ct=>{
+        const catDocs=docs.filter(d=>d.categoria===ct.id);
+        if(catDocs.length===0)return '';
+        return `<div class="card ani" style="margin-bottom:16px">
+          <div class="card-head"><span>${ct.icona}</span><h3 style="color:${ct.colore}">${ct.nome}</h3></div>
+          <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px">
+            ${catDocs.map(d=>`
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);transition:all .15s" onmouseover="this.style.borderColor='${ct.colore}'" onmouseout="this.style.borderColor='var(--border2)'">
+              <span style="font-size:20px">${d.icona||'📄'}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--text);letter-spacing:.3px">${d.titolo}</div>
+                ${d.descrizione?`<div style="font-family:'EB Garamond',serif;font-size:13px;color:var(--text3);font-style:italic">${d.descrizione}</div>`:''}
+                ${d.stato?`<div style="font-size:11px;color:var(--warn);font-family:'Cinzel',serif;margin-top:2px">⏳ ${d.stato}</div>`:''}
+              </div>
+              <div style="display:flex;gap:8px;flex-shrink:0">
+                ${d.url?`
+                <button onclick="apriDocPreview('${d.id}')" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-family:'Cinzel',serif;font-size:10px;cursor:pointer;letter-spacing:.5px">👁 Preview</button>
+                <a href="${d.url}" target="_blank" style="padding:6px 12px;border-radius:6px;border:1px solid ${ct.colore};background:transparent;color:${ct.colore};font-family:'Cinzel',serif;font-size:10px;cursor:pointer;letter-spacing:.5px;text-decoration:none">↗ Apri</a>`:'<span style="font-size:11px;color:var(--text3);font-family:\'Cinzel\',serif">In lavorazione</span>'}
+                ${currentUser?.tipo==='dirigenza'?`<button onclick="openDocModal('${d.id}')" style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:12px;cursor:pointer">✏️</button>
+                <button onclick="deleteDoc('${d.id}')" style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--danger);font-size:12px;cursor:pointer">🗑</button>`:''}
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+function apriDocPreview(id){
+  const d=documenti_data.find(x=>x.id===id);if(!d||!d.url)return;
+  let previewUrl=d.url;
+  if(previewUrl.includes('docs.google.com/document'))
+    previewUrl=previewUrl.replace('/edit','/preview').split('?')[0];
+  document.getElementById('docPreviewTitle').textContent=d.titolo;
+  document.getElementById('docPreviewLink').href=d.url;
+  document.getElementById('docPreviewFrame').src=previewUrl;
+  openModal('docPreviewModal');
+}
+function openDocModal(id){
+  editDocId=id||null;
+  const d=id?documenti_data.find(x=>x.id===id):null;
+  const cat=getDocCategorie();
+  document.getElementById('docTitolo').value=d?.titolo||'';
+  document.getElementById('docDescrizione').value=d?.descrizione||'';
+  document.getElementById('docUrl').value=d?.url||'';
+  document.getElementById('docIcona').value=d?.icona||'📄';
+  document.getElementById('docStato').value=d?.stato||'';
+  document.getElementById('docCategoria').innerHTML=cat.map(c=>`<option value="${c.id}" ${d?.categoria===c.id?'selected':''}>${c.icona} ${c.nome}</option>`).join('');
+  openModal('docModal');
+}
+async function saveDoc(){
+  const titolo=document.getElementById('docTitolo').value.trim();
+  if(!titolo){toast('Inserisci un titolo','danger');return;}
+  const body={
+    titolo,
+    descrizione:document.getElementById('docDescrizione').value.trim(),
+    url:document.getElementById('docUrl').value.trim(),
+    icona:document.getElementById('docIcona').value.trim()||'📄',
+    stato:document.getElementById('docStato').value.trim(),
+    categoria:document.getElementById('docCategoria').value,
+  };
+  try{
+    if(editDocId) await apiFetch(`/api/documenti/${editDocId}`,{method:'PUT',body:JSON.stringify(body)});
+    else await apiFetch('/api/documenti',{method:'POST',body:JSON.stringify(body)});
+    await reloadData();closeModal('docModal');toast('Documento salvato','success');renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+async function deleteDoc(id){
+  if(!confirm('Eliminare questo documento?'))return;
+  await apiFetch(`/api/documenti/${id}`,{method:'DELETE'});
+  await reloadData();toast('Documento eliminato','info');renderPage();
+}
+
+// ══ SEGNALAZIONI ══
+function renderSegnalazioni(c){
+  const isDirigenza=currentUser?.tipo==='dirigenza';
+  const myId=currentUser?.tipo==='agente'?currentUser.agentId:'dirigenza';
+  // AGENTI: solo le proprie — DIRIGENZA: tutte
+  const lista=isDirigenza?segnalazioni_data:segnalazioni_data.filter(s=>s.mittenteId===myId);
+  const stati={aperta:{label:'Aperta',color:'var(--warn)'},in_corso:{label:'In lavorazione',color:'var(--accent)'},chiusa:{label:'Chiusa',color:'var(--green)'}};
+  c.innerHTML=`
+  <div class="kpi-strip ani" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi c-warn"><div class="kpi-icon">🚨</div><div class="kpi-val">${lista.filter(s=>s.stato==='aperta').length}</div><div class="kpi-lbl">Aperte</div></div>
+    <div class="kpi c-blue"><div class="kpi-icon">🔄</div><div class="kpi-val">${lista.filter(s=>s.stato==='in_corso').length}</div><div class="kpi-lbl">In Lavorazione</div></div>
+    <div class="kpi c-green"><div class="kpi-icon">✅</div><div class="kpi-val">${lista.filter(s=>s.stato==='chiusa').length}</div><div class="kpi-lbl">Chiuse</div></div>
+  </div>
+  <div class="card ani" style="animation-delay:.05s">
+    <div class="card-head">
+      <span>🚨</span>
+      <h3>${isDirigenza?'Tutte le Segnalazioni':'Le Mie Segnalazioni'}</h3>
+      ${!isDirigenza?`<span style="margin-left:auto;font-family:'EB Garamond',serif;font-size:13px;color:var(--text3);font-style:italic">Visualizzi solo le segnalazioni da te inviate</span>`:''}
+    </div>
+    <div style="padding:8px 12px;display:flex;flex-direction:column;gap:8px">
+    ${lista.length===0?`<div style="padding:30px;text-align:center;font-family:'EB Garamond',serif;font-style:italic;color:var(--text3)">${isDirigenza?'Nessuna segnalazione ricevuta':'Non hai ancora inviato segnalazioni — usa il pulsante in alto a destra'}</div>`:''}
+    ${lista.map(s=>`
+    <div style="border:1px solid var(--border2);border-radius:10px;padding:14px 16px;background:var(--bg3);border-left:4px solid ${stati[s.stato]?.color||'var(--border)'}">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+            <span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--text)">${s.titolo}</span>
+            <span style="padding:2px 8px;border-radius:10px;background:${stati[s.stato]?.color||'var(--border)'};color:#fff;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px">${stati[s.stato]?.label||s.stato}</span>
+            ${s.priorita==='alta'?'<span style="padding:2px 8px;border-radius:10px;background:var(--danger);color:#fff;font-family:\'Cinzel\',serif;font-size:9px;letter-spacing:1px">ALTA PRIORITÀ</span>':''}
+          </div>
+          <div style="font-family:'EB Garamond',serif;font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:6px">${s.corpo}</div>
+          <div style="font-family:'EB Garamond',serif;font-size:12px;color:var(--text3)">${isDirigenza?`Da: <b>${s.mittenteNome}</b> · `:''}${s.data}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+          ${isDirigenza?`
+          <select onchange="cambiaStatoSeg('${s.id}',this.value)" style="padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'Cinzel',serif;font-size:10px;cursor:pointer">
+            <option value="aperta" ${s.stato==='aperta'?'selected':''}>Aperta</option>
+            <option value="in_corso" ${s.stato==='in_corso'?'selected':''}>In lavorazione</option>
+            <option value="chiusa" ${s.stato==='chiusa'?'selected':''}>Chiusa</option>
+          </select>
+          <button onclick="deleteSegnalazione('${s.id}')" style="padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--danger);font-size:12px;cursor:pointer">🗑 Elimina</button>`:''}
+        </div>
+      </div>
+    </div>`).join('')}
+    </div>
+  </div>`;
+}
+function openSegnalazioneModal(){
+  document.getElementById('segTitolo').value='';
+  document.getElementById('segCorpo').value='';
+  document.getElementById('segPriorita').value='normale';
+  openModal('segnalazioneModal');
+}
+async function saveSegnalazione(){
+  const titolo=document.getElementById('segTitolo').value.trim();
+  const corpo=document.getElementById('segCorpo').value.trim();
+  if(!titolo||!corpo){toast('Compila tutti i campi','danger');return;}
+  try{
+    await apiFetch('/api/segnalazioni',{method:'POST',body:JSON.stringify({
+      titolo,corpo,priorita:document.getElementById('segPriorita').value,
+      mittenteId:myPecId(),mittenteNome:myPecNome(),stato:'aperta',
+    })});
+    await reloadData();closeModal('segnalazioneModal');toast('Segnalazione inviata','success');renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
+async function cambiaStatoSeg(id,stato){
+  await apiFetch(`/api/segnalazioni/${id}`,{method:'PUT',body:JSON.stringify({stato})});
+  await reloadData();renderPage();
+}
+async function deleteSegnalazione(id){
+  if(!confirm('Eliminare questa segnalazione?'))return;
+  await apiFetch(`/api/segnalazioni/${id}`,{method:'DELETE'});
+  await reloadData();renderPage();toast('Eliminata','info');
+}
+
+// ══ BADGE UPDATE ══
+function updateBadges(){
+  const nb=document.getElementById('nbAgenti');if(nb)nb.textContent=agents.length;
+  const nc=document.getElementById('nbComun');if(nc)nc.textContent=comunicati.length;
+  const myId=myPecId();
+  const unreadPec=pecs.filter(p=>p.destinatarioId===myId&&!p.letta&&p.stato!=='bozza').length;
+  // Badge dirigenza
+  const npDir=document.getElementById('nbPec');
+  if(npDir){npDir.textContent=unreadPec>0?unreadPec:'';npDir.style.display=unreadPec>0?'':'none';}
+  // Badge agente
+  const npAg=document.getElementById('nbPecAg');
+  if(npAg){npAg.textContent=unreadPec>0?unreadPec:'';npAg.style.display=unreadPec>0?'':'none';}
+  const ns=document.getElementById('nbSeg');
+  if(ns){const aperte=segnalazioni_data.filter(s=>s.stato==='aperta').length;ns.textContent=aperte>0?aperte:'';ns.style.display=aperte>0?'':'none';}
+}
+
+// ══ AVVIO ══
+init();
+
+// ══ GESTIONE PASSWORD AGENTI (DIRIGENZA) ══
+async function renderPasswordAgenti(c){
+  let pwdData=[];
+  try{
+    pwdData=await apiFetch('/api/agenti/passwords');
+  }catch(e){
+    c.innerHTML=`<div class="card" style="padding:32px;text-align:center;color:var(--danger)">❌ Errore caricamento dati password</div>`;
+    return;
+  }
+  c.innerHTML=`
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px">
+      <span style="font-size:20px">🔑</span>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--text)">Gestione Password Agenti</div>
+        <div style="font-family:'EB Garamond',serif;font-size:13px;color:var(--text3)">Visualizza lo stato e resetta le password del personale</div>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl" style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--bg2)">
+          <th style="padding:12px 16px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border)">AGENTE</th>
+          <th style="padding:12px 16px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border)">NICK</th>
+          <th style="padding:12px 16px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text3);text-align:center;border-bottom:1px solid var(--border)">STATO PASSWORD</th>
+          <th style="padding:12px 16px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text3);text-align:center;border-bottom:1px solid var(--border)">AZIONI</th>
+        </tr></thead>
+        <tbody>
+          ${pwdData.map(a=>`
+          <tr style="border-bottom:1px solid var(--border2);transition:background .15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:12px 16px;font-family:'EB Garamond',serif;font-size:15px;color:var(--text)">${a.nome} ${a.cognome}</td>
+            <td style="padding:12px 16px;font-family:'Cinzel',serif;font-size:11px;color:var(--text3)">@${a.discord}</td>
+            <td style="padding:12px 16px;text-align:center">
+              ${a.has_password
+                ?'<span style="background:var(--green-dim);color:var(--green);border:1px solid rgba(46,204,138,.3);border-radius:20px;padding:3px 12px;font-family:\'Cinzel\',serif;font-size:10px;letter-spacing:1px">✅ IMPOSTATA</span>'
+                :'<span style="background:var(--warn-dim);color:var(--warn);border:1px solid rgba(245,166,35,.3);border-radius:20px;padding:3px 12px;font-family:\'Cinzel\',serif;font-size:10px;letter-spacing:1px">⚠️ NON IMPOSTATA</span>'}
+            </td>
+            <td style="padding:12px 16px;text-align:center;display:flex;gap:8px;justify-content:center">
+              ${a.has_password?`<button onclick="openSetPwdAgente('${a.id}','${a.nome} ${a.cognome}')" style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(77,184,255,.3);border-radius:7px;padding:6px 14px;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(77,184,255,.25)'" onmouseout="this.style.background='var(--accent-dim)'">✏️ MODIFICA</button>`:''}
+              <button onclick="resetPwdAgente('${a.id}','${a.nome} ${a.cognome}')" style="background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,107,107,.3);border-radius:7px;padding:6px 14px;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(255,107,107,.25)'" onmouseout="this.style.background='var(--danger-dim)'">🔄 RESET</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+async function resetPwdAgente(id,nome){
+  if(!confirm(`Resettare la password di ${nome}? Al prossimo accesso dovrà impostarne una nuova.`))return;
+  try{
+    await apiFetch(`/api/agenti/${id}/reset-password`,{method:'POST'});
+    toast(`Password di ${nome} resettata`,'success');
+    renderPage();
+  }catch(e){toast('Errore: '+e.message,'danger');}
+}
+function openSetPwdAgente(id,nome){
+  const nuovaPwd=prompt(`Imposta nuova password per ${nome}:`);
+  if(!nuovaPwd||nuovaPwd.trim().length<3){if(nuovaPwd!==null)toast('Password troppo corta (min. 3 caratteri)','danger');return;}
+  apiFetch(`/api/agenti/${id}/set-password-dirigenza`,{method:'POST',body:JSON.stringify({pwd:nuovaPwd.trim()})})
+    .then(()=>{toast(`Password di ${nome} aggiornata`,'success');renderPage();})
+    .catch(e=>toast('Errore: '+e.message,'danger'));
+}
+
+(function(){
+  const cur=document.getElementById('glowCursor');
+  if(cur){
+    document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+    document.addEventListener('mouseover',e=>{if(e.target.matches('button,a,.nav-item,.kpi,.card,.tb-btn,.fbtn,.ltab,.tbl tr,.comun-item,.dcard'))cur.classList.add('big');});
+    document.addEventListener('mouseout',e=>{if(e.target.matches('button,a,.nav-item,.kpi,.card,.tb-btn,.fbtn,.ltab,.tbl tr,.comun-item,.dcard'))cur.classList.remove('big');});
+  }
+  function particles(){
+    const s=document.getElementById('loginScreen');if(!s)return;
+    for(let i=0;i<22;i++){const p=document.createElement('div');const sz=Math.random()*3+1;const cols=['rgba(77,184,255,.5)','rgba(45,232,204,.4)','rgba(167,139,250,.3)'];p.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:${cols[Math.floor(Math.random()*cols.length)]};left:${Math.random()*100}%;top:0;--dx:${(Math.random()-.5)*120}px;--rot:${Math.random()*360}deg;animation:particleFall ${Math.random()*12+8}s ${Math.random()*10}s linear infinite;pointer-events:none;z-index:1;`;s.appendChild(p);}
+  }
+  function tilt(){
+    document.querySelectorAll('.kpi,.card,.profile-hero,.dcard').forEach(el=>{
+      if(el.classList.contains('kpi')&&!el.querySelector('.kpi-glow')){const g=document.createElement('div');g.className='kpi-glow';el.appendChild(g);}
+      el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect();const dx=(e.clientX-r.left-r.width/2)/(r.width/2);const dy=(e.clientY-r.top-r.height/2)/(r.height/2);const t=el.classList.contains('kpi')?10:7;el.style.transform=`perspective(800px) rotateX(${-dy*t}deg) rotateY(${dx*t}deg) translateZ(8px)`;el.style.boxShadow=`${-dx*14}px ${-dy*14}px 40px rgba(0,0,0,.5),0 0 30px rgba(77,184,255,${.05+Math.abs(dx)*.1})`;const g=el.querySelector('.kpi-glow');if(g){g.style.left=(e.clientX-r.left)+'px';g.style.top=(e.clientY-r.top)+'px';g.style.opacity='1';}});
+      el.addEventListener('mouseleave',()=>{el.style.transform='';el.style.boxShadow='';const g=el.querySelector('.kpi-glow');if(g)g.style.opacity='0';});
+    });
+  }
+  function ripple(){
+    document.querySelectorAll('.login-btn,.tb-btn.primary,.fbtn.primary').forEach(btn=>{
+      if(btn._r)return;btn._r=true;btn.addEventListener('click',e=>{const r=btn.getBoundingClientRect();const s=Math.max(r.width,r.height)*2;const el=document.createElement('span');el.className='ripple-effect';el.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px;`;btn.appendChild(el);setTimeout(()=>el.remove(),700);});
+    });
+  }
+  function kpiAnim(){document.querySelectorAll('.kpi-val').forEach(el=>{const t=parseInt(el.textContent);if(isNaN(t)||t===0)return;let st=null;const step=ts=>{if(!st)st=ts;const p=Math.min((ts-st)/800,1);const e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*t);if(p<1)requestAnimationFrame(step);else el.textContent=t;};requestAnimationFrame(step);});}
+  particles();
+  // Controlla sessione Discord al caricamento pagina
+  checkDiscordSession();
+  // Controlla sessione salvata in sessionStorage (per refresh pagina)
+  (async()=>{
+    const savedSession = sessionStorage.getItem('discord_session');
+    const savedLivello = sessionStorage.getItem('discord_livello');
+    if(savedSession && savedLivello && !SESSION_TOKEN){
+      // Verifica che la sessione sia ancora valida
+      SESSION_TOKEN = savedSession;
+      try {
+        await apiFetch('/auth/session');
+        await enterDiscordSession(savedSession, savedLivello);
+      } catch(e) {
+        SESSION_TOKEN = '';
+        sessionStorage.removeItem('discord_session');
+        sessionStorage.removeItem('discord_livello');
+      }
+    }
+  })();
+  window.addEventListener('load',()=>setTimeout(()=>{tilt();ripple();},300));
+  const obs=new MutationObserver(()=>{tilt();ripple();setTimeout(kpiAnim,100);});
+  setTimeout(()=>{const ct=document.getElementById('pageContent');if(ct)obs.observe(ct,{childList:true,subtree:false});},500);
+})();
+</script>
+</body>
+</html>
+
