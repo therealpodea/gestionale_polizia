@@ -502,6 +502,71 @@ def update_segnalazione(seg_id: str, body: StatoUpdate):
 def delete_segnalazione(seg_id: str):
     db_execute("DELETE FROM segnalazioni WHERE id=?",(seg_id,)); return {"ok":True}
 
+SYNC_KEY = os.getenv("SYNC_KEY", "estovia_2026_secret")
+
+@app.get("/sync")
+async def discord_sync(
+    sync: str = None,
+    discord: str = None,
+    tipo: str = None,
+    motivo: str = None,
+    key: str = None,
+    grado: str = None,
+    sanzione: str = None,
+    stato: str = None,
+    rimozione_sanzione: str = None,
+):
+    # Verifica chiave segreta
+    if key != SYNC_KEY:
+        raise HTTPException(status_code=403, detail="Chiave non valida")
+    if not discord or not tipo:
+        raise HTTPException(status_code=400, detail="Parametri mancanti")
+
+    # Trova agente per username Discord
+    agent = db_fetchone("SELECT * FROM agents WHERE lower(discord)=lower(?)", (discord,))
+    if not agent:
+        agent = db_fetchone("SELECT * FROM agents WHERE lower(discord)=lower(?)", (discord.split('#')[0],))
+    if not agent:
+        raise HTTPException(status_code=404, detail=f"Agente '{discord}' non trovato nel gestionale")
+
+    agent_id = agent["id"]
+    agent_nome = f"{agent['nome']} {agent['cognome']}"
+    now = str(date.today())
+
+    if tipo in ("Promozione", "Degrado") and grado:
+        vecchio = agent["grado"]
+        db_execute("UPDATE agents SET grado=? WHERE id=?", (grado, agent_id))
+        db_execute(
+            "INSERT INTO history (id,agentId,agentNome,tipo,vecchio,nuovo,motivo,data) VALUES (?,?,?,?,?,?,?,?)",
+            (str(uuid.uuid4())[:12], agent_id, agent_nome, tipo, vecchio, grado, motivo or "", now)
+        )
+
+    elif tipo == "Sanzione" and sanzione:
+        vecchio = agent.get("sanzione") or "Nessuna"
+        db_execute("UPDATE agents SET sanzione=? WHERE id=?", (sanzione, agent_id))
+        db_execute(
+            "INSERT INTO history (id,agentId,agentNome,tipo,vecchio,nuovo,motivo,data) VALUES (?,?,?,?,?,?,?,?)",
+            (str(uuid.uuid4())[:12], agent_id, agent_nome, "Sanzione", vecchio, sanzione, motivo or "", now)
+        )
+
+    elif tipo == "Rimozione Sanzione":
+        vecchio = agent.get("sanzione") or "Nessuna"
+        db_execute("UPDATE agents SET sanzione=NULL WHERE id=?", (agent_id,))
+        db_execute(
+            "INSERT INTO history (id,agentId,agentNome,tipo,vecchio,nuovo,motivo,data) VALUES (?,?,?,?,?,?,?,?)",
+            (str(uuid.uuid4())[:12], agent_id, agent_nome, "Rimozione Sanzione", vecchio, "Nessuna", motivo or "", now)
+        )
+
+    elif tipo in ("Cambio Stato", "Licenziamento") and stato:
+        vecchio = agent.get("stato") or "Attivo"
+        db_execute("UPDATE agents SET stato=? WHERE id=?", (stato, agent_id))
+        db_execute(
+            "INSERT INTO history (id,agentId,agentNome,tipo,vecchio,nuovo,motivo,data) VALUES (?,?,?,?,?,?,?,?)",
+            (str(uuid.uuid4())[:12], agent_id, agent_nome, tipo, vecchio, stato, motivo or "", now)
+        )
+
+    return {"ok": True, "agente": agent_nome, "tipo": tipo}
+
 @app.get("/")
 def serve_frontend(): return FileResponse("gestionale.html")
 
