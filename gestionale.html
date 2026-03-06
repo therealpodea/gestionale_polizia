@@ -8,10 +8,10 @@
 <style>
 :root{
   /* ── BLU NOTTE ── */
-  --n0:#020508;
-  --n1:#03070f;
-  --n2:#040a16;
-  --n3:#060e1e;
+  --n0:#030810;
+  --n1:#040a16;
+  --n2:#060e1e;
+  --n3:#080f22;
   --n4:#081226;
   --n5:#0a162e;
   --n6:#0e1d3c;
@@ -55,9 +55,9 @@
   --azure-dim:rgba(36,96,200,.12);
 
   /* ── TESTO ── */
-  --t1:#dce8f5;
-  --t2:#8098b8;
-  --t3:#3a5070;
+  --t1:#e8f2ff;
+  --t2:#9ab4d4;
+  --t3:#4e6888;
   --t4:#1e3050;
 
   /* ── BORDI ── */
@@ -310,7 +310,7 @@ body::after{
 .ltab.active{color:var(--blue3);border-bottom-color:var(--blue3);}
 .ltab:hover{color:var(--blue-light);}
 .login-form{display:flex;flex-direction:column;gap:12px;}
-.l-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:rgba(36,96,200,.4);text-transform:uppercase;margin-bottom:4px;}
+.l-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:rgba(100,160,240,.6);text-transform:uppercase;margin-bottom:4px;}
 .l-input{
   width:100%;padding:11px 14px;
   background:rgba(255,255,255,.03);
@@ -319,7 +319,7 @@ body::after{
   color:var(--t1);font-family:'Cormorant Garamond',serif;font-size:15px;
   outline:none;transition:all .2s;
 }
-.l-input:focus{border-color:rgba(36,96,200,.4);background:rgba(36,96,200,.04);box-shadow:0 0 0 3px rgba(36,96,200,.06);}
+.l-input:focus{border-color:rgba(100,160,240,.6);background:rgba(36,96,200,.04);box-shadow:0 0 0 3px rgba(36,96,200,.06);}
 .l-input::placeholder{color:rgba(36,96,200,.2);}
 .login-btn{
   width:100%;padding:13px;margin-top:4px;
@@ -365,7 +365,7 @@ body::after{
 ══════════════════════════════════════════ */
 .sidebar{
   width:248px;min-width:248px;height:100vh;
-  background:linear-gradient(180deg,#020912 0%,#030b18 60%,#020a14 100%);
+  background:linear-gradient(180deg,#030e1c 0%,#040f1e 60%,#030d1a 100%);
   border-right:1px solid rgba(36,96,200,.14);
   display:flex;flex-direction:column;
   position:relative;overflow:hidden;flex-shrink:0;
@@ -415,14 +415,14 @@ body::after{
 }
 .sb-logo-sub{
   font-family:'Cormorant Garamond',serif;font-size:11px;font-style:italic;
-  color:rgba(90,154,240,.35);letter-spacing:.5px;margin-top:1px;
+  color:rgba(110,170,255,.5);letter-spacing:.5px;margin-top:1px;
 }
 
 /* ── BADGE MODALITÀ ── */
 .sb-mode{
   padding:6px 18px;margin:0;
   font-family:'Cinzel',serif;font-size:8px;letter-spacing:3.5px;text-transform:uppercase;
-  border-bottom:1px solid rgba(36,96,200,.08);
+  border-bottom:1px solid rgba(36,96,200,.12);
   position:relative;z-index:1;
 }
 .sb-mode.dirigenza{
@@ -439,7 +439,7 @@ body::after{
   display:flex;align-items:center;gap:10px;
   padding:18px 18px 6px;
   font-family:'Cinzel',serif;font-size:7px;letter-spacing:4px;text-transform:uppercase;
-  color:rgba(90,154,240,.35);
+  color:rgba(110,170,255,.5);
   flex-shrink:0;position:relative;z-index:1;
   margin-top:2px;
 }
@@ -463,7 +463,7 @@ body::after{
   margin:1px 8px 1px 10px;
   border-radius:3px;
   font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;
-  color:rgba(140,180,230,.5);
+  color:rgba(160,200,245,.65);
   cursor:pointer;border:1px solid transparent;
   transition:all .18s cubic-bezier(.22,1,.36,1);
   position:relative;flex-shrink:0;z-index:1;
@@ -478,13 +478,13 @@ body::after{
   box-shadow:0 0 8px rgba(90,154,240,.5);
 }
 .nav-item:hover{
-  color:rgba(180,215,255,.85);
+  color:rgba(210,230,255,.95);
   background:rgba(36,96,200,.07);
   border-color:rgba(36,96,200,.12);
   transform:translateX(2px);
 }
 .nav-item.active{
-  color:#90c4ff;
+  color:#a8d4ff;
   background:linear-gradient(90deg,rgba(36,96,200,.18),rgba(36,96,200,.06));
   border-color:rgba(36,96,200,.25);
   border-left-color:rgba(90,154,240,.6);
@@ -540,7 +540,7 @@ body::after{
 }
 .sb-urank{
   font-family:'Cormorant Garamond',serif;font-size:11px;font-style:italic;
-  color:rgba(90,154,240,.35);margin-top:1px;
+  color:rgba(110,170,255,.5);margin-top:1px;
 }
 .sb-logout{
   font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;
@@ -560,7 +560,7 @@ body::after{
 /* Topbar */
 .topbar{
   height:58px;padding:0 28px;
-  background:rgba(4,7,14,.97);
+  background:rgba(5,10,22,.95);
   border-bottom:1px solid rgba(36,96,200,.1);
   display:flex;align-items:center;justify-content:space-between;
   flex-shrink:0;position:relative;z-index:10;
@@ -613,7 +613,7 @@ body::after{
 
 /* ── CARDS ── */
 .card{
-  background:linear-gradient(145deg,rgba(10,16,30,.88),rgba(7,12,22,.92));
+  background:linear-gradient(145deg,rgba(12,20,40,.78),rgba(9,15,30,.84));
   border:1px solid rgba(36,96,200,.12);
   border-radius:3px;
   overflow:hidden;position:relative;
@@ -634,14 +634,14 @@ body::after{
   display:flex;align-items:center;gap:10px;
   padding:13px 20px;
   background:rgba(36,96,200,.03);
-  border-bottom:1px solid rgba(36,96,200,.08);
+  border-bottom:1px solid rgba(36,96,200,.12);
   position:relative;
 }
 .card-head span{font-size:14px;flex-shrink:0;}
 .card-head h3{
   font-family:'Cinzel',serif;font-size:9px;font-weight:700;
   letter-spacing:3.5px;text-transform:uppercase;
-  color:rgba(36,96,200,.65);
+  color:rgba(120,168,240,.75);
 }
 .ch-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
 
@@ -695,19 +695,19 @@ body::after{
 
 /* Colori KPI */
 .kpi.c-blue .kpi-val,.kpi.c-blue .kpi-icon{color:var(--azure2);}
-.kpi.c-blue .kpi-lbl{color:rgba(74,143,224,.6);}
+.kpi.c-blue .kpi-lbl{color:rgba(130,180,255,.75);}
 .kpi.c-blue::before{background:linear-gradient(90deg,transparent,rgba(74,143,224,.3),transparent);}
 .kpi.c-green .kpi-val,.kpi.c-green .kpi-icon{color:var(--green2);}
-.kpi.c-green .kpi-lbl{color:rgba(58,184,124,.6);}
+.kpi.c-green .kpi-lbl{color:rgba(80,210,140,.75);}
 .kpi.c-green::before{background:linear-gradient(90deg,transparent,rgba(58,184,124,.3),transparent);}
 .kpi.c-teal .kpi-val,.kpi.c-teal .kpi-icon{color:#2ab8a0;}
-.kpi.c-teal .kpi-lbl{color:rgba(42,184,160,.6);}
+.kpi.c-teal .kpi-lbl{color:rgba(60,200,175,.75);}
 .kpi.c-teal::before{background:linear-gradient(90deg,transparent,rgba(42,184,160,.3),transparent);}
 .kpi.c-warn .kpi-val,.kpi.c-warn .kpi-icon{color:var(--warn2);}
-.kpi.c-warn .kpi-lbl{color:rgba(232,150,42,.6);}
+.kpi.c-warn .kpi-lbl{color:rgba(232,170,60,.75);}
 .kpi.c-warn::before{background:linear-gradient(90deg,transparent,rgba(232,150,42,.3),transparent);}
 .kpi.c-danger .kpi-val,.kpi.c-danger .kpi-icon{color:var(--danger2);}
-.kpi.c-danger .kpi-lbl{color:rgba(217,64,64,.6);}
+.kpi.c-danger .kpi-lbl{color:rgba(230,90,90,.75);}
 .kpi.c-danger::before{background:linear-gradient(90deg,transparent,rgba(217,64,64,.3),transparent);}
 .kpi.c-gold .kpi-val,.kpi.c-gold .kpi-icon{color:var(--blue-light);}
 .kpi.c-gold .kpi-lbl{color:rgba(36,96,200,.6);}
@@ -721,9 +721,9 @@ body::after{
 .tbl th{
   padding:11px 18px;
   font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3.5px;text-transform:uppercase;
-  color:rgba(36,96,200,.4);text-align:left;
+  color:rgba(100,160,240,.6);text-align:left;
   background:rgba(36,96,200,.025);
-  border-bottom:1px solid rgba(36,96,200,.08);
+  border-bottom:1px solid rgba(36,96,200,.12);
   cursor:pointer;white-space:nowrap;
   transition:color .2s;
 }
@@ -785,7 +785,7 @@ body::after{
 .f-input{padding:8px 14px;font-size:14px;width:250px;}
 .f-select{padding:8px 12px;font-size:13px;}
 .f-input:focus,.f-select:focus{border-color:rgba(36,96,200,.35);background:rgba(36,96,200,.05);}
-.f-input::placeholder{color:rgba(36,96,200,.2);}
+.f-input::placeholder{color:rgba(100,150,210,.35);}
 .f-select option{background:var(--n2);}
 
 /* ── FORM / MODAL ── */
@@ -796,7 +796,7 @@ body::after{
 }
 .overlay.open{display:flex;}
 .modal{
-  background:linear-gradient(145deg,rgba(8,13,24,.99),rgba(6,10,19,.99));
+  background:linear-gradient(145deg,rgba(10,16,32,.96),rgba(8,13,26,.97));
   border:1px solid rgba(36,96,200,.2);
   border-radius:3px;
   box-shadow:var(--sh),0 0 60px rgba(36,96,200,.05);
@@ -813,14 +813,14 @@ body::after{
 .modal-head{
   display:flex;align-items:flex-start;justify-content:space-between;
   padding:20px 24px 16px;
-  border-bottom:1px solid rgba(36,96,200,.08);
+  border-bottom:1px solid rgba(36,96,200,.12);
 }
 .modal-title{
   font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:3px;
   background:linear-gradient(135deg,var(--blue-light),var(--pearl));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.modal-sub{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:rgba(36,96,200,.35);margin-top:2px;}
+.modal-sub{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:rgba(110,160,230,.5);margin-top:2px;}
 .modal-close,.m-close{
   width:28px;height:28px;border-radius:2px;
   background:rgba(36,96,200,.06);border:1px solid rgba(36,96,200,.15);
@@ -838,7 +838,7 @@ body::after{
 .fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .full{grid-column:1/-1;}
 .form-grid{display:flex;flex-direction:column;gap:12px;}
-.flbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:rgba(36,96,200,.4);text-transform:uppercase;}
+.flbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:rgba(100,160,240,.6);text-transform:uppercase;}
 .finput,.fselect,.ftextarea{
   background:rgba(255,255,255,.03);
   border:1px solid rgba(36,96,200,.15);
@@ -848,7 +848,7 @@ body::after{
   padding:10px 13px;outline:none;transition:all .2s;width:100%;
 }
 .finput:focus,.fselect:focus,.ftextarea:focus{
-  border-color:rgba(36,96,200,.4);background:rgba(36,96,200,.04);
+  border-color:rgba(100,160,240,.6);background:rgba(36,96,200,.04);
   box-shadow:0 0 0 3px rgba(36,96,200,.06);
 }
 .finput::placeholder,.ftextarea::placeholder{color:rgba(36,96,200,.2);}
@@ -917,9 +917,9 @@ body::after{
 .feed-item:hover::before{width:2px;}
 .feed-item:last-child{border-bottom:none;}
 .feed-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;box-shadow:0 0 8px currentColor;animation:pulse 3s ease-in-out infinite;}
-.feed-txt{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--t1);}
+.feed-txt{font-family:'Cormorant Garamond',serif;font-size:15px;color:#d0e4f8;}
 .feed-txt b{font-family:'Cinzel',serif;font-size:11px;color:var(--blue3);letter-spacing:.5px;}
-.feed-meta{font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--t3);margin-top:2px;font-style:italic;}
+.feed-meta{font-family:'Cormorant Garamond',serif;font-size:12px;color:#5e80a0;margin-top:2px;font-style:italic;}
 
 /* ── COMUNICATI ── */
 .comun-item{
@@ -930,7 +930,7 @@ body::after{
 .comun-item:last-child{border-bottom:none;}
 .comun-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .comun-title{font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--t1);flex:1;letter-spacing:1px;}
-.comun-body{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--t2);line-height:1.65;}
+.comun-body{font-family:'Cormorant Garamond',serif;font-size:14px;color:#9ab8d8;line-height:1.65;}
 .comun-meta{font-family:'Cormorant Garamond',serif;font-size:11px;color:var(--t3);margin-top:5px;font-style:italic;}
 .comun-unread{width:7px;height:7px;border-radius:50%;background:var(--azure2);flex-shrink:0;box-shadow:0 0 8px rgba(74,143,224,.7);animation:pulse 2s ease-in-out infinite;}
 
@@ -938,7 +938,7 @@ body::after{
 .ger-item{display:flex;align-items:center;gap:14px;padding:11px 20px;border-bottom:1px solid rgba(36,96,200,.05);transition:background .15s;}
 .ger-item:hover{background:rgba(36,96,200,.025);}
 .ger-item:last-child{border-bottom:none;}
-.ger-pos{font-family:'Cormorant SC',serif;font-size:18px;font-weight:700;width:30px;text-align:center;flex-shrink:0;color:rgba(36,96,200,.4);}
+.ger-pos{font-family:'Cormorant SC',serif;font-size:18px;font-weight:700;width:30px;text-align:center;flex-shrink:0;color:rgba(100,160,240,.6);}
 .ger-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
 .ger-info{flex:1;}
 .ger-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--t1);}
@@ -985,7 +985,7 @@ body::after{
 /* ── TOAST ── */
 .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
 .toast{
-  background:rgba(4,7,14,.97);backdrop-filter:blur(20px);
+  background:rgba(5,10,22,.95);backdrop-filter:blur(20px);
   border:1px solid rgba(36,96,200,.15);border-radius:2px;
   padding:12px 18px;
   font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--t1);
@@ -1174,10 +1174,71 @@ body::after{
 </div>
 
 <!-- MODAL DOCUMENTO -->
+<div class="overlay" id="verbaleModal">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title">📝 Nuovo Verbale</div><div class="modal-sub">Redazione rapporto operativo</div></div>
+      <button class="modal-close" onclick="closeModal('verbaleModal')">✕</button>
+    </div>
+    <div class="form-grid" style="padding:20px;gap:14px">
+      <div class="fg2">
+        <div class="fg"><label class="flbl">Tipo Operazione *</label>
+          <select class="fselect" id="vbTipo">
+            <option value="">— Seleziona —</option>
+            <option value="Arresto">🔒 Arresto</option>
+            <option value="Fermo">⛔ Fermo</option>
+            <option value="Rapina">🔫 Rapina</option>
+            <option value="Omicidio">💀 Omicidio</option>
+            <option value="Inseguimento">🚔 Inseguimento</option>
+            <option value="Perquisizione">🔍 Perquisizione</option>
+            <option value="Sequestro">📦 Sequestro</option>
+            <option value="Controllo">🛂 Controllo</option>
+            <option value="Intervento">🚨 Intervento</option>
+            <option value="Altro">📋 Altro</option>
+          </select>
+        </div>
+        <div class="fg"><label class="flbl">Data & Ora *</label>
+          <input class="finput" type="datetime-local" id="vbData">
+        </div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="flbl">Luogo / Zona *</label>
+          <input class="finput" id="vbLuogo" placeholder="Es: Zona industriale, Via Roma...">
+        </div>
+        <div class="fg"><label class="flbl">Esito</label>
+          <select class="fselect" id="vbEsito">
+            <option value="Positivo">✅ Positivo</option>
+            <option value="Negativo">❌ Negativo</option>
+            <option value="In corso">🔄 In corso</option>
+            <option value="Archiviato">📁 Archiviato</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg full"><label class="flbl">Soggetti Coinvolti (nomi, veicoli, descrizioni)</label>
+        <textarea class="ftextarea" id="vbSoggetti" style="min-height:70px" placeholder="Es: Mario Rossi, Ford Focus nera tg. AB123CD..."></textarea>
+      </div>
+      <div class="fg full"><label class="flbl">Agenti Intervenuti</label>
+        <input class="finput" id="vbAgenti" placeholder="Es: Agente Bianchi, Agente Verdi...">
+      </div>
+      <div class="fg full"><label class="flbl">Descrizione Dettagliata *</label>
+        <textarea class="ftextarea" id="vbDescrizione" style="min-height:120px" placeholder="Descrivi in dettaglio lo svolgimento dell'operazione..."></textarea>
+      </div>
+      <div class="fg full"><label class="flbl">Note Aggiuntive</label>
+        <textarea class="ftextarea" id="vbNote" style="min-height:60px" placeholder="Eventuali note, prove sequestrate, richieste di supporto..."></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="fbtn primary" onclick="saveVerbale()">📝 Deposita Verbale</button>
+      <button class="fbtn secondary" onclick="closeModal('verbaleModal')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DOCUMENTO (solo dirigenza) -->
 <div class="overlay" id="docModal">
   <div class="modal md">
     <div class="modal-head">
-      <div><div class="modal-title">📄 Documento</div><div class="modal-sub">Aggiungi o modifica documento</div></div>
+      <div><div class="modal-title">📄 Documento</div><div class="modal-sub">Aggiungi o modifica documento archivio</div></div>
       <button class="modal-close" onclick="closeModal('docModal')">✕</button>
     </div>
     <div class="form-grid" style="padding:20px;gap:12px">
@@ -1191,17 +1252,6 @@ body::after{
             <label style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase">Colore</label>
             <input type="color" id="docDescColore" value="#8899aa" style="width:38px;height:34px;border:1px solid var(--bdr);border-radius:7px;background:var(--n3);cursor:pointer;padding:2px 3px">
           </div>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;align-items:center">
-          <span style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;color:var(--t3);text-transform:uppercase;margin-right:2px">Preset:</span>
-          <div onclick="document.getElementById('docDescColore').value='#8899aa'" style="width:20px;height:20px;border-radius:5px;background:#8899aa;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Grigio"></div>
-          <div onclick="document.getElementById('docDescColore').value='#4db8ff'" style="width:20px;height:20px;border-radius:5px;background:#4db8ff;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Azzurro"></div>
-          <div onclick="document.getElementById('docDescColore').value='#2de8cc'" style="width:20px;height:20px;border-radius:5px;background:#2de8cc;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Verde acqua"></div>
-          <div onclick="document.getElementById('docDescColore').value='#a78bfa'" style="width:20px;height:20px;border-radius:5px;background:#a78bfa;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Viola"></div>
-          <div onclick="document.getElementById('docDescColore').value='#f5a623'" style="width:20px;height:20px;border-radius:5px;background:#f5a623;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Arancio"></div>
-          <div onclick="document.getElementById('docDescColore').value='#ff6b6b'" style="width:20px;height:20px;border-radius:5px;background:#ff6b6b;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Rosso"></div>
-          <div onclick="document.getElementById('docDescColore').value='#2ecc8a'" style="width:20px;height:20px;border-radius:5px;background:#2ecc8a;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Verde"></div>
-          <div onclick="document.getElementById('docDescColore').value='#ffffff'" style="width:20px;height:20px;border-radius:5px;background:#ffffff;cursor:pointer;border:2px solid transparent;box-sizing:border-box" title="Bianco"></div>
         </div>
       </div>
       <div class="fg full"><label class="flbl">URL Google Docs (opzionale)</label><input class="finput" id="docUrl" placeholder="https://docs.google.com/..."></div>
@@ -1804,6 +1854,7 @@ function setupSidebar(){
 
       <div class="sb-sec">Documentazione</div>
       <div class="nav-item" onclick="goPage('documenti')"><span class="ni">📁</span>Archivio Documenti</div>
+      <div class="nav-item" onclick="openVerbaleModal()"><span class="ni">📝</span>Nuovo Verbale</div>
     `;
     const unread=comunicati.filter(c=>!c.readBy?.includes(currentUser.agentId)).length;
     const nb=document.getElementById('nbBacheca');if(nb)nb.textContent=unread;
@@ -1852,7 +1903,7 @@ function goPage(p){
   if(p==='comunicati'&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openComunModal()">📢 Nuovo Comunicato</button>`;
   if(p==='pec') tr.innerHTML=`<button class="tb-btn primary" onclick="openNuovaPec()">✉️ Nuova PEC</button>`;
   if(p==='documenti'&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openDocModal()">📄 Aggiungi Documento</button>`;
-  else if(p==='documenti') tr.innerHTML=`<button class="tb-btn primary" onclick="openDocModal(null,'altro')">📝 Nuovo Verbale</button>`;
+  else if(p==='documenti') tr.innerHTML=`<button class="tb-btn primary" onclick="openVerbaleModal()">📝 Nuovo Verbale</button>`;
   if(p==='segnalazioni') tr.innerHTML=`<button class="tb-btn primary" onclick="openSegnalazioneModal()">🚨 Nuova Segnalazione</button>`;
   renderPage();
 }
@@ -2842,12 +2893,14 @@ async function eliminaPec(id){
 
 // ══ DOCUMENTAZIONE ══
 const DOC_CATEGORIE_DEFAULT=[
-  {id:'regolamenti',nome:'Regolamenti e Procedure',icona:'📋',colore:'#1A7AC4'},
-  {id:'normative',nome:'Normativa di Garanzia',icona:'⚖️',colore:'#0D8FA8'},
-  {id:'fondamentale',nome:'Normativa Fondamentale',icona:'🏛️',colore:'#2B5C88'},
-  {id:'codici',nome:'Codici di Riferimento',icona:'📖',colore:'#1A9FDC'},
-  {id:'mandati',nome:'Mandati e Moduli',icona:'📄',colore:'#C07A10'},
-  {id:'altro',nome:'Verbali',icona:'📝',colore:'#4A6A90'},
+  {id:'regolamenti',     nome:'Regolamenti e Procedure',    icona:'📋', colore:'#2870c8'},
+  {id:'normative',       nome:'Normativa di Garanzia',      icona:'⚖️', colore:'#1a8fa0'},
+  {id:'fondamentale',    nome:'Normativa Fondamentale',     icona:'🏛️', colore:'#2a5c98'},
+  {id:'codici',          nome:'Codici di Riferimento',      icona:'📖', colore:'#1a90cc'},
+  {id:'ordini',          nome:'Ordini di Servizio',         icona:'📌', colore:'#6040b0'},
+  {id:'mandati',         nome:'Mandati e Moduli',           icona:'📄', colore:'#b06820'},
+  {id:'rapporti',        nome:'Rapporti e Relazioni',       icona:'📊', colore:'#1a7a50'},
+  {id:'formazione',      nome:'Formazione e Addestramento', icona:'🎓', colore:'#8040a0'},
 ];
 function getDocCategorie(){
   try{return JSON.parse(settings.docCategorie||'null')||DOC_CATEGORIE_DEFAULT;}catch{return DOC_CATEGORIE_DEFAULT;}
@@ -2909,25 +2962,60 @@ function apriDocPreview(id){
   document.getElementById('docPreviewFrame').src=previewUrl;
   openModal('docPreviewModal');
 }
+function openVerbaleModal(){
+  document.getElementById('vbTipo').value='';
+  document.getElementById('vbData').value=new Date().toISOString().slice(0,16);
+  document.getElementById('vbLuogo').value='';
+  document.getElementById('vbEsito').value='Positivo';
+  document.getElementById('vbSoggetti').value='';
+  document.getElementById('vbAgenti').value='';
+  document.getElementById('vbDescrizione').value='';
+  document.getElementById('vbNote').value='';
+  openModal('verbaleModal');
+}
+async function saveVerbale(){
+  const tipo=document.getElementById('vbTipo').value;
+  const luogo=document.getElementById('vbLuogo').value.trim();
+  const descrizione=document.getElementById('vbDescrizione').value.trim();
+  if(!tipo){toast('Seleziona il tipo di operazione','danger');return;}
+  if(!luogo){toast('Inserisci il luogo','danger');return;}
+  if(!descrizione){toast('Inserisci la descrizione','danger');return;}
+  const dataOra=document.getElementById('vbData').value||new Date().toISOString().slice(0,16);
+  const esito=document.getElementById('vbEsito').value;
+  const soggetti=document.getElementById('vbSoggetti').value.trim();
+  const agentiInt=document.getElementById('vbAgenti').value.trim();
+  const note=document.getElementById('vbNote').value.trim();
+  const autore=currentUser?.discordName||(()=>{const a=agents.find(x=>x.id===currentUser?.agentId);return a?`${a.nome} ${a.cognome}`:'—';})();
+  const titolo=`[${tipo}] ${luogo} — ${dataOra.replace('T',' ')}`;
+  const descComposta=[
+    `🔒 Tipo: ${tipo}`,
+    `📍 Luogo: ${luogo}`,
+    `⏱ Data/Ora: ${dataOra.replace('T',' ')}`,
+    `📊 Esito: ${esito}`,
+    soggetti?`👤 Soggetti: ${soggetti}`:'',
+    agentiInt?`👮 Agenti: ${agentiInt}`:'',
+    `📋 ${descrizione}`,
+    note?`📎 Note: ${note}`:'',
+    `✍️ Redatto da: ${autore}`,
+  ].filter(Boolean).join('\n');
+  const body={titolo,descrizione:descComposta,descColore:'#4a8ad4',url:'',icona:'📝',stato:'',categoria:'rapporti'};
+  try{
+    await apiFetch('/api/documenti',{method:'POST',body:JSON.stringify(body)});
+    await reloadData();closeModal('verbaleModal');toast('Verbale depositato','success');renderPage();
+  }catch(e){toast(e.message,'danger');}
+}
 function openDocModal(id, forzaCategoria){
   editDocId=id||null;
   const d=id?documenti_data.find(x=>x.id===id):null;
   const cat=getDocCategorie();
-  const isDirigenza=currentUser?.tipo==='dirigenza';
   document.getElementById('docTitolo').value=d?.titolo||'';
   document.getElementById('docDescrizione').value=d?.descrizione||'';
   document.getElementById('docDescColore').value=d?.descColore||'#8899aa';
   document.getElementById('docUrl').value=d?.url||'';
   document.getElementById('docIcona').value=d?.icona||'📄';
   document.getElementById('docStato').value=d?.stato||'';
-  // Se agente, mostra solo categoria Verbali bloccata
-  if(!isDirigenza){
-    document.getElementById('docCategoria').innerHTML=`<option value="altro" selected>📝 Verbali</option>`;
-    document.getElementById('docCategoria').disabled=true;
-  } else {
-    document.getElementById('docCategoria').disabled=false;
-    document.getElementById('docCategoria').innerHTML=cat.map(c=>`<option value="${c.id}" ${(forzaCategoria||d?.categoria)===c.id?'selected':''}>${c.icona} ${c.nome}</option>`).join('');
-  }
+  document.getElementById('docCategoria').disabled=false;
+  document.getElementById('docCategoria').innerHTML=cat.map(c=>`<option value="${c.id}" ${(forzaCategoria||d?.categoria)===c.id?'selected':''}>${c.icona} ${c.nome}</option>`).join('');
   openModal('docModal');
 }
 async function saveDoc(){
