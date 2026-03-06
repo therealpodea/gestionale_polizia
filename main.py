@@ -28,7 +28,9 @@ DISCORD_REDIRECT_URI  = f"{BASE_URL}/auth/discord/callback"
 
 # ── MAPPA RUOLI DISCORD → LIVELLO ACCESSO ──
 ROLE_MAP = {
-    "staff":         ["Founder","Gestore Generale RP","Gestore RP","Gestore Crime","Head Staff OblivionMC","Staff OblivionMC"],
+    "staff":         ["🔱| Founder","🔱| Gestore Generale RP","🔱| Gestore RP","🗡| Gestore Crime","🔱| Head Staff OblivionMC","🔱| Staff OblivionMC",
+                      "Founder","Gestore Generale RP","Gestore RP","Gestore Crime","Head Staff OblivionMC","Staff OblivionMC",
+                      "🚨STAFF🚨"],
     "accademia":     ["Allievo Poliziotto"],
     "agente":        ["Agente","Agente Scelto","Assistente","Assistente Coordinatore","Assistente Capo"],
     "sovrintendenza":["Vice Sovrintendente","Sovrintendente","Sovrintendente Capo","Sovrintendente Superiore"],
@@ -105,10 +107,6 @@ if DATABASE_URL:
         # ADD COLUMN con IF NOT EXISTS per evitare InFailedSqlTransaction
         try:
             c.execute("ALTER TABLE agents ADD COLUMN IF NOT EXISTS agent_pwd TEXT")
-            conn.commit()
-        except Exception: conn.rollback()
-        try:
-            c.execute("ALTER TABLE documenti ADD COLUMN IF NOT EXISTS desc_colore TEXT DEFAULT '#8899aa'")
             conn.commit()
         except Exception: conn.rollback()
         # Documenti default solo se tabella vuota
@@ -276,8 +274,7 @@ async def discord_callback(code: str = None, state: str = None, error: str = Non
         guild_roles = guild_res.json() if guild_res.status_code == 200 else []
         role_id_to_name = {r["id"]: r["name"] for r in guild_roles}
         member_role_names = [role_id_to_name[rid] for rid in member_role_ids if rid in role_id_to_name]
-
-        # Determina livello accesso
+        print(f"[DEBUG ROLES] user={discord_username} roles={member_role_names}", flush=True)
         livello = discord_roles_to_level(member_role_names)
         if not livello:
             return RedirectResponse("/?error=no_role")
