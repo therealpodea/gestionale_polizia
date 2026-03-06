@@ -508,11 +508,9 @@ def delete_pec(pec_id: str):
 
 @app.get("/api/documenti")
 def get_documenti():
-    rows = db_fetchall("SELECT *,desc_colore AS \"descColore\" FROM documenti ORDER BY categoria,ordine,titolo")
-    # rinomina desc_colore in descColore per compatibilita frontend
+    rows = db_fetchall("SELECT * FROM documenti ORDER BY categoria,ordine,titolo")
     for r in rows:
-        if 'descColore' not in r or not r['descColore']:
-            r['descColore'] = r.get('desc_colore','#8899aa') or '#8899aa'
+        r['descColore'] = r.get('desc_colore') or '#8899aa'
     return rows
 
 @app.post("/api/documenti")
