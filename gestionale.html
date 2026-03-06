@@ -1817,6 +1817,10 @@ function setupSidebar(){
 
       <div class="sb-sec">Documentazione</div>
       <div class="nav-item" onclick="goPage('documenti')"><span class="ni">📁</span>Archivio Documenti</div>
+      <div class="nav-item" onclick="goPage('ordini_servizio')"><span class="ni">📌</span>Ordini di Servizio</div>
+      <div class="nav-item" onclick="goPage('mandati_moduli')"><span class="ni">📄</span>Mandati e Moduli</div>
+      <div class="nav-item" onclick="goPage('rapporti')"><span class="ni">📊</span>Rapporti e Relazioni</div>
+      <div class="nav-item" onclick="goPage('formazione')"><span class="ni">🎓</span>Formazione</div>
 
       <div class="sb-sec">Amministrazione</div>
       <div class="nav-item" onclick="openAddModal()"><span class="ni">➕</span>Aggiungi Agente</div>
@@ -1854,6 +1858,10 @@ function setupSidebar(){
 
       <div class="sb-sec">Documentazione</div>
       <div class="nav-item" onclick="goPage('documenti')"><span class="ni">📁</span>Archivio Documenti</div>
+      <div class="nav-item" onclick="goPage('ordini_servizio')"><span class="ni">📌</span>Ordini di Servizio</div>
+      <div class="nav-item" onclick="goPage('mandati_moduli')"><span class="ni">📄</span>Mandati e Moduli</div>
+      <div class="nav-item" onclick="goPage('rapporti')"><span class="ni">📊</span>Rapporti e Relazioni</div>
+      <div class="nav-item" onclick="goPage('formazione')"><span class="ni">🎓</span>Formazione</div>
       <div class="nav-item" onclick="openVerbaleModal()"><span class="ni">📝</span>Nuovo Verbale</div>
     `;
     const unread=comunicati.filter(c=>!c.readBy?.includes(currentUser.agentId)).length;
@@ -1881,6 +1889,10 @@ const PAGES={
   pec:{title:'PEC',sub:'Posta Elettronica Certificata'},
   documenti:{title:'Documentazione',sub:'Regolamenti, procedure e modulistica'},
   segnalazioni:{title:'Segnalazioni',sub:'Bacheca segnalazioni interne'},
+  ordini_servizio:{title:'Ordini di Servizio',sub:'Comunicazioni operative dalla dirigenza'},
+  mandati_moduli:{title:'Mandati e Moduli',sub:'Modulistica ufficiale del dipartimento'},
+  rapporti:{title:'Rapporti e Relazioni',sub:'Verbali operativi e rapporti di servizio'},
+  formazione:{title:'Formazione e Addestramento',sub:'Materiale didattico e accademia'},
   mio_profilo:{title:'Il Mio Profilo',sub:'Dati personali e carriera'},
   mio_storico:{title:'Il Mio Storico',sub:'Promozioni, degradi e sanzioni'},
   gerarchia:{title:'Gerarchia',sub:'Struttura del Dipartimento'},
@@ -1904,6 +1916,8 @@ function goPage(p){
   if(p==='pec') tr.innerHTML=`<button class="tb-btn primary" onclick="openNuovaPec()">✉️ Nuova PEC</button>`;
   if(p==='documenti'&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openDocModal()">📄 Aggiungi Documento</button>`;
   else if(p==='documenti') tr.innerHTML=`<button class="tb-btn primary" onclick="openVerbaleModal()">📝 Nuovo Verbale</button>`;
+  if(['ordini_servizio','mandati_moduli','formazione'].includes(p)&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openDocModalCat('${p}')">📄 Aggiungi Documento</button>`;
+  if(p==='rapporti') tr.innerHTML=`<button class="tb-btn primary" onclick="openVerbaleModal()">📝 Nuovo Verbale</button>`;
   if(p==='segnalazioni') tr.innerHTML=`<button class="tb-btn primary" onclick="openSegnalazioneModal()">🚨 Nuova Segnalazione</button>`;
   renderPage();
 }
@@ -1917,6 +1931,10 @@ function renderPage(){
   else if(currentPage==='pec') renderPec(c);
   else if(currentPage==='documenti') renderDocumenti(c);
   else if(currentPage==='segnalazioni') renderSegnalazioni(c);
+  else if(currentPage==='ordini_servizio') renderCatDoc(c,'ordini');
+  else if(currentPage==='mandati_moduli') renderCatDoc(c,'mandati');
+  else if(currentPage==='rapporti') renderCatDoc(c,'rapporti');
+  else if(currentPage==='formazione') renderCatDoc(c,'formazione');
   else if(currentPage==='mio_profilo') renderMioProfilo(c);
   else if(currentPage==='mio_storico') renderMioStorico(c);
   else if(currentPage==='gerarchia') renderGerarchia(c);
@@ -2893,18 +2911,71 @@ async function eliminaPec(id){
 
 // ══ DOCUMENTAZIONE ══
 const DOC_CATEGORIE_DEFAULT=[
-  {id:'regolamenti',     nome:'Regolamenti e Procedure',    icona:'📋', colore:'#2870c8'},
-  {id:'normative',       nome:'Normativa di Garanzia',      icona:'⚖️', colore:'#1a8fa0'},
-  {id:'fondamentale',    nome:'Normativa Fondamentale',     icona:'🏛️', colore:'#2a5c98'},
-  {id:'codici',          nome:'Codici di Riferimento',      icona:'📖', colore:'#1a90cc'},
-  {id:'ordini',          nome:'Ordini di Servizio',         icona:'📌', colore:'#6040b0'},
-  {id:'mandati',         nome:'Mandati e Moduli',           icona:'📄', colore:'#b06820'},
-  {id:'rapporti',        nome:'Rapporti e Relazioni',       icona:'📊', colore:'#1a7a50'},
-  {id:'formazione',      nome:'Formazione e Addestramento', icona:'🎓', colore:'#8040a0'},
+  {id:'regolamenti', nome:'Regolamenti e Procedure',    icona:'📋', colore:'#2870c8'},
+  {id:'normative',   nome:'Normativa di Garanzia',      icona:'⚖️', colore:'#1a8fa0'},
+  {id:'fondamentale',nome:'Normativa Fondamentale',     icona:'🏛️', colore:'#2a5c98'},
+  {id:'codici',      nome:'Codici di Riferimento',      icona:'📖', colore:'#1a90cc'},
+];
+const DOC_CATEGORIE_EXTRA=[
+  {id:'ordini',     nome:'Ordini di Servizio',         icona:'📌', colore:'#6040b0'},
+  {id:'mandati',    nome:'Mandati e Moduli',           icona:'📄', colore:'#b06820'},
+  {id:'rapporti',   nome:'Rapporti e Relazioni',       icona:'📊', colore:'#1a7a50'},
+  {id:'formazione', nome:'Formazione e Addestramento', icona:'🎓', colore:'#8040a0'},
 ];
 function getDocCategorie(){
   try{return JSON.parse(settings.docCategorie||'null')||DOC_CATEGORIE_DEFAULT;}catch{return DOC_CATEGORIE_DEFAULT;}
 }
+function renderCatDoc(c, catId){
+  const allCat=[...DOC_CATEGORIE_DEFAULT,...DOC_CATEGORIE_EXTRA];
+  const cat=allCat.find(x=>x.id===catId)||{id:catId,nome:catId,icona:'📄',colore:'#4a8ad4'};
+  const docs=documenti_data.filter(d=>d.categoria===catId);
+  const isDirigenza=currentUser?.tipo==='dirigenza';
+  // Header sezione
+  c.innerHTML=`
+  <div class="card ani" style="overflow:visible">
+    <div style="padding:18px 22px 14px;display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(36,96,200,.1)">
+      <span style="font-size:26px">${cat.icona}</span>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:3px;color:${cat.colore}">${cat.nome.toUpperCase()}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:var(--t3);margin-top:2px">${docs.length} document${docs.length===1?'o':'i'}</div>
+      </div>
+      ${isDirigenza&&catId!=='rapporti'?`<button class="tb-btn primary" style="margin-left:auto" onclick="openDocModalCat('${catId}')">📄 Aggiungi</button>`:''}
+      ${catId==='rapporti'?`<button class="tb-btn primary" style="margin-left:auto" onclick="openVerbaleModal()">📝 Nuovo Verbale</button>`:''}
+    </div>
+    ${docs.length===0
+      ?`<div style="padding:50px;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--t3);font-size:16px">Nessun documento in questa sezione${isDirigenza?' — usa il pulsante per aggiungerne uno':''}.</div>`
+      :`<div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+        ${docs.map(d=>`
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:3px;border:1px solid rgba(36,96,200,.1);background:rgba(36,96,200,.03);transition:all .18s"
+          onmouseover="this.style.borderColor='${cat.colore}55';this.style.background='rgba(36,96,200,.06)'"
+          onmouseout="this.style.borderColor='rgba(36,96,200,.1)';this.style.background='rgba(36,96,200,.03)'">
+          <span style="font-size:22px;flex-shrink:0">${d.icona||cat.icona}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--t1);letter-spacing:.5px">${d.titolo}</div>
+            ${d.descrizione?`<div style="font-family:'Cormorant Garamond',serif;font-size:13px;color:${d.descColore||'var(--t3)'};font-style:italic;margin-top:2px;white-space:pre-wrap;line-height:1.5">${d.descrizione}</div>`:''}
+            ${d.stato?`<div style="font-family:'Cinzel',serif;font-size:9px;color:var(--warn2);margin-top:4px;letter-spacing:1px">⏳ ${d.stato}</div>`:''}
+          </div>
+          <div style="display:flex;gap:7px;flex-shrink:0">
+            ${d.url?`
+            <button onclick="apriDocPreview('${d.id}')" class="tb-btn">👁 Preview</button>
+            <a href="${d.url}" target="_blank" class="tb-btn primary" style="text-decoration:none">↗ Apri</a>`
+            :`<span style="font-family:'Cinzel',serif;font-size:9px;color:var(--t3);letter-spacing:1px">In lavorazione</span>`}
+            ${isDirigenza?`
+            <button onclick="openDocModal('${d.id}')" class="tb-btn">✏️</button>
+            <button onclick="deleteDoc('${d.id}')" class="tb-btn" style="color:var(--danger2)">🗑</button>`:''}
+          </div>
+        </div>`).join('')}
+      </div>`
+    }
+  </div>`;
+}
+function openDocModalCat(pageId){
+  // Mappa page → catId
+  const map={ordini_servizio:'ordini',mandati_moduli:'mandati',rapporti:'rapporti',formazione:'formazione'};
+  const catId=map[pageId]||pageId;
+  openDocModal(null, catId);
+}
+
 function renderDocumenti(c){
   const cat=getDocCategorie();
   const filtro=window._docFiltro||'tutti';
