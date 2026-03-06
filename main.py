@@ -107,6 +107,10 @@ if DATABASE_URL:
             c.execute("ALTER TABLE agents ADD COLUMN IF NOT EXISTS agent_pwd TEXT")
             conn.commit()
         except Exception: conn.rollback()
+        try:
+            c.execute("ALTER TABLE documenti ADD COLUMN IF NOT EXISTS desc_colore TEXT DEFAULT '#8899aa'")
+            conn.commit()
+        except Exception: conn.rollback()
         # Documenti default solo se tabella vuota
         try:
             c.execute("SELECT COUNT(*) FROM documenti"); cnt=c.fetchone()[0]
