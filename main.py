@@ -28,23 +28,38 @@ DISCORD_REDIRECT_URI  = f"{BASE_URL}/auth/discord/callback"
 
 # ── MAPPA RUOLI DISCORD → LIVELLO ACCESSO ──
 ROLE_MAP = {
-    "staff":         ["🔱| Founder","🔱| Gestore Generale RP","🔱| Gestore RP","🗡| Gestore Crime","🔱| Head Staff OblivionMC","🔱| Staff OblivionMC",
-                      "Founder","Gestore Generale RP","Gestore RP","Gestore Crime","Head Staff OblivionMC","Staff OblivionMC",
-                      "🚨STAFF🚨"],
-    "accademia":     ["Allievo Poliziotto"],
-    "agente":        ["Agente","Agente Scelto","Assistente","Assistente Coordinatore","Assistente Capo"],
-    "sovrintendenza":["Vice Sovrintendente","Sovrintendente","Sovrintendente Capo","Sovrintendente Superiore"],
-    "ispettorato":   ["Vice Ispettore","Ispettore","Ispettore Capo","Ispettore Superiore"],
+    "staff":         ["🚨STAFF🚨","🔱| Staff OblivionMC","🔱| Head Staff OblivionMC","🔱| Founder","🔱| Gestore Generale RP","🔱| Gestore RP","🗡| Gestore Crime",
+                      "Founder","Gestore Generale RP","Gestore RP","Gestore Crime","Head Staff OblivionMC","Staff OblivionMC"],
+    "accademia":     ["Allievo Poliziotto","🎓| Allievo Poliziotto"],
+    "agente":        ["Agente","Agente Scelto","Assistente","Assistente Coordinatore","Assistente Capo",
+                      "🔵| Agente","🔵| Agente Scelto","🔵| Assistente","🔵| Assistente Coordinatore","🔵| Assistente Capo"],
+    "sovrintendenza":["Vice Sovrintendente","Sovrintendente","Sovrintendente Capo","Sovrintendente Superiore",
+                      "🟡| Vice Sovrintendente","🟡| Sovrintendente","🟡| Sovrintendente Capo","🟡| Sovrintendente Superiore"],
+    "ispettorato":   ["Vice Ispettore","Ispettore","Ispettore Capo","Ispettore Superiore",
+                      "🟠| Vice Ispettore","🟠| Ispettore","🟠| Ispettore Capo","🟠| Ispettore Superiore"],
     "dirigenza":     ["Vice Commissario","Sostituto Commissario","Commissario","Commissario Capo",
-                      "Primo Dirigente","Dirigente Aggiunto","Dirigente Superiore","Dirigente Penitenziaria","Dirigente Generale"],
+                      "Primo Dirigente","Dirigente Aggiunto","Dirigente Superiore","Dirigente Penitenziaria","Dirigente Generale",
+                      "🔴| Vice Commissario","🔴| Sostituto Commissario","🔴| Commissario","🔴| Commissario Capo",
+                      "🔴| Primo Dirigente","🔴| Dirigente Aggiunto","🔴| Dirigente Superiore","🔴| Dirigente Penitenziaria","🔴| Dirigente Generale"],
 }
 # Staff ha accesso completo (sopra dirigenza nella gerarchia)
 LIVELLI_GERARCHIA = ["staff","dirigenza","ispettorato","sovrintendenza","agente","accademia"]
 
+import re as _re
+def _clean_role(r):
+    # Rimuove emoji, prefissi tipo "🔱| " e spazi extra
+    r = _re.sub(r'[^\w\s]', '', r)  # rimuove caratteri non-word (emoji, |, ecc.)
+    return r.strip().lower()
+
 def discord_roles_to_level(member_roles):
+    cleaned_member = [_clean_role(r) for r in member_roles]
     for livello in LIVELLI_GERARCHIA:
         for ruolo in ROLE_MAP[livello]:
+            # Match esatto
             if ruolo in member_roles:
+                return livello
+            # Match flessibile (ignora emoji e prefissi)
+            if _clean_role(ruolo) in cleaned_member:
                 return livello
     return None
 
@@ -274,7 +289,8 @@ async def discord_callback(code: str = None, state: str = None, error: str = Non
         guild_roles = guild_res.json() if guild_res.status_code == 200 else []
         role_id_to_name = {r["id"]: r["name"] for r in guild_roles}
         member_role_names = [role_id_to_name[rid] for rid in member_role_ids if rid in role_id_to_name]
-        print(f"[DEBUG ROLES] user={discord_username} roles={member_role_names}", flush=True)
+
+        # Determina livello accesso
         livello = discord_roles_to_level(member_role_names)
         if not livello:
             return RedirectResponse("/?error=no_role")
