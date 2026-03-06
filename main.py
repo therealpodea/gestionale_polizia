@@ -158,6 +158,8 @@ else:
             c.execute("INSERT OR IGNORE INTO settings(key,value) VALUES(?,?)",(k,v))
         try: c.execute("ALTER TABLE agents ADD COLUMN agent_pwd TEXT")
         except: pass
+        try: c.execute("ALTER TABLE documenti ADD COLUMN desc_colore TEXT DEFAULT '#8899aa'")
+        except: pass
         conn.commit(); conn.close()
 
 init_db()
@@ -466,6 +468,7 @@ class Documento(BaseModel):
     id: Optional[str]=None; titolo: str; descrizione: Optional[str]=""
     url: Optional[str]=""; icona: Optional[str]="📄"
     stato: Optional[str]=""; categoria: str="altro"; ordine: Optional[int]=0
+    descColore: Optional[str]="#8899aa"
 
 class Segnalazione(BaseModel):
     id: Optional[str]=None; titolo: str; corpo: str
@@ -505,7 +508,12 @@ def delete_pec(pec_id: str):
 
 @app.get("/api/documenti")
 def get_documenti():
-    return db_fetchall("SELECT * FROM documenti ORDER BY categoria,ordine,titolo")
+    rows = db_fetchall("SELECT *,desc_colore AS \"descColore\" FROM documenti ORDER BY categoria,ordine,titolo")
+    # rinomina desc_colore in descColore per compatibilita frontend
+    for r in rows:
+        if 'descColore' not in r or not r['descColore']:
+            r['descColore'] = r.get('desc_colore','#8899aa') or '#8899aa'
+    return rows
 
 @app.post("/api/documenti")
 def create_documento(doc: Documento, x_api_key: str = Header(None), x_session_token: str = Header(None)):
@@ -522,14 +530,14 @@ def create_documento(doc: Documento, x_api_key: str = Header(None), x_session_to
     else:
         raise HTTPException(status_code=401, detail="Non autorizzato")
     doc.id=doc.id or str(uuid.uuid4())[:12]
-    db_execute("INSERT INTO documenti (id,titolo,descrizione,url,icona,stato,categoria,ordine) VALUES (?,?,?,?,?,?,?,?)",
-        (doc.id,doc.titolo,doc.descrizione,doc.url,doc.icona,doc.stato,doc.categoria,doc.ordine))
+    db_execute("INSERT INTO documenti (id,titolo,descrizione,url,icona,stato,categoria,ordine,desc_colore) VALUES (?,?,?,?,?,?,?,?,?)",
+        (doc.id,doc.titolo,doc.descrizione,doc.url,doc.icona,doc.stato,doc.categoria,doc.ordine,doc.descColore or '#8899aa'))
     return doc
 
 @app.put("/api/documenti/{doc_id}", dependencies=[Depends(check_auth)])
 def update_documento(doc_id: str, doc: Documento):
-    db_execute("UPDATE documenti SET titolo=?,descrizione=?,url=?,icona=?,stato=?,categoria=?,ordine=? WHERE id=?",
-        (doc.titolo,doc.descrizione,doc.url,doc.icona,doc.stato,doc.categoria,doc.ordine,doc_id))
+    db_execute("UPDATE documenti SET titolo=?,descrizione=?,url=?,icona=?,stato=?,categoria=?,ordine=?,desc_colore=? WHERE id=?",
+        (doc.titolo,doc.descrizione,doc.url,doc.icona,doc.stato,doc.categoria,doc.ordine,doc.descColore or '#8899aa',doc_id))
     return {"ok":True}
 
 @app.delete("/api/documenti/{doc_id}", dependencies=[Depends(check_auth)])
@@ -628,4 +636,3 @@ if __name__=="__main__":
     import uvicorn
     port=int(os.getenv("PORT",8000))
     uvicorn.run("main:app",host="0.0.0.0",port=port)
-
