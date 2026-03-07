@@ -1855,7 +1855,7 @@ function renderSettingsLogoPreview(){
 
 // ══ INIT ══
 async function init(){
-  const safe=(p,fb=[])=>p.catch(e=>{console.warn('API warn:',e?.message);return fb;});
+  const safe=(p,fb=[])=>p.catch(e=>{console.warn('[init] API warn:',e?.message);return fb;});
   const [ags,hist,coms,sett,pec,doc,seg]=await Promise.all([
     safe(apiFetch('/api/agents')),
     safe(apiFetch('/api/history')),
@@ -1972,8 +1972,7 @@ async function checkDiscordSession(){
 
 async function enterDiscordSession(token, livello){
   SESSION_TOKEN = token;
-
-  // Step 1: verifica sessione backend
+  // Step 1: verifica token con il server — unico punto che può fallire legittimamente
   let info;
   try {
     info = await apiFetch('/auth/session');
@@ -1984,10 +1983,9 @@ async function enterDiscordSession(token, livello){
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('appWrap').style.display = 'none';
     const errEl = document.getElementById('loginErrDiscord');
-    if(errEl) errEl.textContent = '❌ Sessione scaduta o non valida. Riaccedi.';
+    if(errEl) errEl.textContent = '❌ Sessione scaduta. Riaccedi con Discord.';
     return;
   }
-
   // Step 2: imposta utente
   const isDirigenza = ['staff','dirigenza','ispettorato','sovrintendenza'].includes(livello);
   currentUser = {
@@ -2000,19 +1998,16 @@ async function enterDiscordSession(token, livello){
     _discordUsername: info.discord_username,
   };
   if(isDirigenza) API_KEY = 'estovia2026';
-
-  // Step 3: apri app subito (prima di caricare dati — evita schermo nero)
+  // Step 3: apri app SUBITO — nessun catch globale che può bloccare
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appWrap').style.display = 'flex';
-
-  // Step 4: carica dati (errori non bloccano l'app)
+  // Step 4: carica dati — errori non bloccano l'app
   await init();
-
-  // Step 5: risolvi agentId se mancante
+  // Step 5: risolvi agentId se mancante (matching per username Discord)
   if(!currentUser.agentId && currentUser.tipo === 'agente'){
     const dname = (info.discord_username||'').toLowerCase();
-    const found = agents.find(a => a.discord &&(
-      a.discord.toLowerCase()===dname ||
+    const found = agents.find(a => a.discord && (
+      a.discord.toLowerCase() === dname ||
       dname.includes(a.discord.toLowerCase()) ||
       a.discord.toLowerCase().includes(dname)
     ));
@@ -2022,7 +2017,6 @@ async function enterDiscordSession(token, livello){
       try{ await apiFetch('/api/session/link-agent',{method:'POST',body:JSON.stringify({agent_id:found.id})}); }catch(_){}
     }
   }
-
   setupSidebar();
   const startPage = (['staff','dirigenza'].includes(livello)) ? 'dashboard' : 'mio_profilo';
   goPage(startPage);
@@ -3551,7 +3545,7 @@ function updateBadges(){
         await enterDiscordSession(savedSession, savedLivello);
       }
     }
-    // Safeguard: se non loggato, assicura loginScreen visibile
+    // Safeguard finale: se nessuno è loggato assicura loginScreen visibile
     if(!SESSION_TOKEN && !API_KEY){
       document.getElementById('loginScreen').style.display='flex';
       document.getElementById('appWrap').style.display='none';
