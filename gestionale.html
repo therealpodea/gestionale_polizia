@@ -1855,13 +1855,12 @@ function renderSettingsLogoPreview(){
 
 // ══ INIT ══
 async function init(){
-  // Fetch con fallback: ogni API fallisce silenziosamente (non blocca l'app)
-  const safe = (p, fallback=[]) => p.catch(e=>{console.warn('API warning:',e?.message);return fallback;});
-  const [ags,hist,coms,sett,pec,doc,seg] = await Promise.all([
+  const safe=(p,fb=[])=>p.catch(e=>{console.warn('API warn:',e?.message);return fb;});
+  const [ags,hist,coms,sett,pec,doc,seg]=await Promise.all([
     safe(apiFetch('/api/agents')),
     safe(apiFetch('/api/history')),
     safe(apiFetch('/api/comunicati')),
-    safe(apiFetch('/api/settings'), {}),
+    safe(apiFetch('/api/settings'),{}),
     safe(apiFetch('/api/pec')),
     safe(apiFetch('/api/documenti')),
     safe(apiFetch('/api/segnalazioni')),
@@ -1974,7 +1973,7 @@ async function checkDiscordSession(){
 async function enterDiscordSession(token, livello){
   SESSION_TOKEN = token;
 
-  // Step 1: ottieni info sessione (se fallisce → sessione invalida, torna al login)
+  // Step 1: verifica sessione backend
   let info;
   try {
     info = await apiFetch('/auth/session');
@@ -1989,7 +1988,7 @@ async function enterDiscordSession(token, livello){
     return;
   }
 
-  // Step 2: imposta currentUser
+  // Step 2: imposta utente
   const isDirigenza = ['staff','dirigenza','ispettorato','sovrintendenza'].includes(livello);
   currentUser = {
     tipo: isDirigenza ? 'dirigenza' : 'agente',
@@ -2002,28 +2001,21 @@ async function enterDiscordSession(token, livello){
   };
   if(isDirigenza) API_KEY = 'estovia2026';
 
-  // Step 3: apri app SUBITO (non aspettare init per evitare schermo nero)
+  // Step 3: apri app subito (prima di caricare dati — evita schermo nero)
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appWrap').style.display = 'flex';
 
-  // Step 4: carica dati (con gestione errori separata)
-  try {
-    await init();
-  } catch(e) {
-    console.warn('init() parziale:', e);
-    // Continua comunque — dati potrebbero essere parziali
-  }
+  // Step 4: carica dati (errori non bloccano l'app)
+  await init();
 
-  // Step 5: risolvi agentId se mancante (cerca per discord username)
+  // Step 5: risolvi agentId se mancante
   if(!currentUser.agentId && currentUser.tipo === 'agente'){
-    const dname = (info.discord_username || '').toLowerCase();
-    const found = agents.find(a =>
-      a.discord && (
-        a.discord.toLowerCase() === dname ||
-        dname.includes(a.discord.toLowerCase()) ||
-        a.discord.toLowerCase().includes(dname)
-      )
-    );
+    const dname = (info.discord_username||'').toLowerCase();
+    const found = agents.find(a => a.discord &&(
+      a.discord.toLowerCase()===dname ||
+      dname.includes(a.discord.toLowerCase()) ||
+      a.discord.toLowerCase().includes(dname)
+    ));
     if(found){
       currentUser.agentId = found.id;
       currentUser.nick = found.discord;
@@ -3559,10 +3551,10 @@ function updateBadges(){
         await enterDiscordSession(savedSession, savedLivello);
       }
     }
-    // Safeguard finale: se nessuno è loggato, assicura che loginScreen sia visibile
+    // Safeguard: se non loggato, assicura loginScreen visibile
     if(!SESSION_TOKEN && !API_KEY){
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('appWrap').style.display = 'none';
+      document.getElementById('loginScreen').style.display='flex';
+      document.getElementById('appWrap').style.display='none';
     }
   })();
   window.addEventListener('load',()=>setTimeout(()=>{tilt();ripple();},300));
