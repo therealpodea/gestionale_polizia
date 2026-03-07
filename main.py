@@ -95,7 +95,7 @@ if DATABASE_URL:
         c.execute('CREATE TABLE IF NOT EXISTS comunicati (id TEXT PRIMARY KEY, titolo TEXT NOT NULL, corpo TEXT NOT NULL, priorita TEXT NOT NULL DEFAULT \'normale\', data TEXT NOT NULL, readBy TEXT NOT NULL DEFAULT \'[]\')')
         c.execute('CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)')
         c.execute('CREATE TABLE IF NOT EXISTS pec (id TEXT PRIMARY KEY, mittenteId TEXT NOT NULL, mittenteNome TEXT NOT NULL, destinatarioId TEXT NOT NULL, destinatarioNome TEXT NOT NULL, oggetto TEXT NOT NULL, corpo TEXT NOT NULL, priorita TEXT NOT NULL DEFAULT \'normale\', stato TEXT NOT NULL DEFAULT \'inviata\', letta BOOLEAN NOT NULL DEFAULT FALSE, data TEXT NOT NULL)')
-        c.execute('CREATE TABLE IF NOT EXISTS documenti (id TEXT PRIMARY KEY, titolo TEXT NOT NULL, descrizione TEXT, url TEXT, icona TEXT, stato TEXT, categoria TEXT NOT NULL DEFAULT \'altro\', ordine INTEGER DEFAULT 0)')
+        c.execute('CREATE TABLE IF NOT EXISTS documenti (id TEXT PRIMARY KEY, titolo TEXT NOT NULL, descrizione TEXT, url TEXT, icona TEXT, stato TEXT, categoria TEXT NOT NULL DEFAULT \'altro\', ordine INTEGER DEFAULT 0, desc_colore TEXT DEFAULT \'#8899aa\')')
         c.execute('CREATE TABLE IF NOT EXISTS segnalazioni (id TEXT PRIMARY KEY, titolo TEXT NOT NULL, corpo TEXT NOT NULL, priorita TEXT NOT NULL DEFAULT \'normale\', mittenteId TEXT NOT NULL, mittenteNome TEXT NOT NULL, stato TEXT NOT NULL DEFAULT \'aperta\', data TEXT NOT NULL)')
         c.execute('CREATE TABLE IF NOT EXISTS discord_sessions (token TEXT PRIMARY KEY, discord_id TEXT NOT NULL, discord_username TEXT NOT NULL, discord_avatar TEXT, livello TEXT NOT NULL, grado TEXT, agent_id TEXT, created_at TEXT NOT NULL, expires_at TEXT NOT NULL)')
         for k,v in [("pwd","estovia2026"),("gradi",json.dumps(GRADI_DEFAULT)),("sanzioni",json.dumps(SANZIONI_DEFAULT)),("logo","")]:
@@ -122,6 +122,10 @@ if DATABASE_URL:
         # ADD COLUMN con IF NOT EXISTS per evitare InFailedSqlTransaction
         try:
             c.execute("ALTER TABLE agents ADD COLUMN IF NOT EXISTS agent_pwd TEXT")
+            conn.commit()
+        except Exception: conn.rollback()
+        try:
+            c.execute("ALTER TABLE documenti ADD COLUMN IF NOT EXISTS desc_colore TEXT DEFAULT '#8899aa'")
             conn.commit()
         except Exception: conn.rollback()
         # Documenti default solo se tabella vuota
