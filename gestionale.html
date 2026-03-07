@@ -33,15 +33,15 @@
   --sap2: #2f85ff;
   --sap3: #5aa3ff;
   --sap4: #92c4ff;
-  --sap-g:  rgba(29,111,232,.1);
-  --sap-gl: rgba(29,111,232,.18);
-  --sap-bd: rgba(47,133,255,.2);
+  --sap-g:  rgba(0,82,180,.1);
+  --sap-gl: rgba(0,82,180,.18);
+  --sap-bd: rgba(59,142,234,.2);
 
   /* ── ELECTRIC CYAN ── */
-  --cyn:  #00cfee;
-  --cyn2: #33dcf5;
-  --cyn-g:  rgba(0,207,238,.08);
-  --cyn-bd: rgba(0,207,238,.2);
+  --cyn:  #3b8eea;
+  --cyn2: #6aaeff;
+  --cyn-g:  rgba(0,82,180,.1);
+  --cyn-bd: rgba(59,142,234,.25);
 
   /* ── GOLD AUTHORITY ── */
   --gld:  #c8a227;
@@ -79,9 +79,9 @@
   --tx4: #1a2840;
 
   /* ── BORDERS ── */
-  --bdr:  rgba(47,133,255,.18);
-  --bdr2: rgba(47,133,255,.09);
-  --bdr3: rgba(47,133,255,.04);
+  --bdr:  rgba(59,142,234,.18);
+  --bdr2: rgba(59,142,234,.09);
+  --bdr3: rgba(59,142,234,.04);
 
   /* ── GLASS ── */
   --glass: rgba(6,9,20,.85);
@@ -124,8 +124,8 @@ body {
 /* ── SCROLLBARS ── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(47,133,255,.18); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(47,133,255,.36); }
+::-webkit-scrollbar-thumb { background: rgba(59,142,234,.18); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(59,142,234,.36); }
 
 /* ═══════════════════════════════════════════════
    LOGIN — INSTITUTIONAL SPLIT SCREEN
@@ -133,18 +133,22 @@ body {
 
 #loginScreen {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 420px;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
   background:
-    linear-gradient(160deg, rgba(29,111,232,.14) 0%, transparent 45%),
-    linear-gradient(200deg, transparent 40%, rgba(0,207,238,.05) 80%),
-    var(--ink1);
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,61,143,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(14,165,233,.07) 0%, transparent 50%),
+    #04060f;
   overflow: hidden;
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
 }
 
 /* ── LEFT PANEL: Full-bleed identity ── */
 .login-left {
+  flex: 1;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -152,6 +156,8 @@ body {
   padding: 52px 56px;
   overflow: hidden;
   background: transparent;
+  z-index: 1;
+  min-width: 0;
 }
 
 /* Big hexagonal grid background */
@@ -159,8 +165,8 @@ body {
   content: '';
   position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(47,133,255,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(47,133,255,.04) 1px, transparent 1px);
+    linear-gradient(rgba(59,142,234,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,142,234,.04) 1px, transparent 1px);
   background-size: 44px 44px;
   mask-image: radial-gradient(ellipse 80% 80% at 30% 60%, black 30%, transparent 80%);
 }
@@ -193,18 +199,18 @@ body {
 }
 .login-left-badge-dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: var(--cyn);
-  box-shadow: 0 0 12px var(--cyn);
+  background: var(--blu3);
+  box-shadow: 0 0 12px var(--blu3);
   animation: pulseDot 2.5s ease-in-out infinite;
 }
 @keyframes pulseDot {
-  0%,100% { box-shadow: 0 0 6px var(--cyn); opacity: 1; }
-  50%      { box-shadow: 0 0 18px var(--cyn); opacity: .7; }
+  0%,100% { box-shadow: 0 0 6px var(--blu3); opacity: 1; }
+  50%      { box-shadow: 0 0 18px var(--blu3); opacity: .7; }
 }
 .login-left-badge-txt {
   font-family: var(--f-mono);
   font-size: 9px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--cyn); opacity: .8;
+  text-transform: uppercase; color: var(--blu3); opacity: .8;
 }
 
 .login-left-title {
@@ -237,13 +243,13 @@ body {
 .login-stats {
   position: relative; z-index: 2;
   display: flex; gap: 0;
-  border-top: 1px solid rgba(47,133,255,.12);
+  border-top: 1px solid rgba(59,142,234,.12);
   padding-top: 28px;
 }
 .login-stat {
   flex: 1;
   padding-right: 28px;
-  border-right: 1px solid rgba(47,133,255,.08);
+  border-right: 1px solid rgba(59,142,234,.08);
 }
 .login-stat:last-child { border-right: none; padding-right: 0; padding-left: 28px; }
 .login-stat:first-child { padding-left: 0; }
@@ -272,11 +278,11 @@ body {
   position: relative; z-index: 2;
   display: flex; align-items: center; gap: 14px;
   padding-top: 28px;
-  border-top: 1px solid rgba(47,133,255,.1);
+  border-top: 1px solid rgba(59,142,234,.1);
 }
 .login-tagline-line {
   width: 24px; height: 1px;
-  background: var(--cyn); opacity: .5; flex-shrink: 0;
+  background: var(--blu3); opacity: .5; flex-shrink: 0;
 }
 .login-tagline span {
   font-family: var(--f-mono);
@@ -286,27 +292,22 @@ body {
 
 /* ── RIGHT PANEL: Login form — blends into left ── */
 .login-right {
+  width: 460px;
+  flex-shrink: 0;
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 48px 44px;
-  background: transparent;
+  padding: 40px 40px;
+  background: linear-gradient(90deg, transparent 0%, rgba(4,6,14,.45) 30%, rgba(4,6,14,.6) 100%);
   border-left: none;
-  overflow: hidden;
+  overflow-y: auto;
+  min-height: 100vh;
 }
 
 /* Fade-in from left: left panel bleeds into right */
-.login-right::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(4,6,15,.55) 30%,
-    rgba(4,6,15,.82) 60%,
-    rgba(4,6,15,.94) 100%);
-  pointer-events: none; z-index: 0;
-}
+.login-right::before { display: none; }
 
 /* Top accent line */
 .login-right::after {
@@ -314,8 +315,8 @@ body {
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(47,133,255,.15) 40%,
-    rgba(0,207,238,.5) 70%,
+    rgba(59,142,234,.15) 40%,
+    rgba(0,82,180,.5) 70%,
     transparent 100%);
   z-index: 1;
 }
@@ -324,7 +325,8 @@ body {
 .login-crest {
   position: relative; z-index: 2;
   display: flex; align-items: center; gap: 14px;
-  margin-bottom: 36px;
+  margin-bottom: 24px;
+  width: 100%;
 }
 .login-logo-wrap {
   position: relative;
@@ -336,20 +338,20 @@ body {
   content: '';
   position: absolute; inset: -4px; border-radius: 50%;
   border: 1px solid transparent;
-  border-top-color: rgba(0,207,238,.7);
-  border-right-color: rgba(47,133,255,.4);
+  border-top-color: rgba(0,82,180,.7);
+  border-right-color: rgba(59,142,234,.4);
   animation: spinRing 3s linear infinite;
 }
 .login-logo-wrap::after {
   content: '';
   position: absolute; inset: -1px; border-radius: 50%;
-  border: 1px solid rgba(47,133,255,.15);
+  border: 1px solid rgba(59,142,234,.15);
 }
 @keyframes spinRing { to { transform: rotate(360deg); } }
 #loginLogoDisplay {
   width: 56px; height: 56px; border-radius: 50%;
   background: var(--ink4);
-  border: 1px solid rgba(47,133,255,.2);
+  border: 1px solid rgba(59,142,234,.2);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; position: relative; z-index: 1;
 }
@@ -368,7 +370,7 @@ body {
 .login-institution {
   font-family: var(--f-mono);
   font-size: 8px; letter-spacing: 3.5px;
-  text-transform: uppercase; color: var(--cyn); opacity: .7;
+  text-transform: uppercase; color: var(--blu3); opacity: .7;
   margin-bottom: 3px;
 }
 .login-title {
@@ -394,7 +396,7 @@ body {
 .login-box { position: relative; z-index: 2; width: 100%; }
 .login-box-inner {
   background: rgba(4,6,15,.6);
-  border: 1px solid rgba(47,133,255,.12);
+  border: 1px solid rgba(59,142,234,.12);
   border-radius: 14px;
   overflow: hidden;
   backdrop-filter: blur(16px);
@@ -440,7 +442,7 @@ body {
   margin: 16px 22px 0;
 }
 .login-info-divider::before, .login-info-divider::after {
-  content: ''; flex: 1; height: 1px; background: rgba(47,133,255,.08);
+  content: ''; flex: 1; height: 1px; background: rgba(59,142,234,.08);
 }
 .login-info-divider span {
   font-family: var(--f-mono); font-size: 8px;
@@ -451,7 +453,7 @@ body {
 .login-roles-box {
   margin: 12px 22px 0;
   background: rgba(8,13,28,.5);
-  border: 1px solid rgba(47,133,255,.07);
+  border: 1px solid rgba(59,142,234,.07);
   border-radius: 9px; padding: 12px;
 }
 .login-roles-title {
@@ -464,7 +466,7 @@ body {
 .login-role-row {
   display: flex; align-items: center; gap: 8px;
   padding: 4px 0; font-size: 11px; color: var(--tx2);
-  border-bottom: 1px solid rgba(47,133,255,.04);
+  border-bottom: 1px solid rgba(59,142,234,.04);
 }
 .login-role-row:last-child { border-bottom: none; }
 .login-role-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
@@ -531,8 +533,8 @@ body {
   content: '';
   position: absolute; right: 0; top: 0; bottom: 0; width: 1px;
   background: linear-gradient(180deg,
-    transparent, rgba(0,207,238,.15), rgba(47,133,255,.2),
-    rgba(0,207,238,.15), transparent);
+    transparent, rgba(0,82,180,.15), rgba(59,142,234,.2),
+    rgba(0,82,180,.15), transparent);
 }
 
 /* ── SB Logo ── */
@@ -574,13 +576,13 @@ body {
   background: var(--ink3);
 }
 .sb-mode.mode-dirigenza {
-  background: rgba(29,111,232,.09);
-  border-color: rgba(47,133,255,.22);
+  background: rgba(0,82,180,.09);
+  border-color: rgba(59,142,234,.22);
   color: var(--sap3);
 }
 .sb-mode.mode-agente {
-  background: rgba(0,207,238,.07);
-  border-color: rgba(0,207,238,.2);
+  background: rgba(0,82,180,.07);
+  border-color: rgba(0,82,180,.2);
   color: var(--cyn2);
 }
 
@@ -596,7 +598,7 @@ body {
 }
 .sb-section-label::after {
   content: ''; flex: 1; height: 1px;
-  background: rgba(47,133,255,.06);
+  background: rgba(59,142,234,.06);
 }
 .sb-item {
   display: flex; align-items: center; gap: 9px;
@@ -608,11 +610,11 @@ body {
   font-family: var(--f-body); font-size: 13px;
 }
 .sb-item:hover {
-  background: rgba(29,111,232,.07); color: var(--tx1);
-  border-left-color: rgba(47,133,255,.25);
+  background: rgba(0,82,180,.07); color: var(--tx1);
+  border-left-color: rgba(59,142,234,.25);
 }
 .sb-item.active {
-  background: linear-gradient(90deg, rgba(29,111,232,.14), transparent);
+  background: linear-gradient(90deg, rgba(0,82,180,.14), transparent);
   color: var(--sap3); border-left-color: var(--sap2);
 }
 .sb-ico { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
@@ -696,8 +698,8 @@ body {
 .content {
   flex: 1; overflow-y: auto; padding: 22px;
   background:
-    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(29,111,232,.05) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 50% at 10% 90%, rgba(0,207,238,.03) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(0,82,180,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 10% 90%, rgba(0,82,180,.03) 0%, transparent 55%),
     var(--ink1);
 }
 
@@ -736,7 +738,7 @@ body {
 .card::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(47,133,255,.12), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59,142,234,.12), transparent);
 }
 .card:hover {
   border-color: var(--bdr);
@@ -785,7 +787,7 @@ body {
 .kpi-card::after {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 60px;
-  background: linear-gradient(180deg, rgba(47,133,255,.04), transparent);
+  background: linear-gradient(180deg, rgba(59,142,234,.04), transparent);
 }
 .kpi-card:hover {
   border-color: var(--bdr);
@@ -824,12 +826,12 @@ th {
 }
 td {
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(29,111,232,.04);
+  border-bottom: 1px solid rgba(0,82,180,.04);
   color: var(--tx1); font-size: 13px;
   vertical-align: middle;
 }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: rgba(29,111,232,.05); }
+tr:hover td { background: rgba(0,82,180,.05); }
 
 /* ── Filter bar ── */
 .filter-bar {
@@ -860,12 +862,12 @@ tr:hover td { background: rgba(29,111,232,.05); }
 
 .btn.primary, .fbtn.primary {
   background: linear-gradient(135deg, var(--sap), var(--sap2));
-  color: #fff; border-color: rgba(47,133,255,.4);
-  box-shadow: 0 3px 12px rgba(29,111,232,.3);
+  color: #fff; border-color: rgba(59,142,234,.4);
+  box-shadow: 0 3px 12px rgba(0,82,180,.3);
 }
 .btn.primary:hover, .fbtn.primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(29,111,232,.45);
+  box-shadow: 0 6px 20px rgba(0,82,180,.45);
 }
 .btn.secondary, .fbtn.secondary {
   background: var(--ink3); color: var(--tx2);
@@ -929,8 +931,8 @@ tr:hover td { background: rgba(29,111,232,.05); }
   line-height: 1.45;
 }
 .finput:focus, .fselect:focus, .ftextarea:focus {
-  border-color: rgba(47,133,255,.4);
-  box-shadow: 0 0 0 3px rgba(29,111,232,.1);
+  border-color: rgba(59,142,234,.4);
+  box-shadow: 0 0 0 3px rgba(0,82,180,.1);
 }
 .finput::placeholder, .ftextarea::placeholder { color: var(--tx3); }
 .fselect option { background: var(--ink3); color: var(--tx1); }
@@ -1013,7 +1015,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
 
 .modal {
   background: var(--glass2);
-  border: 1px solid rgba(47,133,255,.16);
+  border: 1px solid rgba(59,142,234,.16);
   border-radius: 14px;
   max-height: 90vh; overflow: hidden;
   display: flex; flex-direction: column;
@@ -1028,7 +1030,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg,
-    transparent, rgba(29,111,232,.6), rgba(0,207,238,.7),
+    transparent, rgba(0,82,180,.6), rgba(0,82,180,.7),
     rgba(200,162,39,.4), transparent);
   border-radius: 14px 14px 0 0; z-index: 1;
 }
@@ -1140,10 +1142,10 @@ tr:hover td { background: rgba(29,111,232,.05); }
 .profile-av {
   width: 64px; height: 64px; border-radius: 50%;
   background: var(--ink3);
-  border: 2px solid rgba(47,133,255,.25);
+  border: 2px solid rgba(59,142,234,.25);
   display: flex; align-items: center; justify-content: center;
   font-size: 26px; flex-shrink: 0; overflow: hidden;
-  box-shadow: 0 0 20px rgba(29,111,232,.15);
+  box-shadow: 0 0 20px rgba(0,82,180,.15);
 }
 .profile-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .profile-name {
@@ -1163,7 +1165,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
   cursor: pointer; transition: background .15s;
 }
 .com-item:last-child { border-bottom: none; }
-.com-item:hover { background: rgba(29,111,232,.05); }
+.com-item:hover { background: rgba(0,82,180,.05); }
 .com-ico {
   width: 36px; height: 36px; border-radius: 9px;
   background: var(--ink4); border: 1px solid var(--bdr2);
@@ -1189,7 +1191,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
   border-radius: 9px; margin-bottom: 8px;
   transition: border-color .2s;
 }
-.bacheca-item:hover { border-color: var(--bdr); border-left-color: var(--cyn); }
+.bacheca-item:hover { border-color: var(--bdr); border-left-color: var(--blu3); }
 
 /* Chart container */
 .chart-box { position: relative; height: 220px; padding: 8px 0; }
@@ -1265,6 +1267,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
 <div id="loginScreen">
   <div class="login-scan"></div>
   <div class="login-scan"></div>
+
 
   <!-- LEFT PANEL -->
   <div class="login-left">
@@ -1398,7 +1401,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
-<input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(event)">
+<input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(event)" style="display:none;position:absolute;left:-9999px">
 
 <!-- MODAL PEC DETTAGLIO -->
 <div class="overlay" id="pecDetailModal">
@@ -2269,7 +2272,7 @@ function renderDashboard(c){
         ${gradi().filter(g=>gradeCount[g]>0).reverse().map(g=>`
         <div class="bar-row">
           <div class="bar-lbl" style="color:${GRADE_COLORS[g]||'var(--t2)'}">${g}</div>
-          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(gradeCount[g]/Math.max(agents.length,1)*100)}%;background:${GRADE_COLORS[g]||'var(--azure2)'}"></div></div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(gradeCount[g]/Math.max(agents.length,1)*100)}%;background:${GRADE_COLORS[g]||'var(--blu4)'}"></div></div>
           <div class="bar-num" style="color:${GRADE_COLORS[g]||'var(--t2)'}">${gradeCount[g]}</div>
         </div>`).join('')}
         ${agents.length===0?'<div style="font-family:\'DM Sans\', sans-serif;font-style:italic;color:var(--t3)">Nessun agente.</div>':''}
@@ -2322,7 +2325,7 @@ function renderAgenti(c){
           <tr class="dr" onclick="openDetailModal('${a.id}')">
             <td><div class="av-cell"><div class="av ${avCls(a)}">${a.nome[0]}${a.cognome[0]}</div><b style="font-family:'Syne', sans-serif;font-size:12px;letter-spacing:0.5px">${a.cognome} ${a.nome}</b></div></td>
             <td><span style="font-family:'Syne', sans-serif;font-size:12px;color:var(--t2);letter-spacing:1px">${a.cf}</span></td>
-            <td><span style="color:var(--azure2);font-weight:600;font-size:13px">@${a.discord}</span></td>
+            <td><span style="color:var(--blu4);font-weight:600;font-size:13px">@${a.discord}</span></td>
             <td><span style="color:${GRADE_COLORS[a.grado]||'var(--t1)'};font-family:'Syne', sans-serif;font-size:11px;letter-spacing:1px">${a.grado}</span></td>
             <td>${statoBadge(a.stato)}</td>
             <td>${sanzioneBadge(a.sanzione)}</td>
@@ -2451,7 +2454,7 @@ function renderStatistiche(c){
       <div class="card-head">
         <span>📈</span><h3>Trend Attività — 12 Mesi</h3>
         <div class="ch-right">
-          <span style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1px;color:var(--azure2);display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;border-radius:2px;background:var(--azure2);display:inline-block"></span>Promozioni</span>
+          <span style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1px;color:var(--blu4);display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;border-radius:2px;background:var(--blu4);display:inline-block"></span>Promozioni</span>
           <span style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1px;color:var(--warn);display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;border-radius:2px;background:var(--warn);display:inline-block"></span>Sanzioni</span>
           <span style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1px;color:var(--purple);display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;border-radius:2px;background:var(--purple);display:inline-block"></span>Degradi</span>
         </div>
@@ -2494,7 +2497,7 @@ function renderStatistiche(c){
           ?`<div style="padding:24px 20px;font-family:'DM Sans', sans-serif;font-style:italic;color:var(--t3)">Nessuna sanzione registrata.</div>`
           :topSan.map((ag,i)=>{
             const a=agents.find(x=>x.id===ag.id);
-            const col=ag.count>=5?'var(--danger)':ag.count>=3?'var(--warn)':'var(--azure2)';
+            const col=ag.count>=5?'var(--danger)':ag.count>=3?'var(--warn)':'var(--blu4)';
             const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
             const maxC=topSan[0].count;
             const pct=Math.round(ag.count/maxC*100);
@@ -2719,15 +2722,15 @@ function renderMioProfilo(c){
         </div>
         <div style="flex:1;min-width:180px">
           <div style="font-family:'Syne', sans-serif;font-size:19px;font-weight:700;color:var(--t1);line-height:1.2;margin-bottom:3px">${a.nome} ${a.cognome}</div>
-          <div style="font-family:'Syne', sans-serif;font-size:12px;font-weight:700;color:${GRADE_COLORS[a.grado]||'var(--azure2)'};letter-spacing:2px;margin-bottom:10px">🎖️ ${a.grado}</div>
+          <div style="font-family:'Syne', sans-serif;font-size:12px;font-weight:700;color:${GRADE_COLORS[a.grado]||'var(--blu4)'};letter-spacing:2px;margin-bottom:10px">🎖️ ${a.grado}</div>
           <div style="display:flex;gap:18px;flex-wrap:wrap">
             <div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px">Discord</div><div style="font-family:'DM Sans', sans-serif;font-size:14px;color:var(--purple)">@${a.discord}</div></div>
-            <div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px">Codice Fiscale</div><div style="font-family:'Syne', sans-serif;font-size:11px;color:var(--azure2);letter-spacing:1px">${a.cf}</div></div>
+            <div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px">Codice Fiscale</div><div style="font-family:'Syne', sans-serif;font-size:11px;color:var(--blu4);letter-spacing:1px">${a.cf}</div></div>
             <div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px">In servizio dal</div><div style="font-family:'DM Sans', sans-serif;font-size:14px;color:var(--t2)">${a.dataIngresso} <span style="color:var(--t3);font-size:12px">(${giorni} gg)</span></div></div>
           </div>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <div style="background:var(--n3);border:1px solid var(--bdr);border-radius:12px;padding:13px 16px;text-align:center;min-width:64px"><div style="font-family:'Syne', sans-serif;font-size:24px;font-weight:700;color:var(--azure2)">${nProm}</div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase">Promozioni</div></div>
+          <div style="background:var(--n3);border:1px solid var(--bdr);border-radius:12px;padding:13px 16px;text-align:center;min-width:64px"><div style="font-family:'Syne', sans-serif;font-size:24px;font-weight:700;color:var(--blu4)">${nProm}</div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase">Promozioni</div></div>
           <div style="background:var(--n3);border:1px solid var(--bdr);border-radius:12px;padding:13px 16px;text-align:center;min-width:64px"><div style="font-family:'Syne', sans-serif;font-size:24px;font-weight:700;color:var(--warn)">${allSanzioni.length}</div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase">Sanzioni tot.</div></div>
           <div style="background:var(--n3);border:1px solid var(--bdr);border-radius:12px;padding:13px 16px;text-align:center;min-width:64px"><div style="font-family:'Syne', sans-serif;font-size:24px;font-weight:700;color:var(--t2)">${agHist.length}</div><div style="font-family:'Syne', sans-serif;font-size:8px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase">Azioni tot.</div></div>
         </div>
@@ -2743,7 +2746,7 @@ function renderMioProfilo(c){
         </div>
         <div>
           <div style="font-family:'Syne', sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:11px">🚨 Segnalazioni Aperte (${agSeg.length})</div>
-          ${agSeg.length===0?`<div style="font-family:'DM Sans', sans-serif;font-style:italic;color:var(--green);font-size:14px">✅ Nessuna segnalazione.</div>`:agSeg.map(s=>{const col=s.priorita==='urgente'?'var(--danger)':s.priorita==='alta'?'var(--warn)':'var(--azure2)';return `<div style="padding:9px 0;border-bottom:1px solid var(--bdr2)"><div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div><span style="font-family:'Syne', sans-serif;font-size:11px;font-weight:700;color:var(--t1)">${s.titolo}</span><span style="font-family:'Syne', sans-serif;font-size:8px;padding:2px 6px;border-radius:20px;background:rgba(255,107,107,.06);color:${col};letter-spacing:1px;border:1px solid rgba(255,107,107,.22)">${s.priorita.toUpperCase()}</span></div><div style="font-family:'DM Sans', sans-serif;font-size:12px;color:var(--t3);font-style:italic;margin-left:14px">${s.data}</div></div>`;}).join('')}
+          ${agSeg.length===0?`<div style="font-family:'DM Sans', sans-serif;font-style:italic;color:var(--green);font-size:14px">✅ Nessuna segnalazione.</div>`:agSeg.map(s=>{const col=s.priorita==='urgente'?'var(--danger)':s.priorita==='alta'?'var(--warn)':'var(--blu4)';return `<div style="padding:9px 0;border-bottom:1px solid var(--bdr2)"><div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div><span style="font-family:'Syne', sans-serif;font-size:11px;font-weight:700;color:var(--t1)">${s.titolo}</span><span style="font-family:'Syne', sans-serif;font-size:8px;padding:2px 6px;border-radius:20px;background:rgba(255,107,107,.06);color:${col};letter-spacing:1px;border:1px solid rgba(255,107,107,.22)">${s.priorita.toUpperCase()}</span></div><div style="font-family:'DM Sans', sans-serif;font-size:12px;color:var(--t3);font-style:italic;margin-left:14px">${s.data}</div></div>`;}).join('')}
         </div>
       </div>
     </div>
@@ -2977,7 +2980,7 @@ function openDetailModal(id){
   const agSeg=(segnalazioni_data||[]).filter(s=>s.mittenteId===id&&s.stato==='aperta');
   const isPriv=['staff','dirigenza'].includes(currentUser.livello)||currentUser.tipo==='dirigenza';
   const giorni=Math.floor((new Date()-new Date(a.dataIngresso))/(1000*60*60*24));
-  document.getElementById('dmTitle').innerHTML=`${a.nome} ${a.cognome} <span style="font-family:'Syne', sans-serif;font-size:13px;color:${GRADE_COLORS[a.grado]||'var(--azure2)'}">· ${a.grado}</span>`;
+  document.getElementById('dmTitle').innerHTML=`${a.nome} ${a.cognome} <span style="font-family:'Syne', sans-serif;font-size:13px;color:${GRADE_COLORS[a.grado]||'var(--blu4)'}">· ${a.grado}</span>`;
   document.getElementById('dmSub').innerHTML=`${statoBadge(a.stato)} ${a.sanzione?sanzioneBadge(a.sanzione):''} <span style="font-family:'DM Sans', sans-serif;font-style:italic;color:var(--t3);font-size:13px">· in servizio ${giorni} gg</span>`;
   document.getElementById('dmBody').innerHTML=`
     <div class="fg2" style="margin-bottom:15px">
@@ -3000,7 +3003,7 @@ function openDetailModal(id){
       </div>
       <div style="background:var(--n2);border:1px solid var(--bdr2);border-radius:10px;padding:14px">
         <div style="font-family:'Syne', sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);margin-bottom:10px">🚨 Segnalazioni (${agSeg.length})</div>
-        ${agSeg.length===0?`<div style="font-family:'DM Sans', sans-serif;font-style:italic;color:var(--green);font-size:13px">✅ Nessuna segnalazione.</div>`:agSeg.map(s=>{const col=s.priorita==='urgente'?'var(--danger)':s.priorita==='alta'?'var(--warn)':'var(--azure2)';return `<div style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0"></div><span style="font-family:'Syne', sans-serif;font-size:10px;font-weight:700;color:var(--t1)">${s.titolo}</span></div><div style="font-family:'DM Sans', sans-serif;font-size:11px;color:var(--t3);font-style:italic;margin-left:12px;margin-top:2px">${s.priorita} · ${s.data}</div></div>`;}).join('')}
+        ${agSeg.length===0?`<div style="font-family:'DM Sans', sans-serif;font-style:italic;color:var(--green);font-size:13px">✅ Nessuna segnalazione.</div>`:agSeg.map(s=>{const col=s.priorita==='urgente'?'var(--danger)':s.priorita==='alta'?'var(--warn)':'var(--blu4)';return `<div style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0"></div><span style="font-family:'Syne', sans-serif;font-size:10px;font-weight:700;color:var(--t1)">${s.titolo}</span></div><div style="font-family:'DM Sans', sans-serif;font-size:11px;color:var(--t3);font-style:italic;margin-left:12px;margin-top:2px">${s.priorita} · ${s.data}</div></div>`;}).join('')}
       </div>
     </div>
     <div style="font-family:'Syne', sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:10px">📋 Storico Completo (${agHist.length})</div>
@@ -3067,12 +3070,12 @@ function prioBadgeCom(p){
   return `<span class="tag blue">🔵 INFO</span>`;
 }
 function tipoColor(t){
-  if(t==='Promozione')return 'var(--azure2)';
+  if(t==='Promozione')return 'var(--blu4)';
   if(t==='Degrado'||t==='Licenziamento')return 'var(--danger)';
   if(t==='Sanzione')return 'var(--warn)';
   if(t==='Rimozione Sanzione')return 'var(--green)';
   if(t==='Ingresso')return 'var(--teal)';
-  return 'var(--azure2)';
+  return 'var(--blu4)';
 }
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
@@ -3124,10 +3127,10 @@ function renderPec(c){
         {key:'out',icon:'📤',label:'Inviata',count:0},
         {key:'bozze',icon:'📝',label:'Bozze',count:bozze.length},
       ].map(f=>`
-      <div onclick="pecFilter='${f.key}';renderPage()" style="display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;background:${pecFilter===f.key?'var(--blue-glow)':'transparent'};border-left:3px solid ${pecFilter===f.key?'var(--azure2)':'transparent'};transition:all .15s">
+      <div onclick="pecFilter='${f.key}';renderPage()" style="display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;background:${pecFilter===f.key?'var(--blue-glow)':'transparent'};border-left:3px solid ${pecFilter===f.key?'var(--blu4)':'transparent'};transition:all .15s">
         <span style="font-size:16px">${f.icon}</span>
-        <span style="font-family:'Syne', sans-serif;font-size:11px;letter-spacing:.5px;color:${pecFilter===f.key?'var(--azure2)':'var(--t2)'}">${f.label}</span>
-        ${f.count>0?`<span style="margin-left:auto;background:var(--azure2);color:#fff;border-radius:10px;padding:2px 7px;font-size:10px;font-family:'Syne', sans-serif">${f.count}</span>`:''}
+        <span style="font-family:'Syne', sans-serif;font-size:11px;letter-spacing:.5px;color:${pecFilter===f.key?'var(--blu4)':'var(--t2)'}">${f.label}</span>
+        ${f.count>0?`<span style="margin-left:auto;background:var(--blu4);color:#fff;border-radius:10px;padding:2px 7px;font-size:10px;font-family:'Syne', sans-serif">${f.count}</span>`:''}
       </div>`).join('')}
     </div>
     <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
@@ -3139,7 +3142,7 @@ function renderPec(c){
           lista.map(p=>`
           <div onclick="openPecDetail('${p.id}')" style="display:flex;flex-direction:column;gap:4px;padding:14px 18px;border-bottom:1px solid var(--bdr2);cursor:pointer;background:${!p.letta&&pecFilter==='in'?'rgba(77,184,255,0.04)':'transparent'};transition:background .15s" onmouseover="this.style.background='var(--n3)'" onmouseout="this.style.background='${!p.letta&&pecFilter==='in'?'rgba(77,184,255,0.04)':'transparent'}'">
             <div style="display:flex;align-items:center;gap:8px">
-              ${!p.letta&&pecFilter==='in'?'<div style="width:7px;height:7px;border-radius:50%;background:var(--azure2);flex-shrink:0"></div>':'<div style="width:7px"></div>'}
+              ${!p.letta&&pecFilter==='in'?'<div style="width:7px;height:7px;border-radius:50%;background:var(--blu4);flex-shrink:0"></div>':'<div style="width:7px"></div>'}
               <span style="font-family:'Syne', sans-serif;font-size:12px;font-weight:700;color:var(--t1)">${pecFilter==='in'?p.mittenteNome:p.destinatarioNome}</span>
               <span style="margin-left:auto;font-family:'DM Sans', sans-serif;font-size:12px;color:var(--t3)">${p.data}</span>
               ${p.priorita==='urgente'?'<span style="background:var(--danger);color:#fff;border-radius:4px;padding:1px 6px;font-size:10px;font-family:\'Syne\', sans-serif">URGENTE</span>':''}
@@ -3283,7 +3286,7 @@ function renderDocumenti(c){
       <div style="padding:14px 16px;border-bottom:1px solid var(--bdr2)">
         <div style="font-family:'Syne', sans-serif;font-size:10px;letter-spacing:2px;color:var(--t3)">CATEGORIE</div>
       </div>
-      <div onclick="window._docFiltro='tutti';renderPage()" style="padding:11px 16px;cursor:pointer;font-family:'Syne', sans-serif;font-size:11px;color:${filtro==='tutti'?'var(--azure2)':'var(--t2)'};border-left:3px solid ${filtro==='tutti'?'var(--azure2)':'transparent'};background:${filtro==='tutti'?'var(--blue-glow)':'transparent'}">📂 Tutti i documenti</div>
+      <div onclick="window._docFiltro='tutti';renderPage()" style="padding:11px 16px;cursor:pointer;font-family:'Syne', sans-serif;font-size:11px;color:${filtro==='tutti'?'var(--blu4)':'var(--t2)'};border-left:3px solid ${filtro==='tutti'?'var(--blu4)':'transparent'};background:${filtro==='tutti'?'var(--blue-glow)':'transparent'}">📂 Tutti i documenti</div>
       ${cat.map(cat=>(`
       <div onclick="window._docFiltro='${cat.id}';renderPage()" style="padding:11px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Syne', sans-serif;font-size:11px;color:${filtro===cat.id?cat.colore:'var(--t2)'};border-left:3px solid ${filtro===cat.id?cat.colore:'transparent'};background:${filtro===cat.id?'rgba(26,107,181,0.06)':'transparent'}">
         <span>${cat.icona}</span>${cat.nome}
@@ -3418,7 +3421,7 @@ function renderSegnalazioni(c){
   const myId=currentUser?.tipo==='agente'?currentUser.agentId:'dirigenza';
   // AGENTI: solo le proprie — DIRIGENZA: tutte
   const lista=isDirigenza?segnalazioni_data:segnalazioni_data.filter(s=>s.mittenteId===myId);
-  const stati={aperta:{label:'Aperta',color:'var(--warn)'},in_corso:{label:'In lavorazione',color:'var(--azure2)'},chiusa:{label:'Chiusa',color:'var(--green)'}};
+  const stati={aperta:{label:'Aperta',color:'var(--warn)'},in_corso:{label:'In lavorazione',color:'var(--blu4)'},chiusa:{label:'Chiusa',color:'var(--green)'}};
   c.innerHTML=`
   <div class="kpi-strip ani" style="grid-template-columns:repeat(3,1fr)">
     <div class="kpi c-warn"><div class="kpi-icon">🚨</div><div class="kpi-val">${lista.filter(s=>s.stato==='aperta').length}</div><div class="kpi-lbl">Aperte</div></div>
