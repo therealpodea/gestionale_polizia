@@ -3514,22 +3514,24 @@ init();
   }
   function kpiAnim(){document.querySelectorAll('.kpi-val').forEach(el=>{const t=parseInt(el.textContent);if(isNaN(t)||t===0)return;let st=null;const step=ts=>{if(!st)st=ts;const p=Math.min((ts-st)/800,1);const e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*t);if(p<1)requestAnimationFrame(step);else el.textContent=t;};requestAnimationFrame(step);});}
   particles();
-  // Controlla sessione Discord al caricamento pagina
-  checkDiscordSession();
-  // Controlla sessione salvata in localStorage (per refresh pagina)
+  // Startup: gestisci OAuth callback e sessione salvata in un unico async IIFE
   (async()=>{
-    const savedSession = localStorage.getItem('discord_session');
-    const savedLivello = localStorage.getItem('discord_livello');
-    if(savedSession && savedLivello && !SESSION_TOKEN){
-      // Verifica che la sessione sia ancora valida
-      SESSION_TOKEN = savedSession;
-      try {
-        await apiFetch('/auth/session');
-        await enterDiscordSession(savedSession, savedLivello);
-      } catch(e) {
-        SESSION_TOKEN = '';
-        localStorage.removeItem('discord_session');
-        localStorage.removeItem('discord_livello');
+    // 1. Controlla se siamo tornati dal redirect OAuth Discord (?session=...&livello=...)
+    await checkDiscordSession();
+    // 2. Se non loggato via OAuth, prova sessione salvata in localStorage
+    if(!SESSION_TOKEN){
+      const savedSession = localStorage.getItem('discord_session');
+      const savedLivello = localStorage.getItem('discord_livello');
+      if(savedSession && savedLivello){
+        SESSION_TOKEN = savedSession;
+        try {
+          await apiFetch('/auth/session');
+          await enterDiscordSession(savedSession, savedLivello);
+        } catch(e) {
+          SESSION_TOKEN = '';
+          localStorage.removeItem('discord_session');
+          localStorage.removeItem('discord_livello');
+        }
       }
     }
   })();
