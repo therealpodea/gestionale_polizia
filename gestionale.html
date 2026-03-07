@@ -206,6 +206,7 @@ body{
   background:var(--b0);
 }
 @keyframes spinRing{to{transform:rotate(360deg)}}
+.login-logo-emoji{font-size:36px;display:flex;align-items:center;justify-content:center;width:100%;height:100%;position:relative;z-index:2}
 /* Override: show img above rings */
 .login-logo-ring img{position:absolute;inset:0;z-index:2;border-radius:50%}
 
@@ -298,11 +299,9 @@ body{
    APP LAYOUT
    ═══════════════════════════════════════════════ */
 #app{
-  display:none;
   height:100vh;
   flex-direction:column;
 }
-#app.visible{display:flex}
 
 /* ── TOPBAR ── */
 #topbar{
@@ -1127,7 +1126,7 @@ textarea.form-control{resize:vertical;min-height:80px}
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo-ring" id="loginLogoWrap">
-        <img id="loginLogo" src="" alt="PdE" onerror="this.style.display='none'">
+        <div id="loginLogoDisplay"><div class="login-logo-emoji">🛡️</div></div>
       </div>
       <div class="login-force">
         Polizia d'Estovia
@@ -1157,7 +1156,7 @@ textarea.form-control{resize:vertical;min-height:80px}
 </div>
 
 <!-- ═══════════════ APP ═══════════════ -->
-<div id="app">
+<div id="app" style="display:none">
 
   <!-- TOPBAR -->
   <div id="topbar">
@@ -1688,15 +1687,14 @@ async function resetLogo(){
 function renderAllLogos(){renderLoginLogo();renderSbLogo();renderSettingsLogoPreview();}
 function renderLoginLogo(){
   const el=document.getElementById('loginLogoDisplay'); if(!el) return;
-  el.innerHTML=logoData?`<img src="${logoData}" class="login-logo-img">`:`<div class="login-logo-emoji">🛡️</div>`;
+  el.innerHTML=logoData?`<img src="${logoData}" style="width:100%;height:100%;object-fit:contain;border-radius:50%;position:relative;z-index:2">`:`<div class="login-logo-emoji">🛡️</div>`;
 }
 function renderSbLogo(){
-  const el=document.getElementById('sbLogoDisplay'); if(!el) return;
+  const el=document.getElementById('topbarLogo'); if(!el) return;
   if(logoData){
-    el.innerHTML=''; el.style.padding='0';
-    el.innerHTML=`<img src="${logoData}" class="sb-logo-img">`;
+    el.src=logoData; el.style.display='block';
   } else {
-    el.innerHTML='🛡️';
+    el.style.display='none';
   }
 }
 function renderSettingsLogoPreview(){
@@ -1745,7 +1743,7 @@ async function enterDiscordSession(token,livello){
     if(['staff','dirigenza','ispettorato','sovrintendenza'].includes(livello)) API_KEY='estovia2026';
     await init();
     document.getElementById('loginScreen').style.display='none';
-    document.getElementById('appWrap').style.display='flex';
+    document.getElementById('app').style.display='flex';
     setupSidebar();
     const startPage=(['staff','dirigenza'].includes(livello))?'dashboard':'mio_profilo';
     goPage(startPage);
@@ -1762,7 +1760,7 @@ async function doLogout(){
   }
   API_KEY='';currentUser=null;
   document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('appWrap').style.display='none';
+  document.getElementById('app').style.display='none';
   document.getElementById('loginErr').textContent='';
   document.getElementById('loginErrDiscord').textContent='';
 }
@@ -2920,9 +2918,9 @@ init();
   // Particelle login
   function particles(){
     const s=document.getElementById('loginScreen');if(!s)return;
-    const cols=['rgba(200,168,75,.5)','rgba(200,168,75,.3)','rgba(64,128,240,.4)'];
+    const cols=['rgba(0,229,255,.6)','rgba(30,127,255,.5)','rgba(0,180,255,.4)'];
     for(let i=0;i<18;i++){
-      const p=document.createElement('div');p.className='login-particle';
+      const p=document.createElement('div');p.className='particle';
       const sz=Math.random()*2.5+1;
       p.style.cssText=`width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*cols.length)]};left:${Math.random()*100}%;--dx:${(Math.random()-.5)*100}px;--d:${Math.random()*10+8}s;--dl:${Math.random()*8}s;--op:${Math.random()*.7+.2};`;
       s.appendChild(p);
@@ -2938,8 +2936,8 @@ init();
     });
   }
   particles();
-  checkDiscordSession();
   (async()=>{
+    await checkDiscordSession();
     const ss=localStorage.getItem('discord_session');const sl=localStorage.getItem('discord_livello');
     if(ss&&sl&&!SESSION_TOKEN){SESSION_TOKEN=ss;try{await apiFetch('/auth/session');await enterDiscordSession(ss,sl);}catch(e){SESSION_TOKEN='';localStorage.removeItem('discord_session');localStorage.removeItem('discord_livello');}}
   })();
