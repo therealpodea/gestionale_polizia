@@ -109,6 +109,8 @@
   --silver-dim:rgba(126,153,192,.08);
   --silver-line:rgba(126,153,192,.14);
   --t1:var(--tx1); --t2:var(--tx2); --t3:var(--tx3); --t4:var(--tx4);
+  --blu2:#0052b4; --blu3:#1a6dd4; --blu4:#3b8eea; --blu5:#6aaeff;
+  --blue-light:#3b8eea; --blue-glow:rgba(26,109,212,.3); --blue-line:rgba(59,142,234,.22);
 }
 
 html, body { height: 100%; overflow: hidden; }
@@ -580,7 +582,7 @@ body {
    ═══════════════════════════════════════════════ */
 .main {
   flex: 1; display: flex; flex-direction: column;
-  min-width: 0; overflow: hidden;
+  min-width: 0; overflow: hidden; min-height: 0;
 }
 
 /* ── Topbar ── */
@@ -614,10 +616,10 @@ body {
 
 /* ── Content ── */
 .content {
-  flex: 1; overflow-y: auto; padding: 22px;
+  flex: 1; min-height: 0; overflow-y: auto; padding: 22px;
   background:
-    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(29,111,232,.05) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 50% at 10% 90%, rgba(0,207,238,.03) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(0,82,180,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 10% 90%, rgba(14,165,233,.03) 0%, transparent 55%),
     var(--ink1);
 }
 
