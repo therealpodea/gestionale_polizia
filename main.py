@@ -269,6 +269,7 @@ async def discord_callback(code: str = None, state: str = None, error: str = Non
         user = user_res.json()
         discord_id = user["id"]
         discord_username = user.get("global_name") or user["username"]
+        raw_discord_username = user["username"]  # username lowercase senza display name
         discord_avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.png" if user.get("avatar") else None
 
         # Leggi ruoli nel server tramite Bot Token
@@ -296,9 +297,24 @@ async def discord_callback(code: str = None, state: str = None, error: str = Non
             return RedirectResponse("/?error=no_role")
 
         # Trova agente nel DB (per username Discord)
-        agent = db_fetchone("SELECT * FROM agents WHERE lower(discord)=lower(?)", (discord_username,))
+        raw_username = user["username"]        # es. xxpodeaxx (lowercase invariante)
+        global_name = user.get("global_name") or raw_username  # es. XxPodeaXx (display)
+        
+        # Cerca con tutti i possibili formati dello username
+        candidates = list({global_name.lower(), raw_username.lower(), raw_username.split('#')[0].lower()})
+        agent = None
+        for cand in candidates:
+            agent = db_fetchone("SELECT * FROM agents WHERE lower(discord)=?", (cand,))
+            if agent:
+                break
         if not agent:
-            agent = db_fetchone("SELECT * FROM agents WHERE lower(discord)=lower(?)", (discord_username.split('#')[0],))
+            # Fallback: cerca per corrispondenza parziale
+            all_agents = db_fetchall("SELECT * FROM agents")
+            for ag in all_agents:
+                ag_disc = (ag.get('discord') or '').lower().strip()
+                if ag_disc and (ag_disc in candidates or any(c in ag_disc for c in candidates)):
+                    agent = ag
+                    break
         grado = agent["grado"] if agent else None
         agent_id = agent["id"] if agent else None
 
@@ -328,6 +344,22 @@ def logout(x_session_token: str = Header(None)):
     if x_session_token:
         db_execute("DELETE FROM discord_sessions WHERE token=?", (x_session_token,))
     return {"ok": True}
+
+@app.post("/api/session/link-agent")
+def link_agent_to_session(body: dict, x_session_token: str = Header(None)):
+    """Collega retroattivamente un agent_id alla sessione Discord se il matching era fallito"""
+    if not x_session_token:
+        raise HTTPException(status_code=401, detail="Nessuna sessione")
+    agent_id = body.get("agent_id")
+    if not agent_id:
+        raise HTTPException(status_code=400, detail="agent_id mancante")
+    # Verifica che l'agente esista
+    agent = db_fetchone("SELECT * FROM agents WHERE id=?", (agent_id,))
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agente non trovato")
+    db_execute("UPDATE discord_sessions SET agent_id=?, grado=? WHERE token=?",
+               (agent_id, agent.get("grado"), x_session_token))
+    return {"ok": True, "agent_id": agent_id}
 
 # ══════════════════════════════════════════════════════
 #   API ESISTENTI (invariate)
@@ -537,7 +569,7 @@ def create_documento(doc: Documento, x_api_key: str = Header(None), x_session_to
     if x_api_key == API_KEY:
         pass  # dirigenza autorizzata
     elif x_session_token:
-        sess = db_fetchone("SELECT * FROM sessions WHERE token=? AND expires>datetime('now')", (x_session_token,))
+        sess = db_fetchone("SELECT * FROM discord_sessions WHERE token=?", (x_session_token,))
         if not sess:
             raise HTTPException(status_code=401, detail="Sessione non valida")
         if doc.categoria != "altro":
