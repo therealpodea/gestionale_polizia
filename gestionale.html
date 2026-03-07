@@ -431,10 +431,13 @@ body {
    ═══════════════════════════════════════════════ */
 
 .app {
-  display: flex;
-  height: 100vh;
+  display: flex !important;
+  height: 100vh !important;
+  width: 100vw !important;
   overflow: hidden;
   background: var(--ink0);
+  position: fixed;
+  inset: 0;
 }
 
 /* ═══════════════════════════════════════════════
@@ -583,6 +586,7 @@ body {
 .main {
   flex: 1; display: flex; flex-direction: column;
   min-width: 0; overflow: hidden; min-height: 0;
+  height: 100%;
 }
 
 /* ── Topbar ── */
@@ -1285,7 +1289,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
 
 
 <!-- ══ APP ══ -->
-<div class="app" id="appWrap" style="display:none">
+<div class="app" id="appWrap" style="display:none;height:100vh;width:100vw;">
   <aside class="sidebar">
     <div class="sb-logo">
       <div id="sbLogoDisplay"></div>
@@ -1844,7 +1848,7 @@ async function confermaSetPassword(){
     _showLoginStep(1);
     await init();
     document.getElementById('loginScreen').style.display='none';
-    document.getElementById('appWrap').style.display='flex';
+    document.getElementById('appWrap').style.cssText='display:flex;height:100vh;width:100vw;';
     setupSidebar();
     goPage('mio_profilo');
   }catch(e){err.textContent='❌ '+e.message;}
@@ -1922,7 +1926,7 @@ async function enterDiscordSession(token, livello){
   if(isDirigenza) API_KEY = 'estovia2026';
   // Step 3: apri app SUBITO
   document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appWrap').style.display = 'flex';
+  document.getElementById('appWrap').style.cssText = 'display:flex;height:100vh;width:100vw;';
   // Step 4: carica dati senza bloccare
   await init();
   // Step 5: risolvi agentId se mancante
@@ -1973,7 +1977,7 @@ async function doLogin(){
   }
   await init();
   document.getElementById('loginScreen').style.display='none';
-  document.getElementById('appWrap').style.display='flex';
+  document.getElementById('appWrap').style.cssText='display:flex;height:100vh;width:100vw;';
   setupSidebar();
   goPage(currentUser.tipo==='dirigenza'?'dashboard':'mio_profilo');
 }
