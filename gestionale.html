@@ -1855,25 +1855,26 @@ function renderSettingsLogoPreview(){
 
 // ══ INIT ══
 async function init(){
-  try{
-    const [ags,hist,coms,sett,pec,doc,seg]=await Promise.all([
-      apiFetch('/api/agents'),
-      apiFetch('/api/history'),
-      apiFetch('/api/comunicati'),
-      apiFetch('/api/settings'),
-      apiFetch('/api/pec'),
-      apiFetch('/api/documenti'),
-      apiFetch('/api/segnalazioni'),
-    ]);
-    agents=ags; history=hist; comunicati=coms;
-    settings={...DEFAULT_SETTINGS,...sett};
-    pecs=pec; documenti_data=doc; segnalazioni_data=seg;
-    if(sett.logo) logoData=sett.logo;
-    renderAllLogos();
-  }catch(e){
-    console.error('Errore caricamento dati:',e);
-    toast('Errore connessione al server','danger');
-  }
+  // Fetch con fallback: ogni API fallisce silenziosamente (non blocca l'app)
+  const safe = (p, fallback=[]) => p.catch(e=>{console.warn('API warning:',e?.message);return fallback;});
+  const [ags,hist,coms,sett,pec,doc,seg] = await Promise.all([
+    safe(apiFetch('/api/agents')),
+    safe(apiFetch('/api/history')),
+    safe(apiFetch('/api/comunicati')),
+    safe(apiFetch('/api/settings'), {}),
+    safe(apiFetch('/api/pec')),
+    safe(apiFetch('/api/documenti')),
+    safe(apiFetch('/api/segnalazioni')),
+  ]);
+  agents=Array.isArray(ags)?ags:[];
+  history=Array.isArray(hist)?hist:[];
+  comunicati=Array.isArray(coms)?coms:[];
+  settings={...DEFAULT_SETTINGS,...(sett||{})};
+  pecs=Array.isArray(pec)?pec:[];
+  documenti_data=Array.isArray(doc)?doc:[];
+  segnalazioni_data=Array.isArray(seg)?seg:[];
+  if(settings.logo) logoData=settings.logo;
+  renderAllLogos();
 }
 
 // ══ LOGIN ══
@@ -1972,44 +1973,67 @@ async function checkDiscordSession(){
 
 async function enterDiscordSession(token, livello){
   SESSION_TOKEN = token;
+
+  // Step 1: ottieni info sessione (se fallisce → sessione invalida, torna al login)
+  let info;
   try {
-    // Ottieni info sessione dal backend
-    const info = await apiFetch('/auth/session');
-    // Imposta currentUser in base al livello
-    const isDirigenza = ['staff','dirigenza','ispettorato','sovrintendenza'].includes(livello);
-    currentUser = {
-      tipo: isDirigenza ? 'dirigenza' : 'agente',
-      nick: info.discord_username,
-      agentId: info.agent_id,
-      livello: livello,
-      discordAvatar: info.discord_avatar,
-      discordName: info.discord_username,
-    };
-    if(['staff','dirigenza','ispettorato','sovrintendenza'].includes(livello)) {
-      API_KEY = 'estovia2026';
-    }
-    await init();
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appWrap').style.display = 'flex';
-    setupSidebar();
-    const startPage = (['staff','dirigenza'].includes(livello)) ? 'dashboard' : 'mio_profilo';
-    goPage(startPage);
+    info = await apiFetch('/auth/session');
   } catch(e) {
     SESSION_TOKEN = '';
-    // Cancella sessione solo su errori di autenticazione, non su errori di rete
-    const msg = e?.message || '';
-    const isAuthError = msg.includes('401') || msg.includes('403') || msg.includes('Non autorizzato') || msg.includes('Sessione');
-    if(isAuthError){
-      localStorage.removeItem('discord_session');
-      localStorage.removeItem('discord_livello');
-      const errEl = document.getElementById('loginErrDiscord');
-      if(errEl) errEl.textContent = '❌ Sessione scaduta. Riaccedi.';
-    } else {
-      // Errore di rete/server — mostra login senza cancellare sessione
-      const errEl = document.getElementById('loginErrDiscord');
-      if(errEl) errEl.textContent = '⚠️ Errore di connessione. Riprova.';
+    localStorage.removeItem('discord_session');
+    localStorage.removeItem('discord_livello');
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appWrap').style.display = 'none';
+    const errEl = document.getElementById('loginErrDiscord');
+    if(errEl) errEl.textContent = '❌ Sessione scaduta o non valida. Riaccedi.';
+    return;
+  }
+
+  // Step 2: imposta currentUser
+  const isDirigenza = ['staff','dirigenza','ispettorato','sovrintendenza'].includes(livello);
+  currentUser = {
+    tipo: isDirigenza ? 'dirigenza' : 'agente',
+    nick: info.discord_username,
+    agentId: info.agent_id,
+    livello: livello,
+    discordAvatar: info.discord_avatar,
+    discordName: info.discord_username,
+    _discordUsername: info.discord_username,
+  };
+  if(isDirigenza) API_KEY = 'estovia2026';
+
+  // Step 3: apri app SUBITO (non aspettare init per evitare schermo nero)
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'flex';
+
+  // Step 4: carica dati (con gestione errori separata)
+  try {
+    await init();
+  } catch(e) {
+    console.warn('init() parziale:', e);
+    // Continua comunque — dati potrebbero essere parziali
+  }
+
+  // Step 5: risolvi agentId se mancante (cerca per discord username)
+  if(!currentUser.agentId && currentUser.tipo === 'agente'){
+    const dname = (info.discord_username || '').toLowerCase();
+    const found = agents.find(a =>
+      a.discord && (
+        a.discord.toLowerCase() === dname ||
+        dname.includes(a.discord.toLowerCase()) ||
+        a.discord.toLowerCase().includes(dname)
+      )
+    );
+    if(found){
+      currentUser.agentId = found.id;
+      currentUser.nick = found.discord;
+      try{ await apiFetch('/api/session/link-agent',{method:'POST',body:JSON.stringify({agent_id:found.id})}); }catch(_){}
     }
   }
+
+  setupSidebar();
+  const startPage = (['staff','dirigenza'].includes(livello)) ? 'dashboard' : 'mio_profilo';
+  goPage(startPage);
 }
 
 async function doLogin(){
@@ -3532,9 +3556,13 @@ function updateBadges(){
       const savedSession = localStorage.getItem('discord_session');
       const savedLivello = localStorage.getItem('discord_livello');
       if(savedSession && savedLivello){
-        // enterDiscordSession gestisce internamente la verifica e il ripristino
         await enterDiscordSession(savedSession, savedLivello);
       }
+    }
+    // Safeguard finale: se nessuno è loggato, assicura che loginScreen sia visibile
+    if(!SESSION_TOKEN && !API_KEY){
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appWrap').style.display = 'none';
     }
   })();
   window.addEventListener('load',()=>setTimeout(()=>{tilt();ripple();},300));
