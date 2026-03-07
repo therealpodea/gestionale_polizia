@@ -1996,10 +1996,19 @@ async function enterDiscordSession(token, livello){
     goPage(startPage);
   } catch(e) {
     SESSION_TOKEN = '';
-    localStorage.removeItem('discord_session');
-    localStorage.removeItem('discord_livello');
-    const errEl = document.getElementById('loginErrDiscord');
-    if(errEl) errEl.textContent = '❌ Sessione non valida. Riprova.';
+    // Cancella sessione solo su errori di autenticazione, non su errori di rete
+    const msg = e?.message || '';
+    const isAuthError = msg.includes('401') || msg.includes('403') || msg.includes('Non autorizzato') || msg.includes('Sessione');
+    if(isAuthError){
+      localStorage.removeItem('discord_session');
+      localStorage.removeItem('discord_livello');
+      const errEl = document.getElementById('loginErrDiscord');
+      if(errEl) errEl.textContent = '❌ Sessione scaduta. Riaccedi.';
+    } else {
+      // Errore di rete/server — mostra login senza cancellare sessione
+      const errEl = document.getElementById('loginErrDiscord');
+      if(errEl) errEl.textContent = '⚠️ Errore di connessione. Riprova.';
+    }
   }
 }
 
@@ -3523,15 +3532,8 @@ function updateBadges(){
       const savedSession = localStorage.getItem('discord_session');
       const savedLivello = localStorage.getItem('discord_livello');
       if(savedSession && savedLivello){
-        SESSION_TOKEN = savedSession;
-        try {
-          await apiFetch('/auth/session');
-          await enterDiscordSession(savedSession, savedLivello);
-        } catch(e) {
-          SESSION_TOKEN = '';
-          localStorage.removeItem('discord_session');
-          localStorage.removeItem('discord_livello');
-        }
+        // enterDiscordSession gestisce internamente la verifica e il ripristino
+        await enterDiscordSession(savedSession, savedLivello);
       }
     }
   })();
