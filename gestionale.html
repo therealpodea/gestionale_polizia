@@ -2140,6 +2140,27 @@ function goPage(p){
   if(['ordini_servizio','mandati_moduli','formazione'].includes(p)&&currentUser.tipo==='dirigenza') tr.innerHTML=`<button class="tb-btn primary" onclick="openDocModalCat('${p}')">📄 Aggiungi Documento</button>`;
   if(p==='rapporti') tr.innerHTML=`<button class="tb-btn primary" onclick="openVerbaleModal()">📝 Nuovo Verbale</button>`;
   if(p==='segnalazioni') tr.innerHTML=`<button class="tb-btn primary" onclick="openSegnalazioneModal()">🚨 Nuova Segnalazione</button>`;
+  // Fix altezza layout
+  const aw = document.getElementById('appWrap');
+  if(aw){
+    aw.style.display = 'flex';
+    aw.style.height = '100vh';
+    aw.style.width = '100%';
+  }
+  const pc = document.getElementById('pageContent');
+  if(pc){
+    pc.style.flex = '1';
+    pc.style.minHeight = '0';
+    pc.style.overflowY = 'auto';
+  }
+  const mn = document.querySelector('.main');
+  if(mn){
+    mn.style.flex = '1';
+    mn.style.display = 'flex';
+    mn.style.flexDirection = 'column';
+    mn.style.minHeight = '0';
+    mn.style.height = '100%';
+  }
   renderPage();
 }
 function renderPage(){
