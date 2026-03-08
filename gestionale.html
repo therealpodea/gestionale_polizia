@@ -431,13 +431,11 @@ body {
    ═══════════════════════════════════════════════ */
 
 .app {
-  display: flex !important;
-  height: 100vh !important;
-  width: 100vw !important;
+  display: flex;
+  height: 100vh;
+  width: 100%;
   overflow: hidden;
   background: var(--ink0);
-  position: fixed;
-  inset: 0;
 }
 
 /* ═══════════════════════════════════════════════
@@ -1289,7 +1287,7 @@ tr:hover td { background: rgba(29,111,232,.05); }
 
 
 <!-- ══ APP ══ -->
-<div class="app" id="appWrap" style="display:none;height:100vh;width:100vw;">
+<div class="app" id="appWrap" style="display:none">
   <aside class="sidebar">
     <div class="sb-logo">
       <div id="sbLogoDisplay"></div>
@@ -1848,7 +1846,7 @@ async function confermaSetPassword(){
     _showLoginStep(1);
     await init();
     document.getElementById('loginScreen').style.display='none';
-    document.getElementById('appWrap').style.cssText='display:flex;height:100vh;width:100vw;';
+    document.getElementById('appWrap').style.display='flex';
     setupSidebar();
     goPage('mio_profilo');
   }catch(e){err.textContent='❌ '+e.message;}
@@ -1926,7 +1924,7 @@ async function enterDiscordSession(token, livello){
   if(isDirigenza) API_KEY = 'estovia2026';
   // Step 3: apri app SUBITO
   document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appWrap').style.cssText = 'display:flex;height:100vh;width:100vw;';
+  document.getElementById('appWrap').style.display='flex';
   // Step 4: carica dati senza bloccare
   await init();
   // Step 5: risolvi agentId se mancante
@@ -1977,7 +1975,7 @@ async function doLogin(){
   }
   await init();
   document.getElementById('loginScreen').style.display='none';
-  document.getElementById('appWrap').style.cssText='display:flex;height:100vh;width:100vw;';
+  document.getElementById('appWrap').style.display='flex';
   setupSidebar();
   goPage(currentUser.tipo==='dirigenza'?'dashboard':'mio_profilo');
 }
