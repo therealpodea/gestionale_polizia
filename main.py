@@ -371,14 +371,18 @@ async def discord_callback(code: str):
 
 async def verify_api_key(request: Request):
     key = request.headers.get("X-API-Key") or request.query_params.get("key")
-    if key != API_KEY:
-        # Also accept valid session token as auth (Discord OAuth users)
-        token = request.headers.get("X-Session") or request.headers.get("X-Session-Token")
-        if token:
-            sess = await get_session(token)
-            if sess:
-                return sess
-        raise HTTPException(403, "API key non valida")
+    if key == API_KEY:
+        return {"api_key": True}
+    # Also accept valid session token as auth (Discord OAuth users)
+    token = (request.headers.get("X-Session") or 
+             request.headers.get("X-Session-Token") or
+             request.headers.get("x-session-token") or
+             request.query_params.get("session"))
+    if token:
+        sess = await get_session(token)
+        if sess:
+            return sess
+    raise HTTPException(403, "API key non valida")
 
 
 @app.post("/auth/logout")
