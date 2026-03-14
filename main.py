@@ -196,17 +196,6 @@ def _rows(rows):
     return [dict(r) for r in rows]
 
 # ─── AUTH HELPERS ─────────────────────────────────────────────────────────────
-async def verify_api_key(request: Request):
-    key = request.headers.get("X-API-Key") or request.query_params.get("key")
-    # Also accept valid session token as authentication (for Discord OAuth users)
-    if key != API_KEY:
-        token = request.headers.get("X-Session") or request.headers.get("X-Session-Token")
-        if token:
-            sess = await get_session(token)
-            if sess:
-                return sess  # valid session = authorized
-        raise HTTPException(403, "API key non valida")
-
 async def get_session(token: str):
     now = int(time.time())
     if USE_POSTGRES:
@@ -379,6 +368,18 @@ async def discord_callback(code: str):
         db.close()
     
     return RedirectResponse(f"/?discord_session={token}&level={access_level}&name={username}&did={discord_id}")
+
+async def verify_api_key(request: Request):
+    key = request.headers.get("X-API-Key") or request.query_params.get("key")
+    if key != API_KEY:
+        # Also accept valid session token as auth (Discord OAuth users)
+        token = request.headers.get("X-Session") or request.headers.get("X-Session-Token")
+        if token:
+            sess = await get_session(token)
+            if sess:
+                return sess
+        raise HTTPException(403, "API key non valida")
+
 
 @app.post("/auth/logout")
 async def logout(request: Request):
