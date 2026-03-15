@@ -8,61 +8,108 @@
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html,body{height:100%;overflow:hidden}
-    body{font-family:'Inter',sans-serif;background:#04060f;color:#e8f0ff;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center}
-    :root{--blu:#003d8f;--blu2:#0052b4;--blu3:#1a6dd4;--blu4:#3b8eea;--t1:#e8f0ff;--t2:#8ba8cc;--t3:#3d5472;--danger2:#f87171}
-    .bg{position:fixed;inset:0;background:radial-gradient(ellipse 90% 70% at 15% 50%,rgba(0,61,143,.2) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 85% 80%,rgba(14,165,233,.05) 0%,transparent 50%),#04060f;z-index:0}
-    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,82,180,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,180,.04) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse 80% 80% at 30% 60%,black 30%,transparent 80%);z-index:0}
-    .login-box{position:relative;z-index:1;width:420px;padding:48px 44px}
-    .crest{display:flex;align-items:center;gap:14px;margin-bottom:32px}
-    .crest-icon{font-size:42px;width:56px;text-align:center}
-    .crest-title{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--t1);letter-spacing:.5px;line-height:1.2}
-    .crest-title b{background:linear-gradient(135deg,#38bdf8,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .crest-sub{font-size:8px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-    .login-card{background:rgba(4,6,15,.6);border:1px solid rgba(0,82,180,.15);border-radius:12px;overflow:hidden;backdrop-filter:blur(20px)}
-    .login-card::before{content:'';display:block;height:2px;background:linear-gradient(90deg,transparent,var(--blu2) 20%,var(--blu3) 50%,var(--blu2) 80%,transparent)}
-    .login-card-title{padding:14px 22px 0;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--t3)}
-    .discord-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:calc(100% - 44px);margin:14px 22px 18px;padding:13px 20px;border-radius:8px;background:linear-gradient(135deg,#5865f2,#4752c4);border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all .22s;box-shadow:0 6px 24px rgba(88,101,242,.35);font-family:'Inter',sans-serif;text-decoration:none}
-    .discord-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(88,101,242,.5)}
+    body{font-family:'Inter',sans-serif;background:#02040c;color:#e2eaff;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center}
+    :root{--blu:#003080;--blu2:#004099;--blu3:#1560c8;--blu4:#3585e8;--t1:#e2eaff;--t2:#7a9ec8;--t3:#344866;--danger2:#f06060}
+
+    .bg{position:fixed;inset:0;z-index:0}
+    .bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 20% 50%,rgba(0,48,128,.2) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(21,96,200,.06) 0%,transparent 50%),#02040c}
+    .bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(53,133,232,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(53,133,232,.03) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 70% 80% at 25% 55%,black 20%,transparent 70%)}
+    .bg-glow{position:absolute;top:30%;left:15%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,64,153,.12) 0%,transparent 70%);filter:blur(40px)}
+
+    .wrap{position:relative;z-index:1;width:400px}
+
+    /* Header */
+    .header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+    .header-badge{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(0,48,128,.5),rgba(21,96,200,.3));border:1px solid rgba(53,133,232,.25);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+    .header-title{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--t1);letter-spacing:.3px;line-height:1.2}
+    .header-sub{font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+
+    /* Card */
+    .card{background:rgba(3,6,18,.7);border:1px solid rgba(53,133,232,.1);border-radius:12px;overflow:hidden;backdrop-filter:blur(24px);box-shadow:0 32px 64px rgba(0,0,0,.6)}
+    .card-top{height:2px;background:linear-gradient(90deg,transparent,rgba(0,64,153,.5) 20%,var(--blu3) 50%,rgba(0,64,153,.5) 80%,transparent)}
+    .card-inner{padding:24px}
+    .card-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:16px}
+
+    /* Discord button */
+    .discord-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;border-radius:8px;background:linear-gradient(135deg,#4f57d4,#5865f2);border:1px solid rgba(88,101,242,.4);color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all .22s;box-shadow:0 6px 20px rgba(88,101,242,.25);font-family:'Inter',sans-serif;text-decoration:none}
+    .discord-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(88,101,242,.4);background:linear-gradient(135deg,#5560e8,#6573ff)}
     .discord-btn svg{width:20px;height:20px;fill:#fff;flex-shrink:0}
-    .info-box{margin:0 22px 18px;background:rgba(0,61,143,.06);border:1px solid rgba(0,82,180,.08);border-radius:8px;padding:12px}
-    .info-title{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px}
-    .info-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px;color:var(--t2);border-bottom:1px solid rgba(0,82,180,.05)}
+
+    /* Info box */
+    .info-box{margin-top:16px;background:rgba(0,48,128,.06);border:1px solid rgba(53,133,232,.08);border-radius:8px;padding:14px 16px}
+    .info-title{font-size:10px;font-weight:600;color:var(--t2);margin-bottom:10px;letter-spacing:.5px}
+    .info-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(53,133,232,.05)}
     .info-row:last-child{border-bottom:none}
     .info-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-    .info-name{font-weight:600;min-width:80px}
-    .err{font-size:11px;color:var(--danger2);text-align:center;padding:0 22px 12px;min-height:14px}
-    .footer{padding:20px 0 0;display:flex;align-items:center;gap:8px;font-size:9px;color:var(--t3);letter-spacing:1px;justify-content:center}
-    .dot{width:3px;height:3px;background:var(--t3);border-radius:50%}
+    .info-name{font-size:11px;font-weight:600;color:var(--t1);min-width:90px}
+    .info-desc{font-size:11px;color:var(--t3)}
+
+    /* Footer */
+    .footer{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px;font-size:9px;color:var(--t3);letter-spacing:1px}
+    .footer-dot{width:3px;height:3px;background:var(--t3);border-radius:50%}
+
+    /* Logo preview */
+    .logo-img{width:100%;height:100%;object-fit:cover;border-radius:13px}
   </style>
 </head>
 <body>
-<div class="bg"></div>
-<div class="grid-bg"></div>
-<div class="login-box">
-  <div class="crest">
-    <div class="crest-icon">🚔</div>
+<div class="bg">
+  <div class="bg-grad"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+</div>
+
+<div class="wrap">
+  <div class="header">
+    <div class="header-badge">🚔</div>
     <div>
-      <div class="crest-title">Polizia <b>d'Estovia</b></div>
-      <div class="crest-sub">Gestionale Interno — Accesso Riservato</div>
+      <div class="header-title">Polizia d'Estovia</div>
+      <div class="header-sub">Gestionale Interno — Accesso Riservato</div>
     </div>
   </div>
 
-  <div class="login-card">
-    <div class="login-card-title">ACCESSO AL SISTEMA</div>
-    <a href="/auth/login" class="discord-btn">
-      <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-      Accedi con Discord
-    </a>
-    <div class="info-box">
-      <div class="info-title">Ruoli con accesso</div>
-      <div class="info-row"><div class="info-dot" style="background:#3b8eea"></div><div class="info-name">Dirigenza</div><div style="color:#3d5472">—</div><div>Accesso completo</div></div>
-      <div class="info-row"><div class="info-dot" style="background:#a78bfa"></div><div class="info-name">Ispettorato</div><div style="color:#3d5472">—</div><div>Gestione agenti</div></div>
-      <div class="info-row"><div class="info-dot" style="background:#34d399"></div><div class="info-name">Agente</div><div style="color:#3d5472">—</div><div>Accesso base</div></div>
+  <div class="card">
+    <div class="card-top"></div>
+    <div class="card-inner">
+      <div class="card-label">Accesso al Sistema</div>
+
+      <a href="/auth/login" class="discord-btn">
+        <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        Accedi con Discord
+      </a>
+
+      <div class="info-box">
+        <div class="info-title">Ruoli autorizzati</div>
+        <div class="info-row">
+          <div class="info-dot" style="background:#3585e8"></div>
+          <div class="info-name">Dirigenza</div>
+          <div class="info-desc">Accesso completo al gestionale</div>
+        </div>
+        <div class="info-row">
+          <div class="info-dot" style="background:#f06060"></div>
+          <div class="info-name">Affari Interni</div>
+          <div class="info-desc">Gestionale + sezione riservata AI</div>
+        </div>
+        <div class="info-row">
+          <div class="info-dot" style="background:#9d72f5"></div>
+          <div class="info-name">Ispettorato</div>
+          <div class="info-desc">Gestione agenti e operazioni</div>
+        </div>
+        <div class="info-row">
+          <div class="info-dot" style="background:#2ec98a"></div>
+          <div class="info-name">Agente</div>
+          <div class="info-desc">Accesso base — profilo e servizi</div>
+        </div>
+      </div>
     </div>
-    <div class="footer">
-      <span>Polizia d'Estovia</span><div class="dot"></div>
-      <span>Accesso riservato al personale</span>
-    </div>
+  </div>
+
+  <div class="footer">
+    <span>Polizia d'Estovia</span>
+    <div class="footer-dot"></div>
+    <span>Sistema Gestionale v2.0</span>
+    <div class="footer-dot"></div>
+    <span>Accesso Riservato</span>
   </div>
 </div>
 </body>
