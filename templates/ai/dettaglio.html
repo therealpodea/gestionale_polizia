@@ -1,131 +1,173 @@
 {% extends "base.html" %}
-{% block title %}Segnalazione AI — {{ seg.titolo }}{% endblock %}
-{% block tb_title %}Dettaglio Segnalazione{% endblock %}
-{% block tb_sub %} · Affari Interni{% endblock %}
+{% block title %}Segnalazione AI{% endblock %}
+{% block tb_title %}Segnalazione AI{% endblock %}
+{% block tb_sub %} · Dettaglio riservato{% endblock %}
 {% set active = 'ai' %}
-{% block tb_right %}<a href="/dashboard/ai" class="btn">← Torna alla lista</a>{% endblock %}
+{% block tb_right %}
+<a href="/dashboard/ai" class="btn">← Torna all'elenco</a>
+{% if user.permission >= 100 %}
+<form method="post" action="/dashboard/ai/elimina" style="display:inline">
+  <input type="hidden" name="seg_id" value="{{ seg._id }}">
+  <button type="submit" class="btn danger" onclick="return confirm('Eliminare definitivamente questa segnalazione?')">🗑️ Elimina</button>
+</form>
+{% endif %}
+{% endblock %}
 
 {% block content %}
-{% set col_stato = '#ef4444' if seg.stato=='aperta' else '#3b8eea' if seg.stato=='in_corso' else '#10b981' if seg.stato=='chiusa' else '#8b5cf6' %}
-{% set col_prio  = '#ef4444' if seg.priorita=='urgente' else '#f59e0b' if seg.priorita=='alta' else '#3b8eea' %}
+<div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
 
-<!-- Header -->
-<div class="card ani" style="border-color:rgba(239,68,68,.12)">
-  <div style="padding:20px 24px">
-    <div style="display:flex;align-items:flex-start;gap:16px">
-      <div style="width:4px;border-radius:2px;background:{{ col_prio }};align-self:stretch;flex-shrink:0;min-height:80px"></div>
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-          <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(239,68,68,.5)">SEGNALAZIONE #{{ seg.id[-6:] | upper }}</span>
-          <span style="padding:2px 10px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;letter-spacing:1px;font-weight:700">
-            {% if seg.stato=='aperta' %}APERTA{% elif seg.stato=='in_corso' %}IN ISTRUTTORIA{% elif seg.stato=='chiusa' %}CHIUSA{% else %}ARCHIVIATA{% endif %}
-          </span>
-          {% if seg.priorita=='urgente' %}<span class="badge red">🔴 URGENTE</span>
-          {% elif seg.priorita=='alta' %}<span class="badge warn">🟡 ALTA</span>{% endif %}
-          {% if seg.anonima %}<span class="badge purple">🎭 ANONIMA</span>{% endif %}
+  <!-- Colonna principale -->
+  <div>
+    <!-- Header segnalazione -->
+    <div class="card ani" style="border-color:rgba(239,68,68,.12)">
+      <div style="padding:20px 24px;border-bottom:1px solid rgba(239,68,68,.08)">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div style="width:4px;border-radius:2px;background:{% if seg.priorita=='urgente' %}#ef4444{% elif seg.priorita=='alta' %}#f59e0b{% else %}#3b8eea{% endif %};align-self:stretch;flex-shrink:0;min-height:60px"></div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+              <span style="font-size:15px;font-weight:800;color:#e8f0ff">
+                Segnalazione contro: <span style="color:#f87171">{{ seg.agente_nome }}</span>
+                {% if seg.agente_cf %}<span style="font-size:11px;color:#3d5472;font-weight:400">({{ seg.agente_cf }})</span>{% endif %}
+              </span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              {% if seg.stato=='aperta' %}<span class="badge red">🔴 Aperta</span>
+              {% elif seg.stato=='in_corso' %}<span class="badge blue">🔵 In Istruttoria</span>
+              {% elif seg.stato=='chiusa' %}<span class="badge green">✅ Chiusa</span>
+              {% else %}<span class="badge purple">📦 Archiviata</span>{% endif %}
+              {% if seg.priorita=='urgente' %}<span class="badge red">🔴 URGENTE</span>
+              {% elif seg.priorita=='alta' %}<span class="badge warn">🟡 Alta priorità</span>{% endif %}
+              {% if seg.anonima %}<span class="badge purple">🎭 Anonima</span>{% endif %}
+              {% if seg.fonte == 'portale_pubblico' %}<span class="badge blue">🌐 Portale Pubblico</span>{% endif %}
+            </div>
+          </div>
         </div>
-        <div style="font-size:20px;font-weight:700;color:#f87171;margin-bottom:6px">{{ seg.titolo }}</div>
-        <div style="font-size:13px;color:#8ba8cc">Agente segnalato: <b style="color:#e8f0ff">{{ seg.agente_nome }}</b>{% if seg.agente_cf %} · CF: <span style="color:#3b8eea">{{ seg.agente_cf }}</span>{% endif %}</div>
       </div>
-    </div>
 
-    <!-- Meta grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 20px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(239,68,68,.07)">
-      <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:2px">Data episodio</div><div style="font-size:13px;color:#8ba8cc">{{ seg.data_episodio or '—' }}</div></div>
-      <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:2px">Luogo</div><div style="font-size:13px;color:#8ba8cc">{{ seg.luogo or '—' }}</div></div>
-      <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:2px">Ricevuta il</div><div style="font-size:13px;color:#8ba8cc">{{ seg.data }}</div></div>
-      {% if seg.modificata_da %}<div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:2px">Ultima modifica</div><div style="font-size:13px;color:#8ba8cc">{{ seg.modificata_da }} · {{ seg.ultima_modifica }}</div></div>{% endif %}
-    </div>
-  </div>
-</div>
-
-<div class="grid-2 mt-4">
-  <!-- Colonna sinistra: contenuto -->
-  <div style="display:flex;flex-direction:column;gap:16px">
-
-    <!-- Segnalante -->
-    <div class="card ani" style="animation-delay:.04s;border-color:rgba(139,92,246,.12)">
-      <div class="card-head" style="background:rgba(139,92,246,.02)"><span>👤</span><h3 style="color:rgba(139,92,246,.5)">Segnalante</h3></div>
-      <div style="padding:14px 20px">
-        {% if seg.anonima %}
-        <div style="display:flex;align-items:center;gap:10px;color:#a78bfa"><span style="font-size:22px">🎭</span><div><div style="font-weight:600">Segnalazione anonima</div><div style="font-size:12px;color:#3d5472;margin-top:2px">Nessun dato identificativo registrato</div></div></div>
-        {% else %}
-        <div style="display:flex;flex-direction:column;gap:8px">
-          {% if seg.segnalante_nome %}<div style="font-size:13px"><span style="color:#3d5472;font-size:10px;letter-spacing:1px;text-transform:uppercase">Nome:</span> <span style="color:#e8f0ff;font-weight:600">{{ seg.segnalante_nome }}</span></div>{% endif %}
-          {% if seg.segnalante_cf %}<div style="font-size:13px"><span style="color:#3d5472;font-size:10px;letter-spacing:1px;text-transform:uppercase">CF:</span> <span style="color:#3b8eea">{{ seg.segnalante_cf }}</span></div>{% endif %}
-          {% if seg.segnalante_contatto %}<div style="font-size:13px"><span style="color:#3d5472;font-size:10px;letter-spacing:1px;text-transform:uppercase">Contatto:</span> <span style="color:#8ba8cc">{{ seg.segnalante_contatto }}</span></div>{% endif %}
-          {% if not seg.segnalante_nome and not seg.segnalante_cf %}<div style="font-style:italic;color:#3d5472">Dati segnalante non forniti.</div>{% endif %}
+      <!-- Griglia info -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0;border-bottom:1px solid rgba(239,68,68,.06)">
+        {% for icon, label, value in [
+          ('📅', 'Data episodio', seg.data_episodio or '—'),
+          ('📍', 'Luogo', seg.luogo or '—'),
+          ('📨', 'Ricevuta il', seg.timestamp),
+          ('👤', 'Segnalante', 'Anonimo' if seg.anonima else (seg.segnalante_nome or '—')),
+        ] %}
+        <div style="padding:12px 16px;border-right:1px solid rgba(239,68,68,.04);border-bottom:1px solid rgba(239,68,68,.04)">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:3px">{{ icon }} {{ label }}</div>
+          <div style="font-size:13px;color:#8ba8cc">{{ value }}</div>
         </div>
-        {% endif %}
+        {% endfor %}
       </div>
+
+      <!-- Descrizione -->
+      <div style="padding:20px 24px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(239,68,68,.4);margin-bottom:10px">DESCRIZIONE</div>
+        <div style="font-size:14px;color:#8ba8cc;line-height:1.7;white-space:pre-wrap;background:rgba(239,68,68,.02);border:1px solid rgba(239,68,68,.06);border-radius:8px;padding:16px">{{ seg.descrizione }}</div>
+      </div>
+
+      {% if seg.prove %}
+      <div style="padding:0 24px 20px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(59,142,234,.4);margin-bottom:10px">📎 PROVE / LINK</div>
+        <div style="font-size:13px;color:#3b8eea;line-height:1.7;white-space:pre-wrap;padding:12px 14px;background:rgba(59,142,234,.04);border:1px solid rgba(59,142,234,.1);border-radius:6px">{{ seg.prove }}</div>
+      </div>
+      {% endif %}
+
+      {% if not seg.anonima and (seg.segnalante_cf or seg.segnalante_contatto) %}
+      <div style="padding:0 24px 20px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d5472;margin-bottom:10px">DATI SEGNALANTE</div>
+        <div style="display:flex;gap:20px;font-size:12px;color:#8ba8cc">
+          {% if seg.segnalante_cf %}<div>CF: <span style="color:#e8f0ff">{{ seg.segnalante_cf }}</span></div>{% endif %}
+          {% if seg.segnalante_contatto %}<div>Contatto: <span style="color:#e8f0ff">{{ seg.segnalante_contatto }}</span></div>{% endif %}
+        </div>
+      </div>
+      {% endif %}
     </div>
 
-    <!-- Descrizione -->
-    <div class="card ani" style="animation-delay:.06s">
-      <div class="card-head"><span>📋</span><h3>Descrizione</h3></div>
-      <div style="padding:16px 20px;font-size:14px;color:#8ba8cc;line-height:1.7;white-space:pre-wrap">{{ seg.descrizione }}</div>
-    </div>
-
-    <!-- Prove -->
-    {% if seg.prove %}
-    <div class="card ani" style="animation-delay:.08s">
-      <div class="card-head"><span>📎</span><h3>Prove e Link</h3></div>
-      <div style="padding:16px 20px;font-size:13px;color:#3b8eea;line-height:1.8;white-space:pre-wrap">{{ seg.prove }}</div>
-    </div>
-    {% endif %}
-
-  </div>
-
-  <!-- Colonna destra: gestione interna -->
-  <div style="display:flex;flex-direction:column;gap:16px">
-
-    <!-- Note interne correnti -->
+    <!-- Note interne -->
     {% if seg.note_interne %}
-    <div class="card ani" style="animation-delay:.05s;border-color:rgba(0,82,180,.15)">
-      <div class="card-head" style="background:rgba(0,82,180,.03)"><span>🔒</span><h3>Note Interne</h3></div>
-      <div style="padding:14px 20px;font-size:13px;color:#8ba8cc;line-height:1.6;white-space:pre-wrap">{{ seg.note_interne }}</div>
+    <div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(0,82,180,.15)">
+      <div class="card-head"><span>📝</span><h3>Note Interne</h3>
+        {% if seg.modificata_da %}<div class="ch-right"><span style="font-size:11px;color:#3d5472">Aggiornate da {{ seg.modificata_da }} il {{ seg.ultima_modifica }}</span></div>{% endif %}
+      </div>
+      <div style="padding:16px 20px;font-size:13px;color:#8ba8cc;line-height:1.6;white-space:pre-wrap">{{ seg.note_interne }}</div>
     </div>
     {% endif %}
 
-    <!-- Form aggiornamento -->
-    <div class="card ani" style="animation-delay:.07s;border-color:rgba(239,68,68,.1)">
-      <div class="card-head" style="background:rgba(239,68,68,.02)"><span>⚙️</span><h3 style="color:rgba(239,68,68,.5)">Aggiorna Segnalazione</h3></div>
-      <div style="padding:16px 20px">
+    <!-- Risposta al cittadino -->
+    {% if seg.risposta_operatore %}
+    <div class="card ani mt-4" style="animation-delay:.08s;border-color:rgba(16,185,129,.15)">
+      <div class="card-head"><span>💬</span><h3>Risposta inviata al cittadino</h3>
+        <div class="ch-right"><span class="badge green">Inviata {{ seg.risposta_data or '' }}</span></div>
+      </div>
+      <div style="padding:16px 20px;font-size:13px;color:#8ba8cc;line-height:1.6;white-space:pre-wrap">{{ seg.risposta_operatore }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Colonna destra - Gestione -->
+  <div>
+    <!-- Aggiorna stato -->
+    <div class="card ani" style="border-color:rgba(239,68,68,.1)">
+      <div class="card-head"><span>⚙️</span><h3>Gestione</h3></div>
+      <div style="padding:16px">
         <form method="post" action="/dashboard/ai/stato">
           <input type="hidden" name="seg_id" value="{{ seg._id }}">
-          <div class="form-grid">
-            <div class="fg"><label class="flbl">Stato</label>
-              <select class="fselect" name="stato">
-                <option value="aperta"     {% if seg.stato=='aperta'     %}selected{% endif %}>🔴 Aperta</option>
-                <option value="in_corso"   {% if seg.stato=='in_corso'   %}selected{% endif %}>🔵 In Istruttoria</option>
-                <option value="chiusa"     {% if seg.stato=='chiusa'     %}selected{% endif %}>✅ Chiusa</option>
-                <option value="archiviata" {% if seg.stato=='archiviata' %}selected{% endif %}>📦 Archiviata</option>
-              </select>
-            </div>
-            <div class="fg"><label class="flbl">Assegnata a</label>
-              <input class="finput" name="assegnata_a" value="{{ seg.assegnata_a or '' }}" placeholder="Nome operatore AI">
-            </div>
-            <div class="fg"><label class="flbl">Note interne</label>
-              <textarea class="ftextarea" name="note_interne" rows="4" placeholder="Aggiungi note riservate agli AI…">{{ seg.note_interne or '' }}</textarea>
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="fbtn primary">Salva</button>
-          </div>
-        </form>
 
-        {% if user.permission >= 100 %}
-        <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(239,68,68,.08)">
-          <form method="post" action="/dashboard/ai/elimina">
-            <input type="hidden" name="seg_id" value="{{ seg._id }}">
-            <button type="submit" class="fbtn danger" style="width:100%" onclick="return confirm('Eliminare definitivamente questa segnalazione? Operazione irreversibile.')">🗑 Elimina Definitivamente</button>
-          </form>
-          <div style="font-size:11px;color:#3d5472;text-align:center;margin-top:6px">Solo la Dirigenza può eliminare</div>
-        </div>
-        {% endif %}
+          <div style="margin-bottom:12px">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:6px">Stato</div>
+            <select name="stato" style="width:100%;padding:9px 12px;border-radius:6px;border:1px solid var(--bdr2);background:var(--bg3);color:#e8f0ff;font-family:'Inter',sans-serif;font-size:12px;cursor:pointer">
+              <option value="aperta"    {% if seg.stato=='aperta'    %}selected{% endif %}>🔴 Aperta</option>
+              <option value="in_corso"  {% if seg.stato=='in_corso'  %}selected{% endif %}>🔵 In Istruttoria</option>
+              <option value="chiusa"    {% if seg.stato=='chiusa'    %}selected{% endif %}>✅ Chiusa</option>
+              <option value="archiviata"{% if seg.stato=='archiviata'%}selected{% endif %}>📦 Archiviata</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:12px">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:6px">Assegna a</div>
+            <input style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid var(--bdr2);background:var(--bg3);color:#e8f0ff;font-family:'Inter',sans-serif;font-size:12px;outline:none" name="assegnata_a" placeholder="Nome agente AI" value="{{ seg.assegnata_a or '' }}">
+          </div>
+
+          <div style="margin-bottom:12px">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#3d5472;margin-bottom:6px">Note interne riservate</div>
+            <textarea name="note_interne" rows="4" placeholder="Note visibili solo agli AI…" style="width:100%;background:rgba(255,255,255,.02);border:1px solid var(--bdr2);border-radius:6px;color:#e8f0ff;font-size:12px;padding:8px 12px;font-family:'Inter',sans-serif;resize:vertical;outline:none">{{ seg.note_interne or '' }}</textarea>
+          </div>
+
+          <button type="submit" class="btn primary" style="width:100%;justify-content:center;font-size:11px">💾 Aggiorna</button>
+        </form>
       </div>
     </div>
 
+    <!-- Rispondi al cittadino -->
+    {% if not seg.anonima %}
+    <div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(16,185,129,.12)">
+      <div class="card-head"><span>💬</span><h3>Rispondi al cittadino</h3></div>
+      <div style="padding:16px">
+        <form method="post" action="/dashboard/ai/risposta">
+          <input type="hidden" name="seg_id" value="{{ seg._id }}">
+          <textarea name="risposta" rows="5" placeholder="Scrivi la risposta da inviare al cittadino segnalante…" style="width:100%;background:rgba(255,255,255,.02);border:1px solid rgba(16,185,129,.15);border-radius:6px;color:#e8f0ff;font-size:12px;padding:10px 12px;font-family:'Inter',sans-serif;resize:vertical;outline:none;margin-bottom:10px">{{ seg.risposta_operatore or '' }}</textarea>
+          <button type="submit" class="btn success" style="width:100%;justify-content:center;font-size:11px">💬 Invia risposta</button>
+        </form>
+        <div style="font-size:11px;color:#3d5472;margin-top:8px">La risposta sarà visibile al cittadino nel portale pubblico tramite il codice segnalazione.</div>
+      </div>
+    </div>
+    {% else %}
+    <div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(139,92,246,.12)">
+      <div class="card-head"><span>🎭</span><h3>Segnalazione anonima</h3></div>
+      <div style="padding:16px;font-size:12px;color:#3d5472">Non è possibile rispondere al segnalante poiché la segnalazione è stata inviata in forma anonima.</div>
+    </div>
+    {% endif %}
+
+    <!-- Storico modifiche -->
+    {% if seg.ultima_modifica %}
+    <div class="card ani mt-4" style="animation-delay:.08s">
+      <div class="card-head"><span>🕐</span><h3>Ultima modifica</h3></div>
+      <div style="padding:12px 16px;font-size:12px;color:#3d5472">
+        {{ seg.ultima_modifica }} da <span style="color:#8ba8cc">{{ seg.modificata_da }}</span>
+      </div>
+    </div>
+    {% endif %}
   </div>
+
 </div>
 {% endblock %}
