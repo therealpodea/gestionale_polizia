@@ -2,216 +2,143 @@
 {% block title %}Fedina Penale{% endblock %}
 {% set active = 'fedina' %}
 
-{% block extra_head %}
-<style>
-.fedina-card{background:linear-gradient(145deg,#060914,#03050e);border:1px solid rgba(59,142,234,.12);border-radius:12px;overflow:hidden;position:relative}
-.fedina-header{background:linear-gradient(135deg,rgba(0,41,100,.6),rgba(0,61,143,.3));padding:28px 32px;position:relative;overflow:hidden}
-.fedina-header::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(59,142,234,.08),transparent 70%)}
-.fedina-header::after{content:'POLIZIA D\'ESTOVIA';position:absolute;bottom:10px;right:20px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(59,142,234,.08);font-weight:700}
-.fedina-seal{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(0,61,143,.4),rgba(26,109,212,.2));border:2px solid rgba(59,142,234,.25);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
-.fedina-stato-pulita{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.04));border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:20px;text-align:center}
-.infrazione-item{border:1px solid rgba(239,68,68,.1);border-radius:8px;background:rgba(239,68,68,.02);overflow:hidden;margin-bottom:10px;transition:all .2s}
-.infrazione-item:hover{border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.04)}
-.infrazione-num{width:32px;height:32px;border-radius:6px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#f87171;flex-shrink:0}
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="page-md">
-  <div style="padding:24px 0 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-    <div>
-      <h1 style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:4px">📋 Fedina Penale</h1>
-      <p style="font-size:12px;color:var(--t3)">Registro ufficiale dei precedenti penali — Polizia d'Estovia</p>
-    </div>
-    {% if cittadino %}
-    <a href="/cittadini/profilo" class="fbtn secondary" style="font-size:11px;padding:7px 14px">✏️ Modifica profilo</a>
-    {% endif %}
+  <div style="padding:28px 0 20px">
+    <div style="font-size:36px;margin-bottom:10px">📋</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">Fedina Penale</h1>
+    <p style="font-size:13px;color:var(--t3)">Registra o consulta la tua fedina penale personale</p>
   </div>
 
   {% if not cittadino %}
   <!-- Non loggato -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
-    <div class="card" style="padding:28px;text-align:center">
-      <div style="font-size:36px;margin-bottom:14px">🔐</div>
-      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:8px">Accedi per consultare</div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:18px;line-height:1.6">Accedi con Discord per consultare la tua fedina penale personale e le tue segnalazioni</div>
-      <a href="/cittadini/login" class="fbtn discord" style="justify-content:center;width:100%">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-        Accedi con Discord
-      </a>
-    </div>
-    <div class="card" style="padding:28px">
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px">🔎 Ricerca pubblica</div>
-      <p style="font-size:12px;color:var(--t3);margin-bottom:14px;line-height:1.6">Cerca la fedina penale di un cittadino tramite Codice Fiscale (solo dati pubblici).</p>
-      <form method="get" action="/cittadini/fedina">
-        <div class="form-group">
-          <input class="finput" name="cerca_cf" placeholder="Codice Fiscale" value="{{ cerca_cf or '' }}" style="text-transform:uppercase;letter-spacing:1px">
-        </div>
-        <button type="submit" class="fbtn primary" style="width:100%;justify-content:center">🔍 Cerca</button>
+  <div class="alert info">ℹ️ Devi <a href="/cittadini/accedi" style="color:var(--blu4)">accedere o registrarti</a> per consultare o aggiornare la tua fedina penale.</div>
+
+  <!-- Cerca fedina pubblica -->
+  <div class="card mb-4">
+    <div class="card-head"><span>🔎</span><h3>Ricerca Pubblica</h3></div>
+    <div style="padding:20px">
+      <p style="font-size:13px;color:var(--t2);margin-bottom:16px">Puoi cercare la fedina penale di un cittadino tramite Codice Fiscale (solo dati pubblici).</p>
+      <form method="get" action="/cittadini/fedina" style="display:flex;gap:10px">
+        <input class="finput" name="cerca_cf" placeholder="Inserisci Codice Fiscale" value="{{ cerca_cf or '' }}" style="flex:1;text-transform:uppercase">
+        <button type="submit" class="fbtn primary">🔍 Cerca</button>
       </form>
       {% if cerca_cf and not risultato %}
-      <div class="alert error" style="margin-top:14px">❌ Nessun cittadino trovato.</div>
+      <div class="alert error" style="margin-top:16px">❌ Nessun cittadino trovato con questo Codice Fiscale.</div>
       {% elif risultato %}
-      <div style="margin-top:16px;padding:14px;background:rgba(0,82,180,.04);border:1px solid var(--bdr2);border-radius:8px">
-        <div style="font-weight:700;color:var(--t1);margin-bottom:4px">{{ risultato.nome }} {{ risultato.cognome }}</div>
-        <div style="font-size:11px;color:var(--t3);letter-spacing:1px;margin-bottom:10px">{{ risultato.cf }}</div>
-        {% set n = risultato.fedina|length if risultato.fedina else 0 %}
-        {% if n == 0 %}<span class="badge green">✅ Fedina pulita</span>
-        {% else %}<span class="badge red">🔴 {{ n }} infrazioni</span>{% endif %}
+      <div style="margin-top:20px;padding:16px;background:rgba(0,82,180,.04);border:1px solid var(--bdr2);border-radius:8px">
+        <div style="font-size:15px;font-weight:700;color:var(--t1);margin-bottom:8px">{{ risultato.nome }} {{ risultato.cognome }}</div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:12px">CF: {{ risultato.cf }}</div>
+        {% if risultato.fedina and risultato.fedina|length > 0 %}
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(239,68,68,.6);margin-bottom:8px">Infrazioni registrate: {{ risultato.fedina|length }}</div>
+        {% for f in risultato.fedina %}
+        {% if not f.riservato %}
+        <div style="padding:10px 12px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.1);border-radius:6px;margin-bottom:6px">
+          <div style="font-size:12px;font-weight:600;color:var(--t1)">{{ f.reato }}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">{{ f.data }} — {{ f.sanzione or 'Sanzione da definire' }}</div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <span class="badge green">✅ Fedina Penale Pulita</span>
+        {% endif %}
       </div>
       {% endif %}
     </div>
   </div>
 
   {% else %}
-  <!-- Loggato -->
-  {% if not cittadino.cf %}
-  <div class="alert warn">⚠️ Devi <a href="/cittadini/profilo" style="color:var(--warn2);font-weight:600">completare il tuo profilo</a> prima di consultare la fedina penale.</div>
-  {% else %}
-
-  <div style="display:grid;grid-template-columns:300px 1fr;gap:20px">
-
-    <!-- Scheda identità -->
+  <!-- Loggato - mostra fedina personale -->
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:20px">
+    <!-- Scheda cittadino -->
     <div>
-      <div class="fedina-card">
-        <!-- Header istituzionale -->
-        <div class="fedina-header">
-          <div style="display:flex;align-items:flex-start;gap:14px">
-            <div class="fedina-seal">
-              {% if cittadino.avatar_url %}<img src="{{ cittadino.avatar_url }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-              {% else %}🚔{% endif %}
-            </div>
-            <div style="flex:1">
-              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(139,168,204,.5);margin-bottom:4px">Repubblica di Estovia</div>
-              <div style="font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:#e8f0ff;line-height:1.2">{{ cittadino.nome }} {{ cittadino.cognome }}</div>
-              <div style="font-size:10px;color:rgba(59,142,234,.6);margin-top:4px;letter-spacing:1px">{{ cittadino.cf }}</div>
-            </div>
-          </div>
+      <div class="card" style="padding:20px;margin-bottom:16px">
+        <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--blu),var(--blu3));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin-bottom:12px">
+          {{ cittadino.nome[0] }}{{ cittadino.cognome[0] }}
         </div>
-
-        <!-- Dati anagrafici -->
-        <div style="padding:16px 18px">
-          {% set fields = [
-            ('📅', 'Data di nascita', cittadino.data_nascita or '—'),
-            ('⚧', 'Sesso', 'Maschile' if cittadino.sesso=='M' else 'Femminile' if cittadino.sesso=='F' else (cittadino.sesso or '—')),
-            ('🌍', 'Nazionalità', cittadino.nazionalita or '—'),
-            ('📍', 'Luogo di nascita', cittadino.luogo_nascita or '—'),
-            ('📞', 'Telefono', cittadino.telefono or '—'),
-            ('💼', 'Professione', cittadino.professione or '—'),
-          ] %}
-          {% for icon, label, value in fields %}
-          <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(59,142,234,.04)">
-            <div style="font-size:13px;width:18px;text-align:center;flex-shrink:0">{{ icon }}</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--t3)">{{ label }}</div>
-              <div style="font-size:12px;color:var(--t2);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ value }}</div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-
-        <!-- Stato fedina -->
-        <div style="padding:12px 18px;border-top:1px solid var(--bdr2)">
-          {% set n_inf = cittadino.fedina|length if cittadino.fedina else 0 %}
-          <div style="display:flex;align-items:center;justify-content:space-between">
-            <span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--t3)">Stato fedina</span>
-            {% if n_inf == 0 %}<span class="badge green">✅ Pulita</span>
-            {% elif n_inf <= 2 %}<span class="badge warn">⚠️ {{ n_inf }} infrazioni</span>
-            {% else %}<span class="badge red">🔴 {{ n_inf }} infrazioni</span>{% endif %}
-          </div>
-        </div>
-
-        <!-- Footer scheda -->
-        <div style="padding:8px 18px;background:rgba(0,82,180,.03);border-top:1px solid var(--bdr2)">
-          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(59,142,234,.2);text-align:center">Polizia d'Estovia — Registro Anagrafico</div>
-        </div>
+        <div style="font-size:16px;font-weight:700;color:var(--t1)">{{ cittadino.nome }} {{ cittadino.cognome }}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px;letter-spacing:1px">{{ cittadino.cf }}</div>
+        {% if cittadino.contatto %}<div style="font-size:12px;color:var(--t2);margin-top:6px">{{ cittadino.contatto }}</div>{% endif %}
+        <div class="divider" style="margin:14px 0"></div>
+        <div style="font-size:11px;color:var(--t3)">Registrato il {{ cittadino.data_registrazione }}</div>
+        <a href="/cittadini/logout" class="fbtn secondary" style="margin-top:12px;font-size:11px;padding:8px 14px;width:100%;justify-content:center">Esci</a>
       </div>
 
-      <div style="margin-top:12px">
-        <a href="/cittadini/segnalazione" class="fbtn primary" style="width:100%;justify-content:center;font-size:12px">🚨 Nuova segnalazione</a>
+      <div class="card" style="padding:16px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:12px">Stato Fedina</div>
+        {% set n_infrazioni = cittadino.fedina|length if cittadino.fedina else 0 %}
+        {% if n_infrazioni == 0 %}
+        <span class="badge green" style="font-size:12px;padding:6px 12px">✅ Fedina Pulita</span>
+        {% elif n_infrazioni <= 2 %}
+        <span class="badge warn" style="font-size:12px;padding:6px 12px">⚠️ {{ n_infrazioni }} infrazioni</span>
+        {% else %}
+        <span class="badge red" style="font-size:12px;padding:6px 12px">🔴 {{ n_infrazioni }} infrazioni</span>
+        {% endif %}
+        <div style="font-size:12px;color:var(--t3);margin-top:10px">Le infrazioni vengono registrate dagli agenti del Dipartimento</div>
       </div>
     </div>
 
-    <!-- Fedina e segnalazioni -->
+    <!-- Fedina e azioni -->
     <div>
-      <!-- Fedina penale -->
       <div class="card mb-4">
         <div class="card-head">
-          <span>⚖️</span><h3>Precedenti Penali</h3>
-          <div style="margin-left:auto">
-            {% set n_inf = cittadino.fedina|length if cittadino.fedina else 0 %}
-            {% if n_inf == 0 %}<span class="badge green">Nessuno</span>
-            {% else %}<span class="badge red">{{ n_inf }} registrati</span>{% endif %}
-          </div>
+          <span>📋</span><h3>Storico Infrazioni</h3>
+          <div style="margin-left:auto"><span class="badge {% if cittadino.fedina|length > 0 %}red{% else %}green{% endif %}">{{ cittadino.fedina|length if cittadino.fedina else 0 }} voci</span></div>
         </div>
-
         {% if cittadino.fedina and cittadino.fedina|length > 0 %}
-        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:0">
-          {% for f in cittadino.fedina %}
-          <div class="infrazione-item">
-            <div style="padding:12px 14px;display:flex;align-items:flex-start;gap:12px">
-              <div class="infrazione-num">{{ loop.index }}</div>
-              <div style="flex:1">
-                <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:5px">{{ f.reato }}</div>
-                <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:5px">
-                  <span style="font-size:11px;color:var(--t3)">📅 {{ f.data }}</span>
-                  {% if f.luogo %}<span style="font-size:11px;color:var(--t3)">📍 {{ f.luogo }}</span>{% endif %}
-                </div>
-                {% if f.sanzione %}
-                <div style="font-size:12px;color:var(--warn2);font-weight:600">⚖️ {{ f.sanzione }}</div>
-                {% endif %}
-                {% if f.note %}<div style="font-size:11px;color:var(--t3);margin-top:4px;font-style:italic">{{ f.note }}</div>{% endif %}
-              </div>
-              <div>
-                {% if f.stato == 'definitivo' %}<span class="badge red">Definitivo</span>
-                {% elif f.stato == 'in_corso' %}<span class="badge warn">In corso</span>
-                {% else %}<span class="badge gray">Archiviato</span>{% endif %}
-              </div>
+        {% for f in cittadino.fedina %}
+        <div style="padding:14px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px">{{ f.reato }}</div>
+              <div style="font-size:12px;color:var(--t3)">📅 {{ f.data }} {% if f.luogo %}· 📍 {{ f.luogo }}{% endif %}</div>
+              {% if f.sanzione %}<div style="font-size:12px;color:var(--warn2);margin-top:4px">⚖️ Sanzione: {{ f.sanzione }}</div>{% endif %}
+              {% if f.note %}<div style="font-size:12px;color:var(--t3);margin-top:4px;font-style:italic">📝 {{ f.note }}</div>{% endif %}
             </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        <div class="fedina-stato-pulita" style="margin:16px">
-          <div style="font-size:32px;margin-bottom:10px">✅</div>
-          <div style="font-size:14px;font-weight:700;color:var(--green2);margin-bottom:4px">Fedina Penale Pulita</div>
-          <div style="font-size:12px;color:var(--t3)">Non risultano precedenti penali a tuo carico nel registro della Polizia d'Estovia</div>
-        </div>
-        {% endif %}
-      </div>
-
-      <!-- Segnalazioni -->
-      <div class="card">
-        <div class="card-head">
-          <span>🚨</span><h3>Le mie Segnalazioni</h3>
-          <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-            <span class="badge blue">{{ segnalazioni|length }}</span>
-            <a href="/cittadini/segnalazione" class="fbtn primary" style="font-size:10px;padding:5px 12px">+ Nuova</a>
-          </div>
-        </div>
-        {% if segnalazioni %}
-        {% for s in segnalazioni %}
-        <div style="padding:11px 18px;border-bottom:1px solid rgba(59,142,234,.04);display:flex;align-items:center;gap:12px">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.titolo }}</div>
-            <div style="font-size:11px;color:var(--t3);margin-top:2px">{{ s.data }} · <span style="color:var(--blu4);letter-spacing:.5px">{{ s.id }}</span></div>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
-            {% if s.risposta_operatore %}<span class="badge green" style="font-size:9px">💬</span>{% endif %}
-            {% if s.stato=='aperta' %}<span class="badge warn">Aperta</span>
-            {% elif s.stato=='in_corso' %}<span class="badge blue">In corso</span>
-            {% elif s.stato=='chiusa' %}<span class="badge green">Chiusa</span>
-            {% else %}<span class="badge gray">{{ s.stato }}</span>{% endif %}
+            <div style="flex-shrink:0">
+              {% if f.stato == 'definitivo' %}<span class="badge red">Definitivo</span>
+              {% elif f.stato == 'in_corso' %}<span class="badge warn">In corso</span>
+              {% else %}<span class="badge blue">Archiviato</span>{% endif %}
+            </div>
           </div>
         </div>
         {% endfor %}
         {% else %}
-        <div style="padding:28px;text-align:center;font-size:12px;font-style:italic;color:var(--t3)">Nessuna segnalazione inviata.</div>
+        <div style="padding:40px;text-align:center">
+          <div style="font-size:32px;margin-bottom:10px">✅</div>
+          <div style="font-size:14px;font-weight:600;color:var(--green2)">Fedina Penale Pulita</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:6px">Non risultano infrazioni a tuo carico</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Segnalazioni inviate -->
+      <div class="card">
+        <div class="card-head"><span>🚨</span><h3>Le mie segnalazioni</h3>
+          <div style="margin-left:auto"><a href="/cittadini/segnalazione" class="fbtn primary" style="font-size:11px;padding:6px 14px">+ Nuova</a></div>
+        </div>
+        {% if segnalazioni and segnalazioni|length > 0 %}
+        {% for s in segnalazioni %}
+        <div style="padding:12px 20px;border-bottom:1px solid rgba(0,82,180,.05);display:flex;align-items:center;gap:12px">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:var(--t1)">{{ s.titolo }}</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:2px">{{ s.data }}</div>
+          </div>
+          {% if s.stato == 'aperta' %}<span class="badge warn">Aperta</span>
+          {% elif s.stato == 'in_corso' %}<span class="badge blue">In lavorazione</span>
+          {% elif s.stato == 'chiusa' %}<span class="badge green">Chiusa</span>
+          {% else %}<span class="badge blue">{{ s.stato }}</span>{% endif %}
+          {% if s.risposta_operatore %}
+          <span class="badge green" style="font-size:9px">💬 Risposta</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="padding:24px;text-align:center;font-style:italic;color:var(--t3)">Nessuna segnalazione inviata.</div>
         {% endif %}
       </div>
     </div>
   </div>
-  {% endif %}
   {% endif %}
 </div>
 {% endblock %}

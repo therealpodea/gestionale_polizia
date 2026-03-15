@@ -14,6 +14,7 @@ from fastapi.templating import Jinja2Templates
 
 import config
 from auth import get_current_user_live
+from routers.settings_helper import get_settings
 
 router    = APIRouter(tags=["affari_interni"])
 templates = Jinja2Templates(directory="templates")
@@ -76,6 +77,7 @@ async def ai_dashboard(
     n_arch    = await db["segnalazioni_ai"].count_documents({"stato": "archiviata"})
 
     return templates.TemplateResponse("ai/dashboard.html", {
+        "settings":   await get_settings(),
         "request":      request,
         "user":         user,
         "segnalazioni": segnalazioni,
@@ -103,6 +105,7 @@ async def ai_dettaglio(
     if not seg:
         raise HTTPException(404, "Segnalazione non trovata.")
     return templates.TemplateResponse("ai/dettaglio.html", {
+        "settings":   await get_settings(),
         "request":      request,
         "user":         user,
         "seg":          seg,

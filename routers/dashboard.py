@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 import config
+from routers.settings_helper import get_settings
 from auth import get_current_user_live, require_permission, require_write
 
 router    = APIRouter(prefix="/dashboard", tags=["dashboard"])
@@ -60,6 +61,7 @@ async def dashboard(request: Request, user: dict = Depends(get_current_user_live
         grade_count[g] = await db["agenti"].count_documents({"approvato": True, "grado": g})
 
     return templates.TemplateResponse("dashboard.html", {
+        "settings":   await get_settings(),
         "request":       request,
         "user":          user,
         "agenti":        agenti,
@@ -103,6 +105,7 @@ async def agenti_page(
     agenti = _ser_list(await db["agenti"].find(filt).sort("cognome", 1).to_list(500))
 
     return templates.TemplateResponse("agenti.html", {
+        "settings":   await get_settings(),
         "request":  request,
         "user":     user,
         "agenti":   agenti,
@@ -117,6 +120,7 @@ async def agenti_page(
 @router.get("/agenti/add", response_class=HTMLResponse)
 async def agenti_add_page(request: Request, user: dict = Depends(require_permission(50))):
     return templates.TemplateResponse("agenti_add.html", {
+        "settings":   await get_settings(),
         "request": request,
         "user":    user,
         "gradi":   config.GRADI_DEFAULT,
@@ -233,6 +237,7 @@ async def agente_dettaglio(
         await db["storico"].find({"agente_id": agente_id}).sort("timestamp", -1).to_list(200)
     )
     return templates.TemplateResponse("agente_dettaglio.html", {
+        "settings":   await get_settings(),
         "request": request,
         "user":    user,
         "agente":  agente,
@@ -323,6 +328,7 @@ async def storico_page(
         await db["storico"].find(filt).sort("timestamp", -1).limit(300).to_list(300)
     )
     return templates.TemplateResponse("storico.html", {
+        "settings":   await get_settings(),
         "request": request,
         "user":    user,
         "storico": storico,
@@ -378,6 +384,7 @@ async def statistiche_page(
     top_san = await db["storico"].aggregate(pipeline).to_list(6)
 
     return templates.TemplateResponse("statistiche.html", {
+        "settings":   await get_settings(),
         "request":    request,
         "user":       user,
         "attivi":     attivi,
@@ -409,6 +416,7 @@ async def comunicati_page(request: Request, user: dict = Depends(get_current_use
     for c in comunicati:
         c["letto"] = discord_id in c.get("letto_da", [])
     return templates.TemplateResponse("comunicati.html", {
+        "settings":   await get_settings(),
         "request":    request,
         "user":       user,
         "comunicati": comunicati,
@@ -500,6 +508,7 @@ async def segnalazioni_page(request: Request, user: dict = Depends(get_current_u
         await db["segnalazioni"].find(filt).sort("timestamp", -1).to_list(200)
     )
     return templates.TemplateResponse("segnalazioni.html", {
+        "settings":   await get_settings(),
         "request":      request,
         "user":         user,
         "segnalazioni": segnalazioni,
@@ -566,6 +575,7 @@ async def verbali_page(request: Request, user: dict = Depends(get_current_user_l
         await db["verbali"].find().sort("timestamp", -1).to_list(200)
     )
     return templates.TemplateResponse("verbali.html", {
+        "settings":   await get_settings(),
         "request":  request,
         "user":     user,
         "verbali":  verbali,
@@ -637,6 +647,7 @@ async def gerarchia_page(request: Request, user: dict = Depends(get_current_user
     agenti_raw.sort(key=grado_key)
 
     return templates.TemplateResponse("gerarchia.html", {
+        "settings":   await get_settings(),
         "request": request,
         "user":    user,
         "agenti":  agenti_raw,
@@ -657,6 +668,7 @@ async def utenti_page(request: Request, user: dict = Depends(require_permission(
         await db["agenti"].find({"approvato": True}).sort("cognome", 1).to_list(500)
     )
     return templates.TemplateResponse("utenti.html", {
+        "settings":   await get_settings(),
         "request":   request,
         "user":      user,
         "in_attesa": in_attesa,
@@ -729,6 +741,7 @@ async def pec_page(
     lista = inbox if cartella == "in" else outbox if cartella == "out" else bozze
 
     return templates.TemplateResponse("pec.html", {
+        "settings":   await get_settings(),
         "request":  request,
         "user":     user,
         "inbox":    inbox,

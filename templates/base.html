@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Gestionale{% endblock %} — Polizia d'Estovia</title>
+  <title>{% block title %}Gestionale{% endblock %} — {{ settings.nome if settings and settings.nome else "Polizia d'Estovia" }}</title>
+  {% if settings and settings.favicon_url %}
+  <link rel="icon" type="image/png" href="{{ settings.favicon_url }}">
+  {% endif %}
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
@@ -175,9 +178,13 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sb-logo">
-      <div class="sb-logo-icon">🚔</div>
+      <div class="sb-logo-icon" style="overflow:hidden">
+        {% if settings and settings.logo_url %}
+        <img src="{{ settings.logo_url }}" style="width:100%;height:100%;object-fit:cover;border-radius:7px" alt="Logo">
+        {% else %}🚔{% endif %}
+      </div>
       <div>
-        <div class="sb-logo-name">Polizia d'Estovia</div>
+        <div class="sb-logo-name">{{ settings.nome if settings and settings.nome else "Polizia d'Estovia" }}</div>
         <div class="sb-logo-sub">Gestionale Interno</div>
       </div>
     </div>
@@ -246,6 +253,9 @@
       <div class="sb-sec">Sistema</div>
       <a href="/dashboard/utenti" class="nav-item {% if active == 'utenti' %}active{% endif %}">
         <span class="nav-icon">⚙️</span>Gestione Utenti
+      </a>
+      <a href="/dashboard/impostazioni" class="nav-item {% if active == 'impostazioni' %}active{% endif %}">
+        <span class="nav-icon">🎨</span>Impostazioni
       </a>
       {% endif %}
     </nav>

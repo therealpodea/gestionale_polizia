@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Impostazioni{% endblock %}
+{% block tb_title %}Impostazioni{% endblock %}
+{% block tb_sub %} · Configurazione Dipartimento{% endblock %}
+{% set active = 'impostazioni' %}
+
+{% block content %}
+{% if msg %}
+<div style="padding:10px 16px;border-radius:6px;margin-bottom:16px;font-size:13px;
+  {% if msg_type=='ok' %}background:var(--green-dim);border:1px solid rgba(14,165,114,.2);color:var(--green2)
+  {% else %}background:var(--danger-dim);border:1px solid rgba(224,53,53,.2);color:var(--danger2){% endif %}">
+  {% if msg_type=='ok' %}✅{% else %}⚠️{% endif %} {{ msg }}
+</div>
+{% endif %}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+  <!-- Logo e identità -->
+  <div class="card ani">
+    <div class="card-head"><span>🖼️</span><h3>Logo & Identità</h3></div>
+    <div style="padding:20px">
+      <form method="post" action="/dashboard/impostazioni/logo">
+
+        <!-- Anteprima logo attuale -->
+        <div style="margin-bottom:18px;padding:16px;background:rgba(0,64,153,.04);border:1px solid var(--bdr2);border-radius:8px;text-align:center">
+          <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Anteprima Logo Attuale</div>
+          {% if settings.logo_url %}
+          <img src="{{ settings.logo_url }}" alt="Logo" style="max-width:120px;max-height:120px;border-radius:10px;border:1px solid var(--bdr2)">
+          <div style="font-size:10px;color:var(--t3);margin-top:8px">{{ settings.logo_url[:50] }}{% if settings.logo_url|length > 50 %}…{% endif %}</div>
+          {% else %}
+          <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--blu),var(--blu3));display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto">🚔</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:8px">Nessun logo impostato — viene usata l'emoji 🚔</div>
+          {% endif %}
+        </div>
+
+        <div class="fg" style="margin-bottom:12px">
+          <label class="flbl">URL Logo PNG/JPG</label>
+          <input class="finput" name="logo_url" value="{{ settings.logo_url or '' }}" placeholder="https://i.imgur.com/tuologo.png">
+          <div style="font-size:10px;color:var(--t3);margin-top:3px">Carica l'immagine su <a href="https://imgur.com" target="_blank" style="color:var(--blu4)">Imgur</a> o <a href="https://imgbb.com" target="_blank" style="color:var(--blu4)">ImgBB</a> e incolla il link diretto</div>
+        </div>
+
+        <div class="fg" style="margin-bottom:12px">
+          <label class="flbl">URL Favicon (icona browser)</label>
+          <input class="finput" name="favicon_url" value="{{ settings.favicon_url or '' }}" placeholder="https://i.imgur.com/tuafavicon.png">
+          <div style="font-size:10px;color:var(--t3);margin-top:3px">Consigliato: immagine quadrata 32×32 o 64×64 px</div>
+        </div>
+
+        <button type="submit" class="fbtn primary" style="width:100%;justify-content:center">💾 Salva Logo</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Info dipartimento -->
+  <div class="card ani" style="animation-delay:.05s">
+    <div class="card-head"><span>🏛️</span><h3>Info Dipartimento</h3></div>
+    <div style="padding:20px">
+      <form method="post" action="/dashboard/impostazioni/info">
+        <div class="fg" style="margin-bottom:12px">
+          <label class="flbl">Nome Dipartimento</label>
+          <input class="finput" name="nome" value="{{ settings.nome or config_nome }}">
+        </div>
+        <div class="fg" style="margin-bottom:12px">
+          <label class="flbl">Motto / Tagline</label>
+          <input class="finput" name="motto" value="{{ settings.motto or '' }}" placeholder="Es. Servire e Proteggere">
+        </div>
+        <div class="fg" style="margin-bottom:12px">
+          <label class="flbl">Colore primario (hex)</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="finput" name="colore_primario" value="{{ settings.colore_primario or '#1560c8' }}" placeholder="#1560c8" style="flex:1">
+            <input type="color" value="{{ settings.colore_primario or '#1560c8' }}" onchange="this.previousElementSibling.previousElementSibling.value=this.value" style="width:36px;height:36px;border-radius:6px;border:1px solid var(--bdr2);background:none;cursor:pointer;padding:2px">
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:16px">
+          <label class="flbl">Link server Discord</label>
+          <input class="finput" name="discord_invite" value="{{ settings.discord_invite or '' }}" placeholder="https://discord.gg/...">
+          <div style="font-size:10px;color:var(--t3);margin-top:3px">Usato nel portale cittadini per il pulsante "Entra nel server"</div>
+        </div>
+        <button type="submit" class="fbtn primary" style="width:100%;justify-content:center">💾 Salva Info</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- Anteprima live -->
+<div class="card ani mt-4" style="animation-delay:.08s">
+  <div class="card-head"><span>👁️</span><h3>Anteprima Live</h3></div>
+  <div style="padding:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    <!-- Sidebar preview -->
+    <div style="background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+      <div id="prev-logo-wrap" style="width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--blu),var(--blu3));display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid rgba(53,133,232,.25);overflow:hidden">
+        {% if settings.logo_url %}<img src="{{ settings.logo_url }}" style="width:100%;height:100%;object-fit:cover">{% else %}🚔{% endif %}
+      </div>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:var(--t1)">{{ settings.nome or config_nome }}</div>
+        <div style="font-size:8px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase">Gestionale Interno</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--t3)">← Anteprima sidebar</div>
+    <div style="font-size:12px;color:var(--t3);margin-left:auto">Le modifiche sono visibili immediatamente dopo il salvataggio</div>
+  </div>
+</div>
+{% endblock %}
