@@ -1,0 +1,19 @@
+{% extends "cittadini/base_cittadini.html" %}
+{% block title %}Accesso Negato{% endblock %}
+
+{% block content %}
+<div class="page-sm" style="text-align:center;padding-top:60px">
+  <div style="font-size:52px;margin-bottom:16px">🚫</div>
+  <h1 style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--danger2);margin-bottom:10px">Accesso Negato</h1>
+  <p style="font-size:14px;color:var(--t2);margin-bottom:6px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto">{{ motivo }}</p>
+  {% if username %}
+  <p style="font-size:12px;color:var(--t3);margin-bottom:24px">Account Discord: <span style="color:var(--t2)">{{ username }}</span></p>
+  {% else %}
+  <div style="height:24px"></div>
+  {% endif %}
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <a href="/cittadini" class="fbtn secondary">🏠 Torna alla home</a>
+    <a href="https://discord.gg/estovia" class="fbtn primary" target="_blank">📨 Entra nel server Discord</a>
+  </div>
+</div>
+{% endblock %}
