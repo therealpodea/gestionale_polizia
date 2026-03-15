@@ -143,16 +143,34 @@
       </div>
     </div>
 
-    <!-- Risposta al denunciante -->
+    <!-- Chat con il denunciante -->
     <div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(14,165,114,.1)">
-      <div class="card-head"><span>💬</span><h3>Risposta al Denunciante</h3></div>
-      <div style="padding:14px">
-        <form method="post" action="/dashboard/denunce/risposta">
-          <input type="hidden" name="denuncia_id" value="{{ d._id }}">
-          <textarea name="risposta" rows="5" placeholder="Scrivi la risposta al cittadino denunciante…" style="width:100%;background:rgba(255,255,255,.02);border:1px solid rgba(14,165,114,.12);border-radius:6px;color:var(--t1);font-size:12px;padding:10px;font-family:'Inter',sans-serif;resize:vertical;outline:none;margin-bottom:10px">{{ d.risposta_agente or '' }}</textarea>
-          <button type="submit" class="btn success" style="width:100%;justify-content:center;font-size:11px">💬 Invia Risposta</button>
-        </form>
-        <div style="font-size:10px;color:var(--t3);margin-top:8px">La risposta sarà visibile al cittadino tramite il codice denuncia.</div>
+      <div class="card-head"><span>💬</span><h3>Chat con il Denunciante</h3>
+        <div class="ch-right"><span class="badge green" id="chat-status">● Live</span></div>
+      </div>
+      <!-- Chat box -->
+      <div id="chat-box" style="height:260px;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:rgba(0,0,0,.12)">
+        {% if d.messaggi %}
+        {% for m in d.messaggi %}
+        <div style="display:flex;flex-direction:column;align-items:{% if m.da=='agente' %}flex-end{% else %}flex-start{% endif %}">
+          <div style="max-width:80%;padding:9px 13px;border-radius:10px;font-size:12px;line-height:1.5;
+            {% if m.da=='agente' %}background:linear-gradient(135deg,rgba(0,64,153,.3),rgba(21,96,200,.18));border:1px solid rgba(53,133,232,.2);color:var(--t1);border-bottom-right-radius:3px
+            {% else %}background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:var(--t1);border-bottom-left-radius:3px{% endif %}">
+            {{ m.testo }}
+          </div>
+          <div style="font-size:9px;color:var(--t3);margin-top:3px;padding:0 4px">
+            {% if m.da=='agente' %}🚔 {{ m.nome_mittente or 'Agente' }}{% else %}👤 {{ m.nome_mittente or 'Cittadino' }}{% endif %} · {{ m.timestamp }}
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="text-align:center;color:var(--t3);font-size:12px;margin:auto" id="no-msg">Nessun messaggio. Inizia la conversazione con il denunciante.</div>
+        {% endif %}
+      </div>
+      <!-- Input -->
+      <div style="padding:10px 14px;border-top:1px solid var(--bdr2);display:flex;gap:8px;background:rgba(0,0,0,.08)">
+        <input id="chat-input" class="finput" placeholder="Scrivi un messaggio al denunciante…" style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')inviaMsg()">
+        <button onclick="inviaMsg()" class="btn success" style="font-size:11px;padding:7px 14px">Invia</button>
       </div>
     </div>
 
@@ -164,4 +182,47 @@
     {% endif %}
   </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const denunciaId = '{{ d._id }}';
+const chatBox = document.getElementById('chat-box');
+function scrollChat(){ chatBox.scrollTop = chatBox.scrollHeight; }
+scrollChat();
+
+function addMsg(testo, timestamp, mine, nome){
+  const noMsg = document.getElementById('no-msg');
+  if(noMsg) noMsg.remove();
+  const wrap = document.createElement('div');
+  wrap.style.cssText = `display:flex;flex-direction:column;align-items:${mine?'flex-end':'flex-start'}`;
+  wrap.innerHTML = `<div style="max-width:80%;padding:9px 13px;border-radius:10px;font-size:12px;line-height:1.5;${mine?'background:linear-gradient(135deg,rgba(0,64,153,.3),rgba(21,96,200,.18));border:1px solid rgba(53,133,232,.2);color:var(--t1);border-bottom-right-radius:3px':'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:var(--t1);border-bottom-left-radius:3px'}">${testo}</div><div style="font-size:9px;color:var(--t3);margin-top:3px;padding:0 4px">${mine?'🚔 '+nome:'👤 '+nome} · ${timestamp}</div>`;
+  chatBox.appendChild(wrap);
+  scrollChat();
+}
+
+async function inviaMsg(){
+  const input = document.getElementById('chat-input');
+  const testo = input.value.trim();
+  if(!testo) return;
+  input.value = '';
+  const res = await fetch(`/dashboard/denunce/${denunciaId}/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({testo})});
+  const data = await res.json();
+  if(data.ok) addMsg(testo, data.timestamp, true, '{{ user.nick or user.username }}');
+}
+
+let lastCount = chatBox.children.length;
+setInterval(async()=>{
+  try{
+    const res = await fetch(`/dashboard/denunce/${denunciaId}/chat/poll`);
+    const msgs = await res.json();
+    if(msgs.length > lastCount){
+      msgs.slice(lastCount).forEach(m=>{
+        if(m.da!=='agente') addMsg(m.testo,m.timestamp,false,m.nome_mittente||'Cittadino');
+      });
+      lastCount = msgs.length;
+    }
+  }catch(e){}
+},5000);
+</script>
 {% endblock %}

@@ -586,3 +586,105 @@ async def denuncia_invia(
         "errore":       None,
         "codice":       codice,
     })
+
+
+# ── Chat API ──────────────────────────────────────────────────────────────────
+from fastapi import Body
+from fastapi.responses import JSONResponse
+
+@router.post("/cittadini/chat/{tipo}/{doc_id}")
+async def chat_invia(
+    request: Request,
+    tipo:    str,
+    doc_id:  str,
+    payload: dict = Body(...),
+):
+    cittadino = await _get_cittadino(request)
+    if not cittadino:
+        from fastapi import HTTPException
+        raise HTTPException(401)
+
+    from database import get_db
+    db = get_db()
+    testo = payload.get("testo", "").strip()
+    if not testo:
+        raise HTTPException(400)
+
+    from bson import ObjectId
+    timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
+    msg = {
+        "da":           "cittadino",
+        "discord_id":   cittadino["discord_id"],
+        "nome_mittente":f"{cittadino.get('nome','')} {cittadino.get('cognome','')}".strip() or cittadino.get("nick",""),
+        "testo":        testo,
+        "timestamp":    timestamp,
+        "letto":        False,
+    }
+    col = "denunce" if tipo == "denunce" else "segnalazioni_pubbliche"
+    await db[col].update_one(
+        {"_id": ObjectId(doc_id)},
+        {"$push": {"messaggi": msg}}
+    )
+    return JSONResponse({"ok": True, "timestamp": timestamp})
+
+
+@router.get("/cittadini/chat/{tipo}/{doc_id}/poll")
+async def chat_poll(
+    request: Request,
+    tipo:    str,
+    doc_id:  str,
+):
+    from database import get_db
+    from bson import ObjectId
+    db = get_db()
+    col = "denunce" if tipo == "denunce" else "segnalazioni_pubbliche"
+    doc = await db[col].find_one({"_id": ObjectId(doc_id)}, {"messaggi": 1})
+    if not doc:
+        return JSONResponse([])
+    return JSONResponse(doc.get("messaggi", []))
+
+
+@router.get("/cittadini/cerca-pratica")
+async def cerca_pratica(codice: str = ""):
+    from database import get_db
+    db = get_db()
+    codice = codice.strip().upper()
+
+    # Cerca in denunce
+    d = await db["denunce"].find_one({"id": codice})
+    if d:
+        return JSONResponse({"found": True, "tipo": "denuncia", "id": d["id"], "titolo": f"Denuncia contro {d.get('denunciato_nome','')}", "stato": d.get("stato",""), "data": d.get("data","")})
+
+    # Cerca in segnalazioni
+    s = await db["segnalazioni_pubbliche"].find_one({"id": codice})
+    if s:
+        return JSONResponse({"found": True, "tipo": "segnalazione", "id": s["id"], "titolo": s.get("titolo",""), "stato": s.get("stato",""), "data": s.get("data","")})
+
+    return JSONResponse({"found": False})
+
+
+# ── Pratiche cittadino (denunce + segnalazioni) ───────────────────────────────
+@router.get("/cittadini/stato-segnalazione", response_class=HTMLResponse)
+async def stato_segnalazione(request: Request, codice: str = ""):
+    from database import get_db
+    db = get_db()
+    cittadino = await _get_cittadino(request)
+    denunce = []
+    segnalazioni = []
+
+    if cittadino and cittadino.get("cf"):
+        denunce = _ser_list(
+            await db["denunce"].find({"denunciante_cf": cittadino["cf"]}).sort("timestamp", -1).to_list(50)
+        )
+        segnalazioni = _ser_list(
+            await db["segnalazioni_pubbliche"].find({"cf": cittadino["cf"]}).sort("timestamp", -1).to_list(50)
+        )
+
+    return templates.TemplateResponse("cittadini/stato_segnalazione.html", {
+        "request":      request,
+        "cittadino":    cittadino,
+        "denunce":      denunce,
+        "segnalazioni": segnalazioni,
+        "codice":       codice.upper() if codice else "",
+        "dipartimento": config.DIPARTIMENTO_NOME,
+    })

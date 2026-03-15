@@ -154,3 +154,56 @@ async def elimina_denuncia(
     db = get_db()
     await db["denunce"].delete_one({"_id": ObjectId(denuncia_id)})
     return RedirectResponse("/dashboard/denunce", status_code=303)
+
+
+# ── Chat agente → cittadino ───────────────────────────────────────────────────
+from fastapi import Body
+from fastapi.responses import JSONResponse
+
+@router.post("/{denuncia_id}/chat")
+async def chat_agente(
+    denuncia_id: str,
+    payload: dict = Body(...),
+    user: dict = Depends(get_current_user_live),
+):
+    if user.get("permission", 0) < 10:
+        raise HTTPException(403)
+    from database import get_db
+    db = get_db()
+    testo = payload.get("testo", "").strip()
+    if not testo:
+        raise HTTPException(400)
+
+    timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
+    msg = {
+        "da":           "agente",
+        "discord_id":   user.get("discord_id"),
+        "nome_mittente":user.get("nick") or user.get("username"),
+        "testo":        testo,
+        "timestamp":    timestamp,
+        "letto":        False,
+    }
+    await db["denunce"].update_one(
+        {"_id": ObjectId(denuncia_id)},
+        {"$push": {"messaggi": msg}}
+    )
+    return JSONResponse({"ok": True, "timestamp": timestamp})
+
+
+@router.get("/{denuncia_id}/chat/poll")
+async def chat_poll(
+    denuncia_id: str,
+    user: dict = Depends(get_current_user_live),
+):
+    from database import get_db
+    db = get_db()
+    doc = await db["denunce"].find_one({"_id": ObjectId(denuncia_id)}, {"messaggi": 1})
+    if not doc:
+        return JSONResponse([])
+    # Marca come letti i messaggi del cittadino
+    await db["denunce"].update_one(
+        {"_id": ObjectId(denuncia_id)},
+        {"$set": {"messaggi.$[elem].letto": True}},
+        array_filters=[{"elem.da": "cittadino"}]
+    )
+    return JSONResponse(doc.get("messaggi", []))
