@@ -183,11 +183,11 @@ async def agenti_add(
 async def agenti_modifica(
     request: Request,
     agente_id:     str = Form(...),
-    nome:          str = Form(...),
-    cognome:       str = Form(...),
-    cf:            str = Form(...),
+    nome:          str = Form(""),
+    cognome:       str = Form(""),
+    cf:            str = Form(""),
     nick:          str = Form(""),
-    grado:         str = Form(...),
+    grado:         str = Form(""),
     stato:         str = Form("Attivo"),
     data_ingresso: str = Form(""),
     note:          str = Form(""),
@@ -195,19 +195,20 @@ async def agenti_modifica(
 ):
     from database import get_db
     db = get_db()
-    await db["agenti"].update_one(
-        {"_id": ObjectId(agente_id)},
-        {"$set": {
-            "nome":          nome.strip(),
-            "cognome":       cognome.strip(),
-            "cf":            cf.strip().upper(),
-            "nick":          nick.strip() or f"{nome} {cognome}",
-            "grado":         grado,
-            "stato":         stato,
-            "data_ingresso": data_ingresso or oggi(),
-            "note":          note.strip(),
-        }}
-    )
+    update = {}
+    if nome.strip():      update["nome"]          = nome.strip()
+    if cognome.strip():   update["cognome"]        = cognome.strip()
+    if cf.strip():        update["cf"]             = cf.strip().upper()
+    if nick.strip():      update["nick"]           = nick.strip()
+    if grado.strip():     update["grado"]          = grado
+    if stato.strip():     update["stato"]          = stato
+    if data_ingresso:     update["data_ingresso"]  = data_ingresso
+    update["note"] = note.strip()
+    if update:
+        await db["agenti"].update_one(
+            {"_id": ObjectId(agente_id)},
+            {"$set": update}
+        )
     return RedirectResponse(f"/dashboard/agenti/{agente_id}", status_code=303)
 
 
