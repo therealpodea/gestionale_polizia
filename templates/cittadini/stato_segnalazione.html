@@ -35,10 +35,10 @@
 
   <!-- Cerca per codice -->
   <div class="card ani mb-4">
-    <div style="padding:16px 20px;display:flex;gap:10px;align-items:center">
-      <input class="finput" id="search-codice" placeholder="🔍 Cerca per codice pratica (es. SEG-XXXXX)" style="flex:1" value="{{ codice or '' }}">
-      <button onclick="cercaCodice()" class="fbtn primary" style="padding:10px 18px">Cerca</button>
-    </div>
+    <form method="get" action="/cittadini/stato-segnalazione" style="padding:16px 20px;display:flex;gap:10px;align-items:center">
+      <input class="finput" name="codice" placeholder="🔍 Cerca per codice pratica (es. SEG-XXXXX)" style="flex:1" value="{{ codice or '' }}">
+      <button type="submit" class="fbtn primary" style="padding:10px 18px">Cerca</button>
+    </form>
     <div id="search-result" style="display:none;padding:0 20px 16px"></div>
   </div>
 
