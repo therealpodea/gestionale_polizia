@@ -1,287 +1,97 @@
 {% extends "cittadini/base_cittadini.html" %}
-{% block title %}Le mie Pratiche{% endblock %}
-{% set active = 'stato' %}
-
-{% block extra_head %}
-<style>
-.pratica-card{border:1px solid var(--bdr2);border-radius:10px;background:linear-gradient(145deg,rgba(6,10,24,.88),rgba(3,5,15,.8));overflow:hidden;transition:all .22s;margin-bottom:12px}
-.pratica-card:hover{border-color:rgba(53,133,232,.18)}
-.pratica-header{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer}
-.pratica-body{display:none;border-top:1px solid var(--bdr2)}
-.pratica-body.open{display:block}
-.chat-box{height:300px;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:rgba(0,0,0,.15)}
-.chat-box::-webkit-scrollbar{width:3px}
-.chat-box::-webkit-scrollbar-thumb{background:rgba(53,133,232,.15);border-radius:2px}
-.msg{max-width:75%;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5;position:relative}
-.msg.mine{align-self:flex-end;background:linear-gradient(135deg,rgba(0,64,153,.3),rgba(21,96,200,.18));border:1px solid rgba(53,133,232,.2);color:var(--t1);border-bottom-right-radius:3px}
-.msg.theirs{align-self:flex-start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:var(--t1);border-bottom-left-radius:3px}
-.msg-meta{font-size:9px;color:var(--t3);margin-top:4px;letter-spacing:.3px}
-.msg-input-wrap{padding:12px 16px;border-top:1px solid var(--bdr2);display:flex;gap:8px;background:rgba(0,0,0,.1)}
-</style>
-{% endblock %}
+{% block title %}Stato Segnalazione{% endblock %}
+{% set active = '' %}
 
 {% block content %}
-<div class="page-md">
-  <div class="ani" style="padding:24px 0 18px">
-    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:5px">🗂️ Le mie Pratiche</h1>
-    <p style="font-size:13px;color:var(--t3)">Visualizza e gestisci le tue denunce e segnalazioni</p>
+<div class="page-sm">
+  <div style="padding:28px 0 20px">
+    <div style="font-size:36px;margin-bottom:10px">🔎</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">Stato Segnalazione</h1>
+    <p style="font-size:13px;color:var(--t3)">Verifica lo stato delle tue segnalazioni tramite codice o accesso</p>
   </div>
-
-  {% if not cittadino %}
-  <div class="alert info ani">
-    ℹ️ Devi <a href="/cittadini/login" style="color:var(--blu4);font-weight:600">accedere con Discord</a> per visualizzare le tue pratiche.
-  </div>
-  {% else %}
 
   <!-- Cerca per codice -->
-  <div class="card ani mb-4">
-    <div style="padding:16px 20px;display:flex;gap:10px;align-items:center">
-      <input class="finput" id="search-codice" placeholder="🔍 Cerca per codice pratica (es. SEG-XXXXX o DEN-XXXXX)" style="flex:1">
-      <button onclick="cercaCodice()" class="fbtn primary" style="padding:10px 18px">Cerca</button>
+  <div class="card mb-4">
+    <div class="card-head"><span>🔎</span><h3>Cerca per codice</h3></div>
+    <div style="padding:20px">
+      <form method="get" action="/cittadini/stato-segnalazione" style="display:flex;gap:10px">
+        <input class="finput" name="codice" placeholder="Inserisci il codice segnalazione" value="{{ codice or '' }}" style="flex:1;letter-spacing:1px">
+        <button type="submit" class="fbtn primary">🔍 Cerca</button>
+      </form>
     </div>
-    <div id="search-result" style="display:none;padding:0 20px 16px"></div>
   </div>
 
-  <!-- Tab denunce / segnalazioni -->
-  <div style="display:flex;gap:2px;margin-bottom:18px;background:rgba(0,0,0,.2);border:1px solid var(--bdr2);border-radius:8px;padding:4px" class="ani">
-    <button onclick="switchTab('denunce')" id="tab-denunce" style="flex:1;padding:9px;border-radius:6px;background:rgba(157,114,245,.12);border:1px solid rgba(157,114,245,.2);color:var(--purple2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s">
-      ⚖️ Denunce <span style="background:rgba(157,114,245,.2);border-radius:10px;padding:1px 7px;font-size:10px">{{ denunce|length }}</span>
-    </button>
-    <button onclick="switchTab('segnalazioni')" id="tab-segnalazioni" style="flex:1;padding:9px;border-radius:6px;background:transparent;border:1px solid transparent;color:var(--t3);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s">
-      🚨 Segnalazioni <span style="background:rgba(52,72,102,.2);border-radius:10px;padding:1px 7px;font-size:10px">{{ segnalazioni|length }}</span>
-    </button>
-  </div>
+  {% if errore %}
+  <div class="alert error">❌ {{ errore }}</div>
+  {% endif %}
 
-  <!-- DENUNCE -->
-  <div id="section-denunce" class="ani">
-    {% if denunce %}
-    {% for d in denunce %}
-    {% set col_stato = '#e03535' if d.stato=='aperta' else '#1560c8' if d.stato=='in_analisi' else '#e8970a' if d.stato=='info_richieste' else '#0ea572' if d.stato=='risolta' else '#7c4fd4' %}
-    {% set label_stato = 'Aperta' if d.stato=='aperta' else 'In Analisi' if d.stato=='in_analisi' else 'Info Richieste' if d.stato=='info_richieste' else 'Risolta' if d.stato=='risolta' else 'Archiviata' %}
-    <div class="pratica-card ani" style="animation-delay:{{ loop.index0 * 0.06 }}s;border-left:3px solid {{ col_stato }}">
-      <div class="pratica-header" onclick="togglePratica('d{{ d._id }}')">
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-            <span style="font-size:13px;font-weight:700;color:var(--t1)">⚖️ Denuncia contro <span style="color:var(--danger2)">{{ d.denunciato_nome }}</span></span>
-            <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;font-weight:700">{{ label_stato | upper }}</span>
-            {% if d.messaggi and d.messaggi|length > 0 %}
-            {% set unread = d.messaggi | selectattr('da', 'ne', 'cittadino') | selectattr('letto', 'eq', false) | list %}
-            {% if unread %}<span class="badge blue">{{ unread|length }} nuovi</span>{% endif %}
-            {% endif %}
-          </div>
-          <div style="font-size:11px;color:var(--purple2);font-weight:600">{{ d.capi_accusa }}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px">📅 {{ d.data_fatto }} · 📍 {{ d.luogo }} · Codice: <span style="color:var(--blu4);letter-spacing:.5px">{{ d.id }}</span></div>
-        </div>
-        <div style="font-size:18px;color:var(--t3);transition:transform .2s" id="arrow-d{{ d._id }}">›</div>
-      </div>
-      <div class="pratica-body" id="body-d{{ d._id }}">
-        <!-- Dettagli -->
-        <div style="padding:14px 18px;border-bottom:1px solid var(--bdr2)">
-          <div style="font-size:12px;color:var(--t2);line-height:1.6">{{ d.descrizione }}</div>
-          {% if d.risposta_agente %}
-          <div style="margin-top:10px;padding:10px 12px;background:rgba(14,165,114,.06);border:1px solid rgba(14,165,114,.12);border-radius:7px">
-            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(46,201,138,.5);margin-bottom:4px">Risposta Ufficiale dal Dipartimento</div>
-            <div style="font-size:12px;color:var(--t1)">{{ d.risposta_agente }}</div>
-            <div style="font-size:10px;color:var(--t3);margin-top:4px">{{ d.risposta_data }}</div>
-          </div>
-          {% endif %}
-        </div>
-        <!-- Chat -->
-        <div class="chat-box" id="chat-d{{ d._id }}">
-          {% if d.messaggi %}
-          {% for m in d.messaggi %}
-          <div class="msg {% if m.da == 'cittadino' %}mine{% else %}theirs{% endif %}">
-            <div>{{ m.testo }}</div>
-            <div class="msg-meta">{% if m.da == 'cittadino' %}Tu{% else %}🚔 {{ m.nome_mittente or 'Agente' }}{% endif %} · {{ m.timestamp }}</div>
-          </div>
-          {% endfor %}
-          {% else %}
-          <div style="text-align:center;color:var(--t3);font-size:12px;margin:auto">Nessun messaggio. Puoi richiedere aggiornamenti qui.</div>
-          {% endif %}
-        </div>
-        <div class="msg-input-wrap">
-          <input class="finput" id="input-d{{ d._id }}" placeholder="Scrivi un messaggio al Dipartimento…" style="flex:1" onkeydown="if(event.key==='Enter')inviaMsg('denunce','{{ d._id }}')">
-          <button onclick="inviaMsg('denunce','{{ d._id }}')" class="fbtn primary" style="padding:9px 16px;font-size:12px">Invia</button>
-        </div>
+  {% if segnalazione %}
+  <div class="card">
+    <div class="card-head">
+      <span>📋</span><h3>Dettaglio Segnalazione</h3>
+      <div style="margin-left:auto">
+        {% if segnalazione.stato == 'aperta' %}<span class="badge warn">🟡 Aperta</span>
+        {% elif segnalazione.stato == 'in_corso' %}<span class="badge blue">🔵 In lavorazione</span>
+        {% elif segnalazione.stato == 'chiusa' %}<span class="badge green">✅ Chiusa</span>
+        {% else %}<span class="badge blue">{{ segnalazione.stato }}</span>{% endif %}
       </div>
     </div>
-    {% endfor %}
-    {% else %}
-    <div style="padding:40px;text-align:center;color:var(--t3);font-size:13px">
-      <div style="font-size:32px;margin-bottom:10px">⚖️</div>
-      Nessuna denuncia presentata.
-      <div style="margin-top:14px"><a href="/cittadini/denuncia" class="fbtn primary" style="font-size:12px;padding:8px 16px">Sporgi una denuncia</a></div>
+    <div style="padding:20px">
+      <div style="font-size:16px;font-weight:700;color:var(--t1);margin-bottom:8px">{{ segnalazione.titolo }}</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:16px">Inviata il {{ segnalazione.data }} {% if segnalazione.nome %}da {{ segnalazione.nome }}{% endif %}</div>
+
+      <div style="font-size:13px;color:var(--t2);line-height:1.6;padding:14px;background:rgba(0,0,0,.15);border-radius:6px;border:1px solid var(--bdr2);margin-bottom:16px">{{ segnalazione.corpo }}</div>
+
+      {% if segnalazione.risposta_operatore %}
+      <div style="padding:14px;background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:8px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(52,211,153,.6);margin-bottom:8px">💬 Risposta del Dipartimento</div>
+        <div style="font-size:13px;color:var(--t1);line-height:1.6">{{ segnalazione.risposta_operatore }}</div>
+        {% if segnalazione.risposta_data %}<div style="font-size:11px;color:var(--t3);margin-top:8px">{{ segnalazione.risposta_data }}</div>{% endif %}
+      </div>
+      {% elif segnalazione.stato == 'aperta' %}
+      <div class="alert info" style="font-size:12px">⏳ La tua segnalazione è in attesa di essere esaminata dagli agenti competenti.</div>
+      {% elif segnalazione.stato == 'in_corso' %}
+      <div class="alert warn" style="font-size:12px">🔄 La tua segnalazione è attualmente in lavorazione. Riceverai una risposta a breve.</div>
+      {% endif %}
     </div>
-    {% endif %}
   </div>
 
-  <!-- SEGNALAZIONI -->
-  <div id="section-segnalazioni" style="display:none" class="ani">
-    {% if segnalazioni %}
+  {% elif cittadino %}
+  <!-- Loggato - mostra tutte le segnalazioni -->
+  <div class="card">
+    <div class="card-head"><span>🚨</span><h3>Le mie segnalazioni</h3></div>
+    {% if segnalazioni and segnalazioni|length > 0 %}
     {% for s in segnalazioni %}
-    {% set col_stato = '#e03535' if s.stato=='aperta' else '#1560c8' if s.stato=='in_corso' else '#0ea572' %}
-    {% set label_stato = 'Aperta' if s.stato=='aperta' else 'In Lavorazione' if s.stato=='in_corso' else 'Chiusa' %}
-    <div class="pratica-card ani" style="animation-delay:{{ loop.index0 * 0.06 }}s;border-left:3px solid {{ col_stato }}">
-      <div class="pratica-header" onclick="togglePratica('s{{ s._id }}')">
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-            <span style="font-size:13px;font-weight:700;color:var(--t1)">🚨 {{ s.titolo }}</span>
-            <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;font-weight:700">{{ label_stato | upper }}</span>
-          </div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px">📅 {{ s.data }} · Codice: <span style="color:var(--blu4);letter-spacing:.5px">{{ s.id }}</span></div>
-        </div>
-        <div style="font-size:18px;color:var(--t3)" id="arrow-s{{ s._id }}">›</div>
-      </div>
-      <div class="pratica-body" id="body-s{{ s._id }}">
-        <div style="padding:14px 18px;border-bottom:1px solid var(--bdr2)">
-          <div style="font-size:12px;color:var(--t2);line-height:1.6">{{ s.corpo }}</div>
+    <div style="padding:14px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px">{{ s.titolo }}</div>
+          <div style="font-size:11px;color:var(--t3)">{{ s.data }} · Codice: <span style="color:var(--blu4);letter-spacing:1px">{{ s.id }}</span></div>
           {% if s.risposta_operatore %}
-          <div style="margin-top:10px;padding:10px 12px;background:rgba(14,165,114,.06);border:1px solid rgba(14,165,114,.12);border-radius:7px">
-            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(46,201,138,.5);margin-bottom:4px">Risposta dal Dipartimento</div>
-            <div style="font-size:12px;color:var(--t1)">{{ s.risposta_operatore }}</div>
+          <div style="margin-top:8px;padding:8px 12px;background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.1);border-radius:6px">
+            <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(52,211,153,.6);margin-bottom:4px">Risposta</div>
+            <div style="font-size:12px;color:var(--t2)">{{ s.risposta_operatore[:120] }}{% if s.risposta_operatore|length > 120 %}…{% endif %}</div>
           </div>
           {% endif %}
         </div>
-        <div class="chat-box" id="chat-s{{ s._id }}">
-          {% if s.messaggi %}
-          {% for m in s.messaggi %}
-          <div class="msg {% if m.da == 'cittadino' %}mine{% else %}theirs{% endif %}">
-            <div>{{ m.testo }}</div>
-            <div class="msg-meta">{% if m.da == 'cittadino' %}Tu{% else %}🚔 {{ m.nome_mittente or 'Agente' }}{% endif %} · {{ m.timestamp }}</div>
-          </div>
-          {% endfor %}
-          {% else %}
-          <div style="text-align:center;color:var(--t3);font-size:12px;margin:auto">Nessun messaggio.</div>
-          {% endif %}
-        </div>
-        <div class="msg-input-wrap">
-          <input class="finput" id="input-s{{ s._id }}" placeholder="Scrivi un messaggio al Dipartimento…" style="flex:1" onkeydown="if(event.key==='Enter')inviaMsg('segnalazioni','{{ s._id }}')">
-          <button onclick="inviaMsg('segnalazioni','{{ s._id }}')" class="fbtn primary" style="padding:9px 16px;font-size:12px">Invia</button>
+        <div>
+          {% if s.stato == 'aperta' %}<span class="badge warn">Aperta</span>
+          {% elif s.stato == 'in_corso' %}<span class="badge blue">In lavorazione</span>
+          {% elif s.stato == 'chiusa' %}<span class="badge green">Chiusa</span>
+          {% else %}<span class="badge blue">{{ s.stato }}</span>{% endif %}
         </div>
       </div>
     </div>
     {% endfor %}
     {% else %}
-    <div style="padding:40px;text-align:center;color:var(--t3);font-size:13px">
-      <div style="font-size:32px;margin-bottom:10px">🚨</div>
-      Nessuna segnalazione inviata.
-      <div style="margin-top:14px"><a href="/cittadini/segnalazione" class="fbtn primary" style="font-size:12px;padding:8px 16px">Invia una segnalazione</a></div>
-    </div>
+    <div style="padding:32px;text-align:center;font-style:italic;color:var(--t3)">Nessuna segnalazione trovata.</div>
     {% endif %}
   </div>
 
+  {% else %}
+  <div class="alert info">
+    ℹ️ Inserisci il codice segnalazione oppure <a href="/cittadini/accedi" style="color:var(--blu4)">accedi</a> per vedere tutte le tue segnalazioni.
+  </div>
   {% endif %}
 </div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-function switchTab(tab){
-  const isDenunce = tab === 'denunce';
-  document.getElementById('section-denunce').style.display = isDenunce ? 'block' : 'none';
-  document.getElementById('section-segnalazioni').style.display = isDenunce ? 'none' : 'block';
-  document.getElementById('tab-denunce').style.background = isDenunce ? 'rgba(157,114,245,.12)' : 'transparent';
-  document.getElementById('tab-denunce').style.color = isDenunce ? 'var(--purple2)' : 'var(--t3)';
-  document.getElementById('tab-denunce').style.borderColor = isDenunce ? 'rgba(157,114,245,.2)' : 'transparent';
-  document.getElementById('tab-segnalazioni').style.background = isDenunce ? 'transparent' : 'rgba(53,133,232,.1)';
-  document.getElementById('tab-segnalazioni').style.color = isDenunce ? 'var(--t3)' : 'var(--blu4)';
-  document.getElementById('tab-segnalazioni').style.borderColor = isDenunce ? 'transparent' : 'rgba(53,133,232,.18)';
-}
-
-function togglePratica(id){
-  const body = document.getElementById('body-' + id);
-  const arrow = document.getElementById('arrow-' + id);
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open');
-  arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
-  if(!isOpen){
-    const chat = document.getElementById('chat-' + id);
-    if(chat) chat.scrollTop = chat.scrollHeight;
-  }
-}
-
-async function inviaMsg(tipo, id){
-  const input = document.getElementById('input-' + tipo[0] + id);
-  const testo = input.value.trim();
-  if(!testo) return;
-  input.value = '';
-  try {
-    const res = await fetch(`/cittadini/chat/${tipo}/${id}`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({testo})
-    });
-    if(res.ok){
-      const data = await res.json();
-      aggiungiMessaggio(tipo[0] + id, testo, data.timestamp, true);
-    }
-  } catch(e){ console.error(e); }
-}
-
-function aggiungiMessaggio(chatId, testo, timestamp, mine){
-  const chat = document.getElementById('chat-' + chatId);
-  if(!chat) return;
-  // Rimuovi placeholder
-  const placeholder = chat.querySelector('[style*="margin:auto"]');
-  if(placeholder) placeholder.remove();
-  const div = document.createElement('div');
-  div.className = 'msg ' + (mine ? 'mine' : 'theirs');
-  div.innerHTML = `<div>${testo}</div><div class="msg-meta">${mine ? 'Tu' : '🚔 Agente'} · ${timestamp}</div>`;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-// Polling ogni 5 secondi per nuovi messaggi
-const activePratiche = {};
-function startPolling(tipo, id){
-  if(activePratiche[tipo+id]) return;
-  activePratiche[tipo+id] = setInterval(async () => {
-    try {
-      const res = await fetch(`/cittadini/chat/${tipo}/${id}/poll`);
-      if(res.ok){
-        const msgs = await res.json();
-        const chat = document.getElementById('chat-' + tipo[0] + id);
-        if(!chat) return;
-        const current = chat.querySelectorAll('.msg').length;
-        if(msgs.length > current){
-          const newMsgs = msgs.slice(current);
-          newMsgs.forEach(m => {
-            if(m.da !== 'cittadino'){
-              aggiungiMessaggio(tipo[0] + id, m.testo, m.timestamp, false);
-            }
-          });
-        }
-      }
-    } catch(e){}
-  }, 5000);
-}
-
-// Avvia polling per le pratiche aperte
-document.querySelectorAll('.pratica-card').forEach(card => {
-  const body = card.querySelector('.pratica-body');
-  if(body){
-    const id = body.id.replace('body-d','').replace('body-s','');
-    const tipo = body.id.startsWith('body-d') ? 'denunce' : 'segnalazioni';
-    startPolling(tipo, id);
-  }
-});
-
-async function cercaCodice(){
-  const codice = document.getElementById('search-codice').value.trim().toUpperCase();
-  if(!codice) return;
-  const res = await fetch(`/cittadini/cerca-pratica?codice=${codice}`);
-  const data = await res.json();
-  const div = document.getElementById('search-result');
-  div.style.display = 'block';
-  if(data.found){
-    div.innerHTML = `<div style="padding:12px 14px;background:rgba(14,165,114,.06);border:1px solid rgba(14,165,114,.12);border-radius:8px">
-      <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px">${data.tipo === 'denuncia' ? '⚖️ Denuncia' : '🚨 Segnalazione'} · ${data.id}</div>
-      <div style="font-size:12px;color:var(--t2)">${data.titolo}</div>
-      <div style="font-size:11px;color:var(--t3);margin-top:4px">Stato: ${data.stato} · ${data.data}</div>
-    </div>`;
-  } else {
-    div.innerHTML = `<div class="alert error" style="margin:0">❌ Nessuna pratica trovata con codice <b>${codice}</b></div>`;
-  }
-}
-</script>
 {% endblock %}

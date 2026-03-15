@@ -615,23 +615,6 @@ async def verbali_add(
         "timestamp":   datetime.now().strftime("%Y-%m-%d %H:%M"),
         "data":        oggi(),
     })
-
-    # Auto-aggiorna fedina penale se il verbale contiene un CF
-    import re
-    # Cerca pattern CF (16 caratteri alfanumerici) nel campo soggetti
-    cf_matches = re.findall(r'\b[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]\b', soggetti.upper())
-    for cf in cf_matches:
-        await db["cittadini"].update_one(
-            {"cf": cf},
-            {"$push": {"fedina": {
-                "reato":    tipo,
-                "data":     data_ora.split("T")[0] if data_ora else oggi(),
-                "luogo":    luogo,
-                "sanzione": "",
-                "note":     f"Verbale: {titolo}",
-                "stato":    "definitivo",
-            }}}
-        )
     return RedirectResponse("/dashboard/verbali", status_code=303)
 
 
