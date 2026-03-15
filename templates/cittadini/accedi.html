@@ -1,0 +1,103 @@
+{% extends "cittadini/base_cittadini.html" %}
+{% block title %}Accedi{% endblock %}
+{% set active = 'accedi' %}
+
+{% block content %}
+<div class="page-sm">
+  <div style="text-align:center;padding:32px 0 24px">
+    <div style="font-size:40px;margin-bottom:12px">👤</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">Accesso Cittadini</h1>
+    <p style="font-size:13px;color:var(--t3)">Accedi o registrati per accedere a tutti i servizi</p>
+  </div>
+
+  {% if errore %}
+  <div class="alert error">⚠️ {{ errore }}</div>
+  {% endif %}
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:0;margin-bottom:24px;background:rgba(0,0,0,.2);border:1px solid var(--bdr2);border-radius:8px;overflow:hidden">
+    <button onclick="switchTab('login')" id="tab-login" style="flex:1;padding:12px;background:rgba(0,82,180,.15);border:none;color:var(--blu4);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;border-right:1px solid var(--bdr2)">🔑 Accedi</button>
+    <button onclick="switchTab('register')" id="tab-register" style="flex:1;padding:12px;background:transparent;border:none;color:var(--t3);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">📝 Registrati</button>
+  </div>
+
+  <!-- Login Form -->
+  <div id="form-login">
+    <div class="card" style="padding:24px">
+      <form method="post" action="/cittadini/accedi">
+        <input type="hidden" name="azione" value="login">
+        <div class="form-group">
+          <label class="flbl">Codice Fiscale <span>*</span></label>
+          <input class="finput" name="cf" placeholder="Inserisci il tuo CF" required style="text-transform:uppercase">
+          <span class="fhint">Il Codice Fiscale è il tuo identificativo univoco</span>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Password <span>*</span></label>
+          <input class="finput" name="password" type="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="fbtn primary" style="width:100%;justify-content:center;margin-top:8px">🔑 Accedi</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Form -->
+  <div id="form-register" style="display:none">
+    <div class="card" style="padding:24px">
+      <form method="post" action="/cittadini/accedi">
+        <input type="hidden" name="azione" value="register">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Nome <span>*</span></label>
+            <input class="finput" name="nome" placeholder="Mario" required>
+          </div>
+          <div class="form-group">
+            <label class="flbl">Cognome <span>*</span></label>
+            <input class="finput" name="cognome" placeholder="Rossi" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Codice Fiscale <span>*</span></label>
+          <input class="finput" name="cf" placeholder="RSSMRA80A01H501U" required style="text-transform:uppercase">
+          <span class="fhint">Sarà usato come tuo username per accedere</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Data di Nascita</label>
+            <input class="finput" name="data_nascita" type="date">
+          </div>
+          <div class="form-group">
+            <label class="flbl">Contatto (Discord/Tel)</label>
+            <input class="finput" name="contatto" placeholder="Es. discord: utente#0000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Password <span>*</span></label>
+          <input class="finput" name="password" type="password" placeholder="Scegli una password sicura" required>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Conferma Password <span>*</span></label>
+          <input class="finput" name="password2" type="password" placeholder="Ripeti la password" required>
+        </div>
+        <div class="alert info" style="margin-bottom:16px;font-size:12px">
+          ℹ️ Registrandoti accetti che i tuoi dati vengano trattati dalla Polizia d'Estovia per i servizi richiesti.
+        </div>
+        <button type="submit" class="fbtn primary" style="width:100%;justify-content:center">📝 Registrati</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function switchTab(tab){
+  const isLogin = tab === 'login';
+  document.getElementById('form-login').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('form-register').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('tab-login').style.background = isLogin ? 'rgba(0,82,180,.15)' : 'transparent';
+  document.getElementById('tab-login').style.color = isLogin ? 'var(--blu4)' : 'var(--t3)';
+  document.getElementById('tab-register').style.background = isLogin ? 'transparent' : 'rgba(0,82,180,.15)';
+  document.getElementById('tab-register').style.color = isLogin ? 'var(--t3)' : 'var(--blu4)';
+}
+{% if tab == 'register' %}switchTab('register');{% endif %}
+</script>
+{% endblock %}
