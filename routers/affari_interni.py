@@ -1,7 +1,7 @@
 """
 Affari Interni — segnalazioni riservate.
-Portale pubblico: /ai/*           (nessun login)
-Gestionale:       /dashboard/ai/* (solo ruoli AI permission>=75 + dirigenza 100)
+Portale pubblico: /cittadini/affari-interni  (in cittadini.py)
+Gestionale:       /dashboard/ai/*            (solo ruoli AI permission>=75 + dirigenza 100)
 """
 from __future__ import annotations
 from datetime import datetime
@@ -19,7 +19,6 @@ router    = APIRouter(tags=["affari_interni"])
 templates = Jinja2Templates(directory="templates")
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
 def uid() -> str:
     return datetime.now().strftime("%Y%m%d%H%M%S") + "".join(random.choices(string.ascii_lowercase, k=4))
 
@@ -35,103 +34,20 @@ def _ser_list(docs):
     return [_ser(dict(d)) for d in docs]
 
 def _check_ai(user: dict):
-    """Solleva 403 se l'utente non è AI né dirigenza 100."""
     if not user.get("is_ai") and user.get("permission", 0) < 100:
         raise HTTPException(403, "Accesso riservato agli Affari Interni.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PORTALE PUBBLICO — nessun login richiesto
-# ══════════════════════════════════════════════════════════════════════════════
-
-@router.get("/ai", response_class=HTMLResponse)
-async def ai_home(request: Request):
-    return templates.TemplateResponse("ai/home.html", {
-        "request":      request,
-        "dipartimento": config.DIPARTIMENTO_NOME,
-    })
-
-
-@router.get("/ai/segnala", response_class=HTMLResponse)
-async def ai_segnala_form(request: Request):
-    return templates.TemplateResponse("ai/segnala.html", {
-        "request":      request,
-        "dipartimento": config.DIPARTIMENTO_NOME,
-        "inviata":      False,
-        "errore":       None,
-    })
-
-
-@router.post("/ai/segnala")
-async def ai_segnala_invia(
-    request:             Request,
-    anonima:             str = Form("no"),
-    segnalante_nome:     str = Form(""),
-    segnalante_cf:       str = Form(""),
-    segnalante_contatto: str = Form(""),
-    agente_nome:         str = Form(...),
-    agente_cf:           str = Form(""),
-    data_episodio:       str = Form(""),
-    luogo:               str = Form(""),
-    titolo:              str = Form(...),
-    descrizione:         str = Form(...),
-    prove:               str = Form(""),
-    priorita:            str = Form("normale"),
-):
-    if not titolo.strip() or not descrizione.strip() or not agente_nome.strip():
-        return templates.TemplateResponse("ai/segnala.html", {
-            "request":      request,
-            "dipartimento": config.DIPARTIMENTO_NOME,
-            "inviata":      False,
-            "errore":       "Compila tutti i campi obbligatori: titolo, agente segnalato, descrizione.",
-        })
-
-    from database import get_db
-    db = get_db()
-
-    is_anon = anonima == "si"
-    await db["segnalazioni_ai"].insert_one({
-        "id":                uid(),
-        "titolo":            titolo.strip(),
-        "descrizione":       descrizione.strip(),
-        "prove":             prove.strip(),
-        "agente_nome":       agente_nome.strip(),
-        "agente_cf":         agente_cf.strip(),
-        "data_episodio":     data_episodio,
-        "luogo":             luogo.strip(),
-        "priorita":          priorita,
-        "anonima":           is_anon,
-        "segnalante_nome":   "" if is_anon else segnalante_nome.strip(),
-        "segnalante_cf":     "" if is_anon else segnalante_cf.strip(),
-        "segnalante_contatto": "" if is_anon else segnalante_contatto.strip(),
-        "stato":             "aperta",
-        "note_interne":      "",
-        "assegnata_a":       "",
-        "ultima_modifica":   "",
-        "modificata_da":     "",
-        "timestamp":         datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "data":              oggi(),
-        "fonte":             "portale_pubblico",
-    })
-
-    return templates.TemplateResponse("ai/segnala.html", {
-        "request":      request,
-        "dipartimento": config.DIPARTIMENTO_NOME,
-        "inviata":      True,
-        "errore":       None,
-        "anonima":      is_anon,
-    })
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# GESTIONALE INTERNO — ruoli AI (permission>=75) + dirigenza (100)
+# GESTIONALE INTERNO
 # ══════════════════════════════════════════════════════════════════════════════
 
 @router.get("/dashboard/ai", response_class=HTMLResponse)
 async def ai_dashboard(
-    request: Request,
-    stato:   str = "",
-    q:       str = "",
+    request:  Request,
+    stato:    str = "",
+    priorita: str = "",
+    q:        str = "",
     user: dict = Depends(get_current_user_live),
 ):
     _check_ai(user)
@@ -141,11 +57,14 @@ async def ai_dashboard(
     filt: dict = {}
     if stato:
         filt["stato"] = stato
+    if priorita:
+        filt["priorita"] = priorita
     if q:
         filt["$or"] = [
-            {"titolo":     {"$regex": q, "$options": "i"}},
-            {"agente_nome":{"$regex": q, "$options": "i"}},
-            {"agente_cf":  {"$regex": q, "$options": "i"}},
+            {"titolo":      {"$regex": q, "$options": "i"}},
+            {"agente_nome": {"$regex": q, "$options": "i"}},
+            {"agente_cf":   {"$regex": q, "$options": "i"}},
+            {"descrizione": {"$regex": q, "$options": "i"}},
         ]
 
     segnalazioni = _ser_list(
@@ -165,6 +84,7 @@ async def ai_dashboard(
         "n_chiuse":     n_chiuse,
         "n_archivio":   n_arch,
         "stato":        stato,
+        "priorita":     priorita,
         "q":            q,
         "dipartimento": config.DIPARTIMENTO_NOME,
     })
@@ -202,9 +122,9 @@ async def ai_stato(
     from database import get_db
     db = get_db()
     update: dict = {
-        "stato":          stato,
+        "stato":           stato,
         "ultima_modifica": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "modificata_da":  user.get("nick") or user.get("username"),
+        "modificata_da":   user.get("nick") or user.get("username"),
     }
     if note_interne:
         update["note_interne"] = note_interne
@@ -214,15 +134,75 @@ async def ai_stato(
     return RedirectResponse(f"/dashboard/ai/{seg_id}", status_code=303)
 
 
+@router.post("/dashboard/ai/risposta")
+async def ai_risposta(
+    seg_id:   str = Form(...),
+    risposta: str = Form(...),
+    user: dict = Depends(get_current_user_live),
+):
+    _check_ai(user)
+    from database import get_db
+    db = get_db()
+    await db["segnalazioni_ai"].update_one(
+        {"_id": ObjectId(seg_id)},
+        {"$set": {
+            "risposta_operatore": risposta.strip(),
+            "risposta_data":      datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "modificata_da":      user.get("nick") or user.get("username"),
+            "ultima_modifica":    datetime.now().strftime("%Y-%m-%d %H:%M"),
+        }}
+    )
+    return RedirectResponse(f"/dashboard/ai/{seg_id}", status_code=303)
+
+
 @router.post("/dashboard/ai/elimina")
 async def ai_elimina(
     seg_id: str = Form(...),
     user: dict = Depends(get_current_user_live),
 ):
-    # Solo dirigenza 100 può eliminare definitivamente
     if user.get("permission", 0) < 100:
         raise HTTPException(403, "Solo la Dirigenza può eliminare segnalazioni AI.")
     from database import get_db
     db = get_db()
     await db["segnalazioni_ai"].delete_one({"_id": ObjectId(seg_id)})
+    return RedirectResponse("/dashboard/ai", status_code=303)
+
+
+# ── Vecchie route gestionale (compatibilità con segnalazioni_ai.html) ─────────
+@router.get("/dashboard/affari-interni", response_class=HTMLResponse)
+async def ai_dashboard_old(request: Request, user: dict = Depends(get_current_user_live)):
+    return RedirectResponse("/dashboard/ai")
+
+@router.post("/dashboard/affari-interni/stato")
+async def ai_stato_old(
+    segnalazione_id: str = Form(...),
+    stato:           str = Form(...),
+    note_interne:    str = Form(""),
+    user: dict = Depends(get_current_user_live),
+):
+    _check_ai(user)
+    from database import get_db
+    db = get_db()
+    update = {
+        "stato":           stato,
+        "ultima_modifica": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "modificata_da":   user.get("nick") or user.get("username"),
+    }
+    if note_interne:
+        update["note_interne"] = note_interne
+        update["aggiornata_da"] = user.get("nick") or user.get("username")
+        update["aggiornata_il"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+    await db["segnalazioni_ai"].update_one({"_id": ObjectId(segnalazione_id)}, {"$set": update})
+    return RedirectResponse("/dashboard/ai", status_code=303)
+
+@router.post("/dashboard/affari-interni/elimina")
+async def ai_elimina_old(
+    segnalazione_id: str = Form(...),
+    user: dict = Depends(get_current_user_live),
+):
+    if user.get("permission", 0) < 100:
+        raise HTTPException(403)
+    from database import get_db
+    db = get_db()
+    await db["segnalazioni_ai"].delete_one({"_id": ObjectId(segnalazione_id)})
     return RedirectResponse("/dashboard/ai", status_code=303)
