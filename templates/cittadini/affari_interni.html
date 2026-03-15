@@ -1,0 +1,155 @@
+{% extends "cittadini/base_cittadini.html" %}
+{% block title %}Segnalazione Affari Interni{% endblock %}
+{% set active = 'ai' %}
+
+{% block content %}
+<div class="page-sm">
+  <div style="padding:28px 0 20px">
+    <div style="font-size:36px;margin-bottom:10px">🔍</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">Segnalazione Affari Interni</h1>
+    <p style="font-size:13px;color:var(--t3)">Segnala comportamenti scorretti da parte di agenti del Dipartimento</p>
+  </div>
+
+  {% if inviata %}
+  <div class="alert success" style="padding:20px">
+    <div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px">✅ Segnalazione inviata con successo</div>
+      <div style="font-size:13px">La tua segnalazione è stata ricevuta dall'Ufficio Affari Interni e sarà esaminata con la massima riservatezza.</div>
+      {% if anonima %}
+      <div style="margin-top:10px;font-size:12px;color:var(--green2)">🎭 La tua segnalazione è stata inviata in forma anonima.</div>
+      {% endif %}
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <a href="/cittadini/affari-interni" class="fbtn primary" style="font-size:12px;padding:8px 18px">📤 Invia altra segnalazione</a>
+        <a href="/cittadini" class="fbtn secondary" style="font-size:12px;padding:8px 18px">🏠 Torna alla home</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+
+  <div class="alert warn" style="margin-bottom:20px">
+    ⚠️ Le segnalazioni agli Affari Interni sono riservate e vengono gestite esclusivamente dall'Ufficio AI. I tuoi dati sono protetti.
+  </div>
+
+  {% if errore %}
+  <div class="alert error">⚠️ {{ errore }}</div>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-head"><span>🔍</span><h3>Modulo Segnalazione Riservata</h3></div>
+    <div style="padding:24px">
+      <form method="post" action="/cittadini/affari-interni" id="form-ai">
+
+        <!-- Toggle anonima -->
+        <div class="section-title">Identità segnalante</div>
+        <div class="toggle-wrap" onclick="toggleAnonima()" id="toggle-wrap">
+          <div class="toggle" id="toggle-btn"></div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--t1)" id="toggle-label">Segnalazione nominativa</div>
+            <div style="font-size:11px;color:var(--t3)">Clicca per passare a segnalazione anonima</div>
+          </div>
+          <span class="badge blue" id="toggle-badge" style="margin-left:auto">Nominativa</span>
+        </div>
+        <input type="hidden" name="anonima" id="input-anonima" value="no">
+
+        <!-- Dati segnalante -->
+        <div id="dati-segnalante">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="flbl">Nome e Cognome</label>
+              <input class="finput" name="segnalante_nome" placeholder="Mario Rossi">
+            </div>
+            <div class="form-group">
+              <label class="flbl">Codice Fiscale</label>
+              <input class="finput" name="segnalante_cf" placeholder="RSSMRA80A01H501U" style="text-transform:uppercase">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="flbl">Contatto (Discord / Telefono)</label>
+            <input class="finput" name="segnalante_contatto" placeholder="Es. discord: utente#0000">
+            <span class="fhint">Opzionale — per permettere agli AI di contattarti se necessario</span>
+          </div>
+          <div class="divider"></div>
+        </div>
+
+        <!-- Agente segnalato -->
+        <div class="section-title">Agente segnalato</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Nome Agente <span style="color:var(--danger2)">*</span></label>
+            <input class="finput" name="agente_nome" placeholder="Nome dell'agente" required>
+          </div>
+          <div class="form-group">
+            <label class="flbl">Codice Fiscale Agente</label>
+            <input class="finput" name="agente_cf" placeholder="CF se conosciuto" style="text-transform:uppercase">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Episodio -->
+        <div class="section-title">Dettagli episodio</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Data episodio</label>
+            <input class="finput" name="data_episodio" type="date">
+          </div>
+          <div class="form-group">
+            <label class="flbl">Luogo <span style="color:var(--danger2)">*</span></label>
+            <input class="finput" name="luogo" placeholder="Es. Via Roma, zona centrale" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Titolo segnalazione <span style="color:var(--danger2)">*</span></label>
+          <input class="finput" name="titolo" placeholder="Breve descrizione dell'episodio" required>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Descrizione dettagliata <span style="color:var(--danger2)">*</span></label>
+          <textarea class="ftextarea" name="descrizione" rows="6" placeholder="Descrivi in dettaglio l'episodio, il comportamento scorretto e le circostanze..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Prove / Link / Riferimenti</label>
+          <textarea class="ftextarea" name="prove" rows="3" placeholder="Link a screenshot, video, testimonianze..."></textarea>
+          <span class="fhint">Opzionale — inserisci qualsiasi elemento utile all'indagine</span>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Priorità</label>
+          <select class="fselect" name="priorita">
+            <option value="normale">🔵 Normale</option>
+            <option value="alta">🟡 Alta — episodio grave</option>
+            <option value="urgente">🔴 Urgente — richiede intervento immediato</option>
+          </select>
+        </div>
+
+        <div class="alert info" style="margin-bottom:20px;font-size:12px">
+          🔒 Questa segnalazione sarà visibile solo all'Ufficio Affari Interni. Gli altri agenti del Dipartimento non avranno accesso.
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="fbtn primary" style="flex:1;justify-content:center">📤 Invia Segnalazione Riservata</button>
+          <a href="/cittadini" class="fbtn secondary">Annulla</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let isAnonima = false;
+function toggleAnonima(){
+  isAnonima = !isAnonima;
+  document.getElementById('input-anonima').value = isAnonima ? 'si' : 'no';
+  document.getElementById('toggle-btn').className = 'toggle' + (isAnonima ? ' on' : '');
+  document.getElementById('toggle-label').textContent = isAnonima ? 'Segnalazione anonima' : 'Segnalazione nominativa';
+  document.getElementById('toggle-badge').textContent = isAnonima ? 'Anonima' : 'Nominativa';
+  document.getElementById('toggle-badge').className = 'badge ' + (isAnonima ? 'purple' : 'blue');
+  document.getElementById('dati-segnalante').style.display = isAnonima ? 'none' : 'block';
+}
+</script>
+{% endblock %}
