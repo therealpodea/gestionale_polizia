@@ -29,9 +29,12 @@ async def badge_counts(user: dict = Depends(get_current_user_live)):
         "stato": "inviata"
     })
 
+    denunce_aperte = await db["denunce"].count_documents({"stato": "aperta"})
+
     return JSONResponse({
         "comunicati_unread":   comunicati_unread,
         "segnalazioni_aperte": segnalazioni_aperte,
         "ai_aperte":           ai_aperte,
         "pec_unread":          pec_unread,
+        "denunce_aperte":     denunce_aperte,
     })

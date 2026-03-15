@@ -21,6 +21,7 @@ from routers.api import router as api_router
 from routers.affari_interni import router as ai_router
 from routers.impostazioni import router as impostazioni_router
 from routers.documentazione import router as documentazione_router
+from routers.denunce import router as denunce_router
 
 # ── Assicura che le cartelle necessarie esistano ───────────────────────────────
 os.makedirs("static", exist_ok=True)
@@ -95,6 +96,7 @@ app.include_router(api_router)
 app.include_router(ai_router)
 app.include_router(impostazioni_router)
 app.include_router(documentazione_router)
+app.include_router(denunce_router)
 
 
 @app.get("/", response_class=HTMLResponse)

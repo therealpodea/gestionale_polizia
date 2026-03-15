@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Denuncia{% endblock %}
+{% block tb_title %}Denuncia{% endblock %}
+{% block tb_sub %} · Dettaglio procedimento{% endblock %}
+{% set active = 'denunce' %}
+{% block tb_right %}
+<a href="/dashboard/denunce" class="btn">← Torna all'elenco</a>
+{% if user.permission >= 100 %}
+<form method="post" action="/dashboard/denunce/elimina" style="display:inline">
+  <input type="hidden" name="denuncia_id" value="{{ d._id }}">
+  <button type="submit" class="btn danger" onclick="return confirm('Eliminare definitivamente?')">🗑️ Elimina</button>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 320px;gap:18px">
+
+  <!-- Colonna principale -->
+  <div>
+    <div class="card ani" style="border-color:rgba(157,114,245,.1)">
+      <div style="padding:20px 22px;border-bottom:1px solid rgba(157,114,245,.07)">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div style="width:4px;border-radius:2px;background:{% if d.priorita=='urgente' %}#e03535{% elif d.priorita=='alta' %}#e8970a{% else %}#3585e8{% endif %};align-self:stretch;flex-shrink:0;min-height:60px"></div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:800;color:var(--t1);margin-bottom:8px">
+              Denuncia contro: <span style="color:var(--danger2)">{{ d.denunciato_nome }}</span>
+              {% if d.denunciato_cf %}<span style="font-size:11px;color:var(--t3);font-weight:400">({{ d.denunciato_cf }})</span>{% endif %}
+            </div>
+            <div style="font-size:13px;color:var(--purple2);font-weight:600;margin-bottom:8px">⚖️ {{ d.capi_accusa }}</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap">
+              {% if d.stato=='aperta' %}<span class="badge red">🆕 Aperta</span>
+              {% elif d.stato=='in_analisi' %}<span class="badge blue">🔍 In Analisi</span>
+              {% elif d.stato=='info_richieste' %}<span class="badge warn">💬 Info Richieste</span>
+              {% elif d.stato=='risolta' %}<span class="badge green">✅ Risolta</span>
+              {% else %}<span class="badge purple">📦 Archiviata</span>{% endif %}
+              {% if d.priorita=='urgente' %}<span class="badge red">🔴 Urgente</span>
+              {% elif d.priorita=='alta' %}<span class="badge warn">🟡 Alta</span>{% endif %}
+              {% if d.risposta_agente %}<span class="badge green">💬 Risposto</span>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0;border-bottom:1px solid rgba(53,133,232,.05)">
+        {% for icon, label, value in [
+          ('📅','Data del fatto', d.data_fatto or '—'),
+          ('⏰','Ora', d.ora_fatto or '—'),
+          ('📍','Luogo', d.luogo or '—'),
+          ('👤','Denunciante', d.denunciante_nome or '—'),
+          ('🪪','CF Denunciante', d.denunciante_cf or '—'),
+          ('📨','Ricevuta il', d.timestamp),
+        ] %}
+        <div style="padding:11px 15px;border-right:1px solid rgba(53,133,232,.04);border-bottom:1px solid rgba(53,133,232,.04)">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:2px">{{ icon }} {{ label }}</div>
+          <div style="font-size:12px;color:var(--t2)">{{ value }}</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Dati denunciato -->
+      {% if d.denunciato_desc %}
+      <div style="padding:14px 20px;border-bottom:1px solid rgba(53,133,232,.04)">
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">🔍 Descrizione Denunciato</div>
+        <div style="font-size:13px;color:var(--t2)">{{ d.denunciato_desc }}</div>
+      </div>
+      {% endif %}
+
+      <!-- Descrizione -->
+      <div style="padding:18px 22px;border-bottom:1px solid rgba(53,133,232,.04)">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(157,114,245,.4);margin-bottom:10px">DESCRIZIONE DEL FATTO</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap;background:rgba(157,114,245,.02);border:1px solid rgba(157,114,245,.06);border-radius:8px;padding:14px">{{ d.descrizione }}</div>
+      </div>
+
+      {% if d.testimoni %}
+      <div style="padding:14px 20px;border-bottom:1px solid rgba(53,133,232,.04)">
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">👥 Testimoni</div>
+        <div style="font-size:13px;color:var(--t2)">{{ d.testimoni }}</div>
+      </div>
+      {% endif %}
+
+      {% if d.prove %}
+      <div style="padding:14px 20px;border-bottom:1px solid rgba(53,133,232,.04)">
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(53,133,232,.4);margin-bottom:8px">📎 Prove / Link</div>
+        <div style="font-size:13px;color:var(--blu4);line-height:1.7;white-space:pre-wrap">{{ d.prove }}</div>
+      </div>
+      {% endif %}
+
+      {% if d.danno %}
+      <div style="padding:14px 20px">
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">💸 Danno Subito</div>
+        <div style="font-size:13px;color:var(--warn2)">{{ d.danno }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Note interne -->
+    {% if d.note_interne %}
+    <div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(53,133,232,.1)">
+      <div class="card-head"><span>📝</span><h3>Note Interne</h3>
+        {% if d.modificata_da %}<div class="ch-right"><span style="font-size:10px;color:var(--t3)">{{ d.modificata_da }} · {{ d.ultima_modifica }}</span></div>{% endif %}
+      </div>
+      <div style="padding:14px 18px;font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap">{{ d.note_interne }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Risposta agente -->
+    {% if d.risposta_agente %}
+    <div class="card ani mt-4" style="animation-delay:.08s;border-color:rgba(14,165,114,.12)">
+      <div class="card-head"><span>💬</span><h3>Risposta inviata al denunciante</h3>
+        <div class="ch-right"><span class="badge green">{{ d.risposta_data or '' }}</span></div>
+      </div>
+      <div style="padding:14px 18px;font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap">{{ d.risposta_agente }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Colonna destra -->
+  <div>
+    <!-- Gestione stato -->
+    <div class="card ani" style="border-color:rgba(157,114,245,.1)">
+      <div class="card-head"><span>⚙️</span><h3>Gestione</h3></div>
+      <div style="padding:14px">
+        <form method="post" action="/dashboard/denunce/stato">
+          <input type="hidden" name="denuncia_id" value="{{ d._id }}">
+          <div style="margin-bottom:10px">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:5px">Stato</div>
+            <select name="stato" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid var(--bdr2);background:var(--bg3);color:var(--t1);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer">
+              <option value="aperta" {% if d.stato=='aperta' %}selected{% endif %}>🆕 Aperta</option>
+              <option value="in_analisi" {% if d.stato=='in_analisi' %}selected{% endif %}>🔍 In Analisi</option>
+              <option value="info_richieste" {% if d.stato=='info_richieste' %}selected{% endif %}>💬 Info Richieste</option>
+              <option value="risolta" {% if d.stato=='risolta' %}selected{% endif %}>✅ Risolta</option>
+              <option value="archiviata" {% if d.stato=='archiviata' %}selected{% endif %}>📦 Archiviata</option>
+            </select>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:5px">Note interne riservate</div>
+            <textarea name="note_interne" rows="4" placeholder="Note visibili solo agli agenti…" style="width:100%;background:rgba(255,255,255,.02);border:1px solid var(--bdr2);border-radius:6px;color:var(--t1);font-size:11px;padding:8px 10px;font-family:'Inter',sans-serif;resize:vertical;outline:none">{{ d.note_interne or '' }}</textarea>
+          </div>
+          <button type="submit" class="btn primary" style="width:100%;justify-content:center;font-size:11px">💾 Aggiorna</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Risposta al denunciante -->
+    <div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(14,165,114,.1)">
+      <div class="card-head"><span>💬</span><h3>Risposta al Denunciante</h3></div>
+      <div style="padding:14px">
+        <form method="post" action="/dashboard/denunce/risposta">
+          <input type="hidden" name="denuncia_id" value="{{ d._id }}">
+          <textarea name="risposta" rows="5" placeholder="Scrivi la risposta al cittadino denunciante…" style="width:100%;background:rgba(255,255,255,.02);border:1px solid rgba(14,165,114,.12);border-radius:6px;color:var(--t1);font-size:12px;padding:10px;font-family:'Inter',sans-serif;resize:vertical;outline:none;margin-bottom:10px">{{ d.risposta_agente or '' }}</textarea>
+          <button type="submit" class="btn success" style="width:100%;justify-content:center;font-size:11px">💬 Invia Risposta</button>
+        </form>
+        <div style="font-size:10px;color:var(--t3);margin-top:8px">La risposta sarà visibile al cittadino tramite il codice denuncia.</div>
+      </div>
+    </div>
+
+    {% if d.ultima_modifica %}
+    <div class="card ani mt-4" style="animation-delay:.08s">
+      <div class="card-head"><span>🕐</span><h3>Ultima modifica</h3></div>
+      <div style="padding:10px 14px;font-size:11px;color:var(--t3)">{{ d.ultima_modifica }} · <span style="color:var(--t2)">{{ d.modificata_da }}</span></div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

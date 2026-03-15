@@ -481,3 +481,108 @@ async def accesso_negato(request: Request, motivo: str = ""):
         "motivo":  motivo or "Accesso non autorizzato.",
         "dipartimento": config.DIPARTIMENTO_NOME,
     })
+
+
+# ── Denuncia pubblica ─────────────────────────────────────────────────────────
+@router.get("/cittadini/denuncia", response_class=HTMLResponse)
+async def denuncia_form(request: Request):
+    cittadino = await _get_cittadino(request)
+    return templates.TemplateResponse("cittadini/denuncia.html", {
+        "request":      request,
+        "cittadino":    cittadino,
+        "dipartimento": config.DIPARTIMENTO_NOME,
+        "inviata":      False,
+        "errore":       None,
+        "codice":       None,
+    })
+
+
+@router.post("/cittadini/denuncia")
+async def denuncia_invia(
+    request:             Request,
+    denunciante_nome:    str = Form(""),
+    denunciante_cf:      str = Form(""),
+    denunciante_contatto:str = Form(""),
+    denunciato_nome:     str = Form(...),
+    denunciato_cf:       str = Form(""),
+    denunciato_desc:     str = Form(""),
+    data_fatto:          str = Form(...),
+    ora_fatto:           str = Form(""),
+    luogo:               str = Form(...),
+    capi_accusa:         str = Form(...),
+    descrizione:         str = Form(...),
+    testimoni:           str = Form(""),
+    prove:               str = Form(""),
+    danno:               str = Form(""),
+    priorita:            str = Form("normale"),
+):
+    if not denunciato_nome.strip() or not descrizione.strip() or not capi_accusa.strip():
+        cittadino = await _get_cittadino(request)
+        return templates.TemplateResponse("cittadini/denuncia.html", {
+            "request":      request,
+            "cittadino":    cittadino,
+            "dipartimento": config.DIPARTIMENTO_NOME,
+            "inviata":      False,
+            "errore":       "Compila tutti i campi obbligatori.",
+            "codice":       None,
+        })
+
+    from database import get_db
+    db = get_db()
+    codice = _gen_codice()
+
+    cittadino = await _get_cittadino(request)
+    if cittadino and cittadino.get("cf") and not denunciante_cf:
+        denunciante_nome = f"{cittadino.get('nome','')} {cittadino.get('cognome','')}".strip()
+        denunciante_cf   = cittadino.get("cf", "")
+
+    await db["denunce"].insert_one({
+        "id":                  codice,
+        "denunciante_nome":    denunciante_nome.strip(),
+        "denunciante_cf":      denunciante_cf.strip().upper(),
+        "denunciante_contatto":denunciante_contatto.strip(),
+        "denunciato_nome":     denunciato_nome.strip(),
+        "denunciato_cf":       denunciato_cf.strip().upper(),
+        "denunciato_desc":     denunciato_desc.strip(),
+        "data_fatto":          data_fatto,
+        "ora_fatto":           ora_fatto,
+        "luogo":               luogo.strip(),
+        "capi_accusa":         capi_accusa.strip(),
+        "descrizione":         descrizione.strip(),
+        "testimoni":           testimoni.strip(),
+        "prove":               prove.strip(),
+        "danno":               danno.strip(),
+        "priorita":            priorita,
+        "stato":               "aperta",
+        "note_interne":        "",
+        "risposta_agente":     "",
+        "risposta_data":       "",
+        "ultima_modifica":     "",
+        "modificata_da":       "",
+        "timestamp":           datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "data":                oggi(),
+        "fonte":               "portale_pubblico",
+    })
+
+    # Se il denunciato ha un CF registrato, aggiorna la sua fedina
+    if denunciato_cf:
+        await db["cittadini"].update_one(
+            {"cf": denunciato_cf.strip().upper()},
+            {"$push": {"fedina": {
+                "reato":     capi_accusa.strip(),
+                "data":      data_fatto,
+                "luogo":     luogo.strip(),
+                "sanzione":  "",
+                "note":      f"Denuncia #{codice}",
+                "stato":     "in_corso",
+            }}}
+        )
+
+    return templates.TemplateResponse("cittadini/denuncia.html", {
+        "request":      request,
+        "cittadino":    cittadino,
+        "dipartimento": config.DIPARTIMENTO_NOME,
+        "inviata":      True,
+        "errore":       None,
+        "codice":       codice,
+    })

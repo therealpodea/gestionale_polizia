@@ -1,0 +1,160 @@
+{% extends "cittadini/base_cittadini.html" %}
+{% block title %}Sporgi Denuncia{% endblock %}
+{% set active = 'denuncia' %}
+
+{% block content %}
+<div class="page-sm">
+  <div class="ani" style="padding:28px 0 20px">
+    <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Polizia d'Estovia — Servizi Legali</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--t1);margin-bottom:8px">⚖️ Sporgi Denuncia</h1>
+    <p style="font-size:13px;color:var(--t3);line-height:1.6">Presenta una denuncia formale al Dipartimento. Tutti i dati forniti saranno trattati con riservatezza.</p>
+  </div>
+
+  {% if inviata %}
+  <div class="alert success ani" style="padding:22px">
+    <div style="font-size:28px;margin-right:4px">✅</div>
+    <div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">Denuncia presentata con successo</div>
+      <div style="font-size:13px;margin-bottom:12px">La tua denuncia è stata ricevuta dal Dipartimento e sarà esaminata dagli agenti competenti.</div>
+      {% if codice %}
+      <div style="padding:12px 16px;background:rgba(14,165,114,.1);border:1px solid rgba(14,165,114,.18);border-radius:8px;margin-bottom:14px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(46,201,138,.6);margin-bottom:5px">Codice Denuncia</div>
+        <div style="font-size:18px;font-weight:800;color:var(--green2);letter-spacing:3px">{{ codice }}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px">Conserva questo codice per verificare lo stato della tua denuncia</div>
+      </div>
+      {% endif %}
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="/cittadini/stato-segnalazione" class="fbtn success" style="font-size:12px;padding:8px 16px">🔎 Verifica stato</a>
+        <a href="/cittadini" class="fbtn secondary" style="font-size:12px;padding:8px 16px">🏠 Home</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+
+  {% if errore %}<div class="alert error ani">⚠️ {{ errore }}</div>{% endif %}
+
+  <div class="card ani">
+    <div class="card-head"><span>⚖️</span><h3>Modulo Denuncia Formale</h3></div>
+    <div style="padding:24px">
+      <form method="post" action="/cittadini/denuncia">
+
+        <!-- Denunciante -->
+        <div class="section-title">Dati del Denunciante</div>
+        {% if cittadino and cittadino.cf %}
+        <div style="padding:12px 14px;background:rgba(53,133,232,.05);border:1px solid rgba(53,133,232,.1);border-radius:8px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+          <div class="avatar" style="width:36px;height:36px;border:2px solid rgba(53,133,232,.2)">
+            {% if cittadino.avatar_url %}<img src="{{ cittadino.avatar_url }}" alt="">
+            {% else %}<span style="font-size:14px">{{ (cittadino.nome or '?')[0]|upper }}</span>{% endif %}
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--t1)">{{ cittadino.nome }} {{ cittadino.cognome }}</div>
+            <div style="font-size:11px;color:var(--t3)">CF: {{ cittadino.cf }} · @{{ cittadino.username }}</div>
+          </div>
+          <span class="badge green" style="margin-left:auto">✓ Verificato</span>
+        </div>
+        <input type="hidden" name="denunciante_nome" value="{{ cittadino.nome }} {{ cittadino.cognome }}">
+        <input type="hidden" name="denunciante_cf" value="{{ cittadino.cf }}">
+        {% else %}
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Nome e Cognome <span>*</span></label>
+            <input class="finput" name="denunciante_nome" placeholder="Mario Rossi" required>
+          </div>
+          <div class="form-group">
+            <label class="flbl">Codice Fiscale <span>*</span></label>
+            <input class="finput" name="denunciante_cf" placeholder="RSSMRA80A01H501U" style="text-transform:uppercase" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Contatto</label>
+          <input class="finput" name="denunciante_contatto" placeholder="Discord / Telefono">
+        </div>
+        {% endif %}
+
+        <div class="divider"></div>
+
+        <!-- Denunciato -->
+        <div class="section-title">Dati del Denunciato</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Nome e Cognome <span>*</span></label>
+            <input class="finput" name="denunciato_nome" placeholder="Nome del soggetto" required>
+          </div>
+          <div class="form-group">
+            <label class="flbl">Codice Fiscale</label>
+            <input class="finput" name="denunciato_cf" placeholder="Se conosciuto" style="text-transform:uppercase">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Descrizione del soggetto</label>
+          <input class="finput" name="denunciato_desc" placeholder="Caratteristiche fisiche, veicolo, ecc.">
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Episodio -->
+        <div class="section-title">Dettagli del Reato</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Data del Fatto <span>*</span></label>
+            <input class="finput" name="data_fatto" type="date" required>
+          </div>
+          <div class="form-group">
+            <label class="flbl">Ora approssimativa</label>
+            <input class="finput" name="ora_fatto" type="time">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Luogo <span>*</span></label>
+          <input class="finput" name="luogo" placeholder="Via, zona, indirizzo del fatto" required>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Capi d'Accusa / Reati contestati <span>*</span></label>
+          <input class="finput" name="capi_accusa" placeholder="Es. Furto, Aggressione, Truffa, Danneggiamento..." required>
+          <span class="fhint">Elenca i reati separati da virgola</span>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Descrizione dettagliata <span>*</span></label>
+          <textarea class="ftextarea" name="descrizione" rows="6" placeholder="Descrivi in dettaglio l'accaduto, la sequenza degli eventi, eventuali testimoni presenti..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Testimoni</label>
+          <input class="finput" name="testimoni" placeholder="Nomi dei testimoni (se presenti)">
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Prove / Link / Riferimenti</label>
+          <textarea class="ftextarea" name="prove" rows="3" placeholder="Link a screenshot, video, documenti, ecc."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Danno subito</label>
+          <input class="finput" name="danno" placeholder="Es. Furto di €500, lesioni fisiche, danni alla proprietà...">
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Priorità</label>
+          <select class="fselect" name="priorita">
+            <option value="normale">🔵 Normale</option>
+            <option value="alta">🟡 Alta — reato grave</option>
+            <option value="urgente">🔴 Urgente — pericolo immediato</option>
+          </select>
+        </div>
+
+        <div class="alert info" style="margin-bottom:18px;font-size:12px">
+          📋 Presentando questa denuncia dichiari che le informazioni fornite sono veritiere. Dichiarazioni false costituiscono reato.
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="fbtn primary" style="flex:1;justify-content:center;font-size:14px;padding:12px">⚖️ Presenta Denuncia</button>
+          <a href="/cittadini" class="fbtn secondary" style="padding:12px 18px">Annulla</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
