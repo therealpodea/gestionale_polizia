@@ -69,6 +69,8 @@ async def lifespan(app: FastAPI):
     await database.connect_db()
     db = database.get_db()
     await setup_bot(bot, db)
+    # Avvia il bot in background senza bloccare il webserver
+    asyncio.create_task(run_bot())
     yield
     await database.close_db()
 
@@ -101,10 +103,14 @@ async def index(request: Request):
 
 # ── Avvio ──────────────────────────────────────────────────────────────────────
 async def run_bot():
-    await bot.start(config.DISCORD_BOT_TOKEN)
+    try:
+        await bot.start(config.DISCORD_BOT_TOKEN)
+    except Exception as e:
+        print(f"[BOT] Errore avvio bot: {e}")
 
 
-async def run_webserver():
+async def main():
+    print("🚀 Avvio Gestionale Polizia d'Estovia...")
     port = int(os.getenv("PORT", config.APP_PORT))
     server_config = uvicorn.Config(
         app=app,
@@ -114,11 +120,6 @@ async def run_webserver():
     )
     server = uvicorn.Server(server_config)
     await server.serve()
-
-
-async def main():
-    print("🚀 Avvio Gestionale Polizia d'Estovia...")
-    await asyncio.gather(run_bot(), run_webserver())
 
 
 if __name__ == "__main__":
