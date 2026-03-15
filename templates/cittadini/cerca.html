@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cerca Agente — Polizia d'Estovia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#04060f;color:#e8f0ff;min-height:100vh;padding:40px 20px}
+    :root{--bdr2:rgba(59,142,234,.1);--blu4:#3b8eea}
+    .box{max-width:600px;margin:0 auto}
+    .back{display:inline-flex;align-items:center;gap:6px;color:#3d5472;font-size:12px;text-decoration:none;margin-bottom:20px}
+    .search-box{display:flex;gap:10px;margin-bottom:24px}
+    .finput{background:rgba(255,255,255,.03);border:1px solid var(--bdr2);border-radius:6px;color:#e8f0ff;font-size:14px;padding:10px 14px;outline:none;flex:1;font-family:'Inter',sans-serif}
+    .finput:focus{border-color:rgba(59,142,234,.3)}
+    .btn{padding:10px 20px;border-radius:6px;background:rgba(0,82,180,.14);border:1px solid rgba(59,142,234,.35);color:#3b8eea;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+    .title{font-size:22px;font-weight:700;color:#e8f0ff;margin-bottom:6px}
+    .sub{font-size:13px;color:#3d5472;margin-bottom:24px}
+    .agente-card{background:rgba(6,9,20,.8);border:1px solid var(--bdr2);border-radius:8px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+    .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#003d8f,#1a6dd4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+    .name{font-size:15px;font-weight:600;color:#e8f0ff}
+    .grado{font-size:11px;color:#3b8eea;letter-spacing:1px;margin-top:2px}
+    .badge{display:inline-flex;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+    .badge.green{background:rgba(16,185,129,.12);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+    .badge.red{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+    .no-res{text-align:center;padding:40px;color:#3d5472;font-style:italic}
+  </style>
+</head>
+<body>
+<div class="box">
+  <a href="/cittadini" class="back">← Torna al portale</a>
+  <div class="title">🔍 Cerca un Agente</div>
+  <div class="sub">Ricerca per nome, cognome o codice fiscale.</div>
+  <form method="get" class="search-box">
+    <input class="finput" name="q" value="{{ q }}" placeholder="Es. Rossi Mario oppure RSSMR…">
+    <button type="submit" class="btn">Cerca</button>
+  </form>
+  {% if q %}
+    {% if agenti %}
+    {% for a in agenti %}
+    <div class="agente-card">
+      <div class="av">{{ a.nome[0] if a.nome else '?' }}{{ a.cognome[0] if a.cognome else '' }}</div>
+      <div style="flex:1">
+        <div class="name">{{ a.nome }} {{ a.cognome }}</div>
+        <div class="grado">🎖️ {{ a.grado }}</div>
+      </div>
+      {% if a.stato=='Attivo' %}<span class="badge green">● In Servizio</span>
+      {% elif a.stato=='Sospeso' %}<span class="badge red">● Sospeso</span>
+      {% else %}<span class="badge" style="background:rgba(0,82,180,.12);color:#3b8eea;border:1px solid rgba(59,142,234,.2)">● {{ a.stato }}</span>{% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="no-res">Nessun agente trovato per "{{ q }}".</div>
+    {% endif %}
+  {% endif %}
+</div>
+</body>
+</html>

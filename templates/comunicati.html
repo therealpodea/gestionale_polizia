@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Comunicati{% endblock %}
+{% block tb_title %}Comunicati{% endblock %}
+{% block tb_sub %} · Bacheca Interna{% endblock %}
+{% set active = 'comunicati' %}
+{% block tb_right %}
+{% if user.permission >= 50 %}
+<button class="btn primary" onclick="openModal('modal-nuovo')">📢 Nuovo Comunicato</button>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="card ani">
+  <div class="card-head"><span>📢</span><h3>Comunicati del Dipartimento</h3><div class="ch-right"><span class="badge blue">{{ comunicati|length }}</span></div></div>
+  {% if comunicati %}
+  {% for c in comunicati %}
+  <div style="padding:14px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+      {% if not c.letto %}<div style="width:7px;height:7px;border-radius:50%;background:#3b8eea;flex-shrink:0;box-shadow:0 0 8px rgba(59,142,234,.7)"></div>{% endif %}
+      {% if c.priorita=='urgente' %}<span class="badge red">🔴 URGENTE</span>
+      {% elif c.priorita=='importante' %}<span class="badge warn">🟡 IMPORTANTE</span>
+      {% else %}<span class="badge blue">🔵 INFO</span>{% endif %}
+      <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:#e8f0ff;flex:1">{{ c.titolo }}</span>
+      {% if user.permission >= 50 %}
+      <button class="btn" onclick="openEditModal('{{ c._id }}','{{ c.titolo|replace("'","\\'")|replace('"','\\"') }}',`{{ c.corpo|replace('`','\\`') }}`,'{{ c.priorita }}')">✏️</button>
+      <form method="post" action="/dashboard/comunicati/elimina" style="display:inline">
+        <input type="hidden" name="comunicato_id" value="{{ c._id }}">
+        <button type="submit" class="btn danger" onclick="return confirm('Eliminare?')">🗑️</button>
+      </form>
+      {% endif %}
+    </div>
+    <div style="font-size:14px;color:#8ba8cc;line-height:1.6;white-space:pre-wrap">{{ c.corpo }}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+      <div style="font-size:11px;color:#3d5472;font-style:italic">{{ c.data }} · {{ c.autore }} · Letto da {{ c.letto_da|length }} agenti</div>
+      <form method="post" action="/dashboard/comunicati/visto" style="display:inline">
+        <input type="hidden" name="comunicato_id" value="{{ c._id }}">
+        <button type="submit" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid {% if c.letto %}var(--green){% else %}var(--bdr){% endif %};background:{% if c.letto %}var(--green-dim){% else %}var(--bg3){% endif %};color:{% if c.letto %}var(--green2){% else %}var(--t3){% endif %};font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s">
+          👁️ {{ c.letto_da|length }} Visto
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div style="padding:40px;text-align:center;font-style:italic;color:#3d5472">Nessun comunicato pubblicato.</div>
+  {% endif %}
+</div>
+
+<!-- MODAL NUOVO -->
+<div class="overlay" id="modal-nuovo">
+  <div class="modal md">
+    <div class="modal-head"><div class="modal-title">NUOVO COMUNICATO</div><button class="m-close" onclick="closeModal('modal-nuovo')">✕</button></div>
+    <div class="modal-body">
+      <form method="post" action="/dashboard/comunicati/add">
+        <div class="form-grid">
+          <div class="fg"><label class="flbl">Titolo *</label><input class="finput" name="titolo" required></div>
+          <div class="fg"><label class="flbl">Priorità</label>
+            <select class="fselect" name="priorita">
+              <option value="normale">🔵 Info</option>
+              <option value="importante">🟡 Importante</option>
+              <option value="urgente">🔴 Urgente</option>
+            </select>
+          </div>
+          <div class="fg"><label class="flbl">Contenuto *</label><textarea class="ftextarea" name="corpo" rows="5" required></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="fbtn primary">Pubblica</button>
+          <button type="button" class="fbtn secondary" onclick="closeModal('modal-nuovo')">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFICA -->
+<div class="overlay" id="modal-modifica">
+  <div class="modal md">
+    <div class="modal-head"><div class="modal-title">MODIFICA COMUNICATO</div><button class="m-close" onclick="closeModal('modal-modifica')">✕</button></div>
+    <div class="modal-body">
+      <form method="post" action="/dashboard/comunicati/modifica">
+        <input type="hidden" name="comunicato_id" id="edit-id">
+        <div class="form-grid">
+          <div class="fg"><label class="flbl">Titolo *</label><input class="finput" name="titolo" id="edit-titolo" required></div>
+          <div class="fg"><label class="flbl">Priorità</label>
+            <select class="fselect" name="priorita" id="edit-priorita">
+              <option value="normale">🔵 Info</option>
+              <option value="importante">🟡 Importante</option>
+              <option value="urgente">🔴 Urgente</option>
+            </select>
+          </div>
+          <div class="fg"><label class="flbl">Contenuto *</label><textarea class="ftextarea" name="corpo" id="edit-corpo" rows="5" required></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="fbtn primary">Salva</button>
+          <button type="button" class="fbtn secondary" onclick="closeModal('modal-modifica')">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+function openEditModal(id, titolo, corpo, priorita){
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-titolo').value = titolo;
+  document.getElementById('edit-corpo').value = corpo;
+  document.getElementById('edit-priorita').value = priorita;
+  openModal('modal-modifica');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Aggiungi Agente{% endblock %}
+{% block tb_title %}Aggiungi Agente{% endblock %}
+{% set active = 'agenti' %}
+{% block content %}
+<div class="card ani" style="max-width:640px">
+  <div class="card-head"><span>➕</span><h3>Nuovo Agente</h3></div>
+  <div style="padding:20px 24px">
+    <form method="post" action="/dashboard/agenti/add">
+      <div class="form-grid">
+        <div class="form-row">
+          <div class="fg"><label class="flbl">Nome *</label><input class="finput" name="nome" required></div>
+          <div class="fg"><label class="flbl">Cognome *</label><input class="finput" name="cognome" required></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label class="flbl">Codice Fiscale *</label><input class="finput" name="cf" required></div>
+          <div class="fg"><label class="flbl">Discord ID</label><input class="finput" name="discord_id" placeholder="ID numerico Discord"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label class="flbl">Nick / Username</label><input class="finput" name="nick"></div>
+          <div class="fg"><label class="flbl">Data Ingresso</label><input class="finput" name="data_ingresso" type="date"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label class="flbl">Grado *</label>
+            <select class="fselect" name="grado" required>
+              <option value="">— Seleziona —</option>
+              {% for g in gradi %}<option>{{ g }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="fg"><label class="flbl">Stato</label>
+            <select class="fselect" name="stato">
+              {% for s in ['Attivo','In Prova','Sospeso','Congedato'] %}<option>{{ s }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label class="flbl">Note</label><textarea class="ftextarea" name="note" rows="3"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="fbtn primary">Salva Agente</button>
+        <a href="/dashboard/agenti" class="fbtn secondary">Annulla</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

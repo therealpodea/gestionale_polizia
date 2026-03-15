@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}PEC{% endblock %}
+{% block tb_title %}PEC{% endblock %}
+{% block tb_sub %} · Posta Interna{% endblock %}
+{% set active = 'pec' %}
+{% block tb_right %}<button class="btn primary" onclick="openModal('modal-nuova')">✉️ Nuova PEC</button>{% endblock %}
+{% block content %}
+
+<div style="display:grid;grid-template-columns:200px 1fr;gap:16px;height:calc(100vh - 160px)">
+
+  <!-- Cartelle -->
+  <div class="card" style="padding:0;overflow:hidden;align-self:start">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--bdr2);font-size:10px;letter-spacing:2px;color:#3d5472;text-transform:uppercase">Cartelle</div>
+    {% for key, icon, label, count in [
+      ('in',  '📥', 'In Arrivo', unread),
+      ('out', '📤', 'Inviata',   0),
+      ('bozze','📝','Bozze',     bozze|length)
+    ] %}
+    <a href="/dashboard/pec?cartella={{ key }}" style="display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;text-decoration:none;background:{% if cartella==key %}rgba(0,82,180,.08){% else %}transparent{% endif %};border-left:3px solid {% if cartella==key %}var(--blu4){% else %}transparent{% endif %};transition:all .15s">
+      <span>{{ icon }}</span>
+      <span style="font-size:11px;letter-spacing:.5px;color:{% if cartella==key %}var(--blu4){% else %}var(--t2){% endif %}">{{ label }}</span>
+      {% if count > 0 %}<span style="margin-left:auto;background:var(--blu2);color:#fff;border-radius:10px;padding:2px 7px;font-size:10px">{{ count }}</span>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Lista messaggi -->
+  <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:13px 18px;border-bottom:1px solid var(--bdr2);font-size:10px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;flex-shrink:0">
+      {% if cartella=='in' %}In Arrivo{% elif cartella=='out' %}Posta Inviata{% else %}Bozze{% endif %}
+       · {{ lista|length }} messaggi
+    </div>
+    <div style="flex:1;overflow-y:auto">
+      {% if lista %}
+      {% for p in lista %}
+      <div onclick="openPecDetail({{ p | tojson | replace("'", "&#39;") }})" style="display:flex;flex-direction:column;gap:4px;padding:13px 18px;border-bottom:1px solid var(--bdr2);cursor:pointer;background:{% if not p.letta and cartella=='in' %}rgba(0,82,180,.04){% else %}transparent{% endif %};transition:background .15s" onmouseover="this.style.background='rgba(0,82,180,.04)'" onmouseout="this.style.background='{% if not p.letta and cartella=='in' %}rgba(0,82,180,.04){% else %}transparent{% endif %}'">
+        <div style="display:flex;align-items:center;gap:8px">
+          {% if not p.letta and cartella=='in' %}<div style="width:7px;height:7px;border-radius:50%;background:var(--blu4);flex-shrink:0"></div>{% else %}<div style="width:7px"></div>{% endif %}
+          <span style="font-size:12px;font-weight:700;color:#e8f0ff">{% if cartella=='in' %}{{ p.mitt_nome }}{% else %}→ {{ p.dest_nome }}{% endif %}</span>
+          <span style="margin-left:auto;font-size:12px;color:#3d5472">{{ p.data }}</span>
+          {% if p.priorita=='urgente' %}<span class="badge red" style="font-size:9px;padding:1px 6px">URGENTE</span>{% endif %}
+        </div>
+        <div style="font-size:12px;color:#8ba8cc;padding-left:15px">{{ p.oggetto }}</div>
+        <div style="font-size:12px;color:#3d5472;padding-left:15px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden">{{ p.corpo }}</div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div style="padding:50px;text-align:center;font-style:italic;color:#3d5472">Nessun messaggio</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUOVA PEC -->
+<div class="overlay" id="modal-nuova">
+  <div class="modal md">
+    <div class="modal-head"><div class="modal-title">NUOVA PEC</div><button class="m-close" onclick="closeModal('modal-nuova')">✕</button></div>
+    <div class="modal-body">
+      <form method="post" action="/dashboard/pec/invia">
+        <div class="form-grid">
+          <div class="fg">
+            <label class="flbl">Destinatario *</label>
+            <select class="fselect" name="dest_id" id="pec-dest" onchange="updateDestNome(this)">
+              <option value="">— Seleziona —</option>
+              {% for a in agenti %}
+              {% if a.discord_id and a.discord_id != my_id %}
+              <option value="{{ a.discord_id }}" data-nome="{{ a.nick or (a.nome + ' ' + a.cognome) }}">
+                {{ a.nick or (a.nome + ' ' + a.cognome) }}
+              </option>
+              {% endif %}
+              {% endfor %}
+            </select>
+            <input type="hidden" name="dest_nome" id="pec-dest-nome">
+          </div>
+          <div class="fg">
+            <label class="flbl">Priorità</label>
+            <select class="fselect" name="priorita">
+              <option value="normale">Normale</option>
+              <option value="urgente">🔴 Urgente</option>
+            </select>
+          </div>
+          <div class="fg"><label class="flbl">Oggetto *</label><input class="finput" name="oggetto" required></div>
+          <div class="fg"><label class="flbl">Messaggio *</label><textarea class="ftextarea" name="corpo" rows="5" required></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" name="stato" value="inviata" class="fbtn primary">📤 Invia</button>
+          <button type="submit" name="stato" value="bozza" class="fbtn secondary">💾 Salva Bozza</button>
+          <button type="button" class="fbtn secondary" onclick="closeModal('modal-nuova')">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETTAGLIO PEC -->
+<div class="overlay" id="modal-dettaglio">
+  <div class="modal md">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="det-oggetto">—</div>
+        <div id="det-prio" style="margin-top:4px"></div>
+      </div>
+      <button class="m-close" onclick="closeModal('modal-dettaglio')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div style="background:rgba(0,82,180,.04);border:1px solid var(--bdr2);border-radius:6px;padding:10px 12px">
+          <div style="font-size:9px;letter-spacing:1.5px;color:#3d5472;text-transform:uppercase;margin-bottom:3px">Da</div>
+          <div style="font-size:13px;color:#e8f0ff" id="det-da">—</div>
+        </div>
+        <div style="background:rgba(0,82,180,.04);border:1px solid var(--bdr2);border-radius:6px;padding:10px 12px">
+          <div style="font-size:9px;letter-spacing:1.5px;color:#3d5472;text-transform:uppercase;margin-bottom:3px">A</div>
+          <div style="font-size:13px;color:#e8f0ff" id="det-a">—</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#3d5472;margin-bottom:12px" id="det-data"></div>
+      <div style="font-size:14px;color:#8ba8cc;line-height:1.7;white-space:pre-wrap;background:rgba(0,0,0,.15);border-radius:6px;padding:14px;border:1px solid var(--bdr2)" id="det-corpo">—</div>
+      <div class="form-actions" style="margin-top:14px">
+        <button class="fbtn primary" id="det-rispondi">↩️ Rispondi</button>
+        <form method="post" action="/dashboard/pec/leggi" id="form-leggi" style="display:none">
+          <input type="hidden" name="pec_id" id="det-id-leggi">
+        </form>
+        <form method="post" action="/dashboard/pec/elimina" style="display:inline">
+          <input type="hidden" name="pec_id" id="det-id-elimina">
+          <button type="submit" class="fbtn danger" onclick="return confirm('Eliminare questo messaggio?')">🗑 Elimina</button>
+        </form>
+        <button class="fbtn secondary" onclick="closeModal('modal-dettaglio')">Chiudi</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function updateDestNome(sel){
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('pec-dest-nome').value = opt.dataset.nome || '';
+}
+
+function openPecDetail(p){
+  document.getElementById('det-oggetto').textContent = p.oggetto || '(senza oggetto)';
+  document.getElementById('det-da').textContent   = p.mitt_nome || '—';
+  document.getElementById('det-a').textContent    = p.dest_nome || '—';
+  document.getElementById('det-data').textContent = p.data || '';
+  document.getElementById('det-corpo').textContent = p.corpo || '';
+  document.getElementById('det-id-leggi').value   = p._id;
+  document.getElementById('det-id-elimina').value = p._id;
+  const prio = document.getElementById('det-prio');
+  prio.innerHTML = p.priorita === 'urgente' ? '<span class="badge red">🔴 URGENTE</span>' : '';
+  // Rispondi
+  document.getElementById('det-rispondi').onclick = () => {
+    closeModal('modal-dettaglio');
+    document.getElementById('pec-dest').value = p.mitt_id || '';
+    document.getElementById('pec-dest-nome').value = p.mitt_nome || '';
+    document.querySelector('[name="oggetto"]').value = 'Re: ' + (p.oggetto || '');
+    openModal('modal-nuova');
+  };
+  // Segna come letta
+  if(!p.letta){ document.getElementById('form-leggi').submit(); return; }
+  openModal('modal-dettaglio');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Affari Interni{% endblock %}
+{% block tb_title %}Affari Interni{% endblock %}
+{% block tb_sub %} · Segnalazioni riservate{% endblock %}
+{% set active = 'ai' %}
+
+{% block content %}
+<!-- KPI -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px" class="ani">
+  <div class="kpi" style="border-color:rgba(239,68,68,.2)">
+    <div class="kpi-icon">🚨</div>
+    <div class="kpi-val" style="color:#ef4444">{{ n_aperte }}</div>
+    <div class="kpi-lbl" style="color:rgba(239,68,68,.5)">Aperte</div>
+  </div>
+  <div class="kpi blue"><div class="kpi-icon">🔍</div><div class="kpi-val">{{ n_corso }}</div><div class="kpi-lbl">In Istruttoria</div></div>
+  <div class="kpi green"><div class="kpi-icon">✅</div><div class="kpi-val">{{ n_chiuse }}</div><div class="kpi-lbl">Chiuse</div></div>
+  <div class="kpi" style="border-color:rgba(139,92,246,.2)">
+    <div class="kpi-icon">📦</div>
+    <div class="kpi-val" style="color:#a78bfa">{{ n_archivio }}</div>
+    <div class="kpi-lbl" style="color:rgba(139,92,246,.5)">Archiviate</div>
+  </div>
+</div>
+
+<!-- Filtri -->
+<div class="card ani mt-4" style="border-color:rgba(239,68,68,.1);animation-delay:.05s">
+  <form class="filter-bar" method="get">
+    <input class="f-input" name="q" placeholder="🔍 Cerca agente, titolo…" value="{{ q }}">
+    <select class="f-select" name="stato" onchange="this.form.submit()">
+      <option value="">Tutti gli stati</option>
+      <option value="aperta"     {% if stato=='aperta'     %}selected{% endif %}>🔴 Aperta</option>
+      <option value="in_corso"   {% if stato=='in_corso'   %}selected{% endif %}>🔵 In Istruttoria</option>
+      <option value="chiusa"     {% if stato=='chiusa'     %}selected{% endif %}>✅ Chiusa</option>
+      <option value="archiviata" {% if stato=='archiviata' %}selected{% endif %}>📦 Archiviata</option>
+    </select>
+    <button type="submit" class="btn primary">Filtra</button>
+    <span style="margin-left:auto;font-size:9px;color:#3d5472;letter-spacing:1px">{{ segnalazioni|length }} segnalazioni</span>
+  </form>
+
+  {% if segnalazioni %}
+  {% for s in segnalazioni %}
+  {% set col_stato = '#ef4444' if s.stato=='aperta' else '#3b8eea' if s.stato=='in_corso' else '#10b981' if s.stato=='chiusa' else '#8b5cf6' %}
+  {% set col_prio  = '#ef4444' if s.priorita=='urgente' else '#f59e0b' if s.priorita=='alta' else '#3b8eea' %}
+
+  <div style="border-bottom:1px solid rgba(239,68,68,.05)">
+    <div style="padding:14px 20px;display:flex;align-items:flex-start;gap:12px">
+      <div style="width:3px;min-height:60px;border-radius:2px;background:{{ col_prio }};flex-shrink:0;align-self:stretch"></div>
+      <div style="flex:1;min-width:0">
+        <!-- Badges -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px">
+          <a href="/dashboard/ai/{{ s._id }}" style="font-size:13px;font-weight:700;color:#f87171;text-decoration:none;hover:underline">
+            [{{ s.agente_nome }}] {{ s.titolo }}
+          </a>
+          <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;letter-spacing:1px;font-weight:700">
+            {% if s.stato=='aperta' %}APERTA{% elif s.stato=='in_corso' %}IN ISTRUTTORIA{% elif s.stato=='chiusa' %}CHIUSA{% else %}ARCHIVIATA{% endif %}
+          </span>
+          {% if s.priorita=='urgente' %}<span class="badge red">🔴 URGENTE</span>
+          {% elif s.priorita=='alta' %}<span class="badge warn">🟡 ALTA</span>{% endif %}
+          {% if s.anonima %}<span class="badge purple">🎭 ANONIMA</span>{% endif %}
+        </div>
+        <!-- Info -->
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:#3d5472;margin-bottom:7px">
+          {% if not s.anonima and s.segnalante_nome %}<span>👤 {{ s.segnalante_nome }}</span>{% elif s.anonima %}<span>👤 Anonimo</span>{% endif %}
+          {% if s.luogo %}<span>📍 {{ s.luogo }}</span>{% endif %}
+          {% if s.data_episodio %}<span>📅 {{ s.data_episodio }}</span>{% endif %}
+          <span>📨 {{ s.data }}</span>
+        </div>
+        <!-- Desc preview -->
+        <div style="font-size:13px;color:#8ba8cc;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ s.descrizione }}</div>
+      </div>
+      <a href="/dashboard/ai/{{ s._id }}" class="btn primary" style="flex-shrink:0;font-size:11px">Apri →</a>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div style="padding:50px;text-align:center;font-style:italic;color:#3d5472">
+    <div style="font-size:36px;margin-bottom:12px">🔍</div>
+    Nessuna segnalazione{% if stato or q %} per i filtri selezionati{% endif %}.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

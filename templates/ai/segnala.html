@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Segnalazione AI — Polizia d'Estovia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#04060f;color:#e8f0ff;min-height:100vh;padding:40px 20px}
+    :root{
+      --bdr2:rgba(59,142,234,.10);--danger:#ef4444;--danger2:#f87171;
+      --danger-dim:rgba(239,68,68,.12);--warn2:#fbbf24;--blu4:#3b8eea;
+      --green:#10b981;--green2:#34d399;--t1:#e8f0ff;--t2:#8ba8cc;--t3:#3d5472;
+    }
+    .wrap{max-width:640px;margin:0 auto}
+    .back{display:inline-flex;align-items:center;gap:6px;color:var(--t3);font-size:12px;text-decoration:none;margin-bottom:24px}
+    .back:hover{color:var(--t2)}
+    .page-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--danger2);text-transform:uppercase;margin-bottom:14px}
+    .page-title{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--t1);margin-bottom:8px}
+    .page-sub{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:24px}
+    .card{background:linear-gradient(145deg,#060914,#04060f);border:1px solid rgba(239,68,68,.1);border-radius:12px;overflow:hidden;margin-bottom:16px}
+    .card::before{content:'';display:block;height:2px;background:linear-gradient(90deg,transparent,#ef4444 20%,#f87171 50%,#ef4444 80%,transparent)}
+    .section{padding:18px 22px;border-bottom:1px solid rgba(239,68,68,.06)}
+    .section:last-child{border-bottom:none}
+    .sec-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(239,68,68,.5);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:rgba(239,68,68,.07)}
+    .anonima-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .radio-card{position:relative}
+    .radio-card input{position:absolute;opacity:0;width:0}
+    .radio-card label{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:8px;border:1px solid var(--bdr2);background:rgba(255,255,255,.02);cursor:pointer;font-size:13px;color:var(--t2);transition:all .2s;font-weight:500}
+    .radio-card input:checked + label{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.06);color:var(--danger2)}
+    .info-note{font-size:11px;color:var(--t3);padding:8px 10px;background:rgba(0,0,0,.2);border-radius:6px;border:1px solid var(--bdr2);line-height:1.6}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:0}
+    .fg.full{grid-column:1/-1}
+    .fg+.fg{margin-top:10px}
+    .flbl{font-size:10px;font-weight:600;letter-spacing:1.5px;color:rgba(239,68,68,.4);text-transform:uppercase}
+    .flbl.req::after{content:' *';color:var(--danger2)}
+    .finput,.fselect,.ftextarea{background:rgba(255,255,255,.03);border:1px solid var(--bdr2);border-radius:6px;color:var(--t1);font-size:14px;padding:9px 12px;outline:none;transition:all .2s;width:100%;font-family:'Inter',sans-serif}
+    .finput:focus,.fselect:focus,.ftextarea:focus{border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.02)}
+    .finput::placeholder,.ftextarea::placeholder{color:rgba(139,168,204,.18)}
+    .ftextarea{resize:vertical;min-height:100px;line-height:1.6}
+    .fselect option{background:#060914}
+    .fnote{font-size:11px;color:var(--t3);margin-top:3px}
+    .prio-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .prio-opt{position:relative}
+    .prio-opt input{position:absolute;opacity:0;width:0}
+    .prio-opt label{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:7px;border:1px solid var(--bdr2);background:rgba(255,255,255,.02);cursor:pointer;font-size:12px;font-weight:600;color:var(--t2);transition:all .2s}
+    .prio-opt.n input:checked + label{border-color:rgba(59,142,234,.4);background:rgba(0,82,180,.08);color:var(--blu4)}
+    .prio-opt.a input:checked + label{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08);color:var(--warn2)}
+    .prio-opt.u input:checked + label{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08);color:var(--danger2)}
+    .submit-btn{width:100%;padding:14px;border-radius:8px;background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(220,38,38,.12));border:1px solid rgba(239,68,68,.3);color:var(--danger2);font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.5px;font-family:'Inter',sans-serif;transition:all .22s}
+    .submit-btn:hover{background:linear-gradient(135deg,rgba(239,68,68,.3),rgba(220,38,38,.2));transform:translateY(-1px)}
+    .alert-err{background:var(--danger-dim);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--danger2);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    /* Successo */
+    .success{background:linear-gradient(145deg,#060914,#04060f);border:1px solid rgba(16,185,129,.2);border-radius:12px;overflow:hidden;text-align:center}
+    .success::before{content:'';display:block;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent)}
+    .success-body{padding:44px 32px}
+    .success-icon{font-size:56px;margin-bottom:16px}
+    .success-title{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--green2);margin-bottom:10px}
+    .success-sub{font-size:14px;color:var(--t2);line-height:1.6;max-width:400px;margin:0 auto 16px}
+    .success-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:20px;font-size:11px;color:var(--green2)}
+    .home-link{display:inline-flex;align-items:center;gap:6px;margin-top:18px;color:var(--t3);font-size:12px;text-decoration:none}
+    #segnalante-fields{margin-top:12px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a href="/ai" class="back">← Torna agli Affari Interni</a>
+
+  {% if inviata %}
+  <div class="success">
+    <div class="success-body">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Segnalazione Ricevuta</div>
+      <div class="success-sub">La tua segnalazione è stata trasmessa all'Ufficio Affari Interni e sarà esaminata con la massima riservatezza.</div>
+      {% if anonima %}
+      <span class="success-badge">🎭 Inviata in forma anonima</span>
+      {% else %}
+      <span class="success-badge" style="border-color:rgba(59,142,234,.2);color:#3b8eea">🔒 I tuoi dati sono riservati agli AI</span>
+      {% endif %}
+      <div><a href="/ai" class="home-link">← Torna agli Affari Interni</a></div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="page-badge">🔍 Affari Interni</div>
+  <div class="page-title">Invia Segnalazione</div>
+  <div class="page-sub">Segnala un comportamento scorretto di un agente. Tutte le segnalazioni sono esaminate in modo riservato dall'Ufficio Affari Interni.</div>
+
+  {% if errore %}<div class="alert-err">⚠️ {{ errore }}</div>{% endif %}
+
+  <form method="post" action="/ai/segnala">
+    <div class="card">
+
+      <!-- IDENTITÀ -->
+      <div class="section">
+        <div class="sec-title">🎭 Tua identità</div>
+        <div class="anonima-row">
+          <div class="radio-card">
+            <input type="radio" name="anonima" id="an-no" value="no" checked onchange="toggleAnon(false)">
+            <label for="an-no">🪪 Con identità</label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="anonima" id="an-si" value="si" onchange="toggleAnon(true)">
+            <label for="an-si">🎭 Anonima</label>
+          </div>
+        </div>
+        <div class="info-note" id="note-no">I tuoi dati saranno visibili <b>solo agli Affari Interni</b>, mai all'agente segnalato. Fornire i tuoi dati aumenta la credibilità della segnalazione.</div>
+        <div class="info-note" id="note-si" style="display:none">Nessun dato identificativo verrà registrato.</div>
+        <div id="segnalante-fields">
+          <div class="form-row" style="margin-top:12px">
+            <div class="fg"><label class="flbl">Nome e Cognome</label><input class="finput" name="segnalante_nome" placeholder="Mario Rossi"></div>
+            <div class="fg"><label class="flbl">Codice Fiscale</label><input class="finput" name="segnalante_cf" placeholder="Opzionale"></div>
+          </div>
+          <div class="fg" style="margin-top:10px">
+            <label class="flbl">Contatto (opzionale)</label>
+            <input class="finput" name="segnalante_contatto" placeholder="Discord, email o altro recapito per eventuali follow-up">
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENTE SEGNALATO -->
+      <div class="section">
+        <div class="sec-title">👮 Agente segnalato</div>
+        <div class="form-row">
+          <div class="fg"><label class="flbl req">Nome / Nickname *</label><input class="finput" name="agente_nome" required placeholder="Nome, cognome o nick Discord"></div>
+          <div class="fg"><label class="flbl">Codice Fiscale</label><input class="finput" name="agente_cf" placeholder="Se conosciuto"></div>
+        </div>
+      </div>
+
+      <!-- TITOLO -->
+      <div class="section">
+        <div class="sec-title">📌 Oggetto della segnalazione</div>
+        <div class="fg"><label class="flbl req">Titolo *</label><input class="finput" name="titolo" required placeholder="Es. Abuso di potere durante pattugliamento del 12/03"></div>
+      </div>
+
+      <!-- EPISODIO -->
+      <div class="section">
+        <div class="sec-title">📋 Dettagli episodio</div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="fg"><label class="flbl">Data episodio</label><input class="finput" name="data_episodio" type="date"></div>
+          <div class="fg"><label class="flbl">Luogo</label><input class="finput" name="luogo" placeholder="Es. Via Roma, Distretto 3"></div>
+        </div>
+        <div class="fg" style="margin-bottom:12px">
+          <label class="flbl req">Descrizione dettagliata *</label>
+          <textarea class="ftextarea" name="descrizione" rows="5" required placeholder="Descrivi con precisione cosa è accaduto, le circostanze e il comportamento contestato…"></textarea>
+        </div>
+        <div class="fg">
+          <label class="flbl">Prove / Link screenshot</label>
+          <textarea class="ftextarea" name="prove" rows="3" placeholder="Link a screenshot, registrazioni o altri elementi probatori…"></textarea>
+          <div class="fnote">Puoi inserire più link separati da una riga vuota.</div>
+        </div>
+      </div>
+
+      <!-- GRAVITÀ -->
+      <div class="section">
+        <div class="sec-title">⚠️ Gravità</div>
+        <div class="prio-row">
+          <div class="prio-opt n"><input type="radio" name="priorita" id="p-n" value="normale" checked><label for="p-n">🔵 Normale</label></div>
+          <div class="prio-opt a"><input type="radio" name="priorita" id="p-a" value="alta"><label for="p-a">🟡 Alta</label></div>
+          <div class="prio-opt u"><input type="radio" name="priorita" id="p-u" value="urgente"><label for="p-u">🔴 Urgente</label></div>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="section">
+        <button type="submit" class="submit-btn">🔍 Invia Segnalazione agli Affari Interni</button>
+        <div style="font-size:11px;color:#3d5472;text-align:center;margin-top:10px">Inviando dichiari che le informazioni fornite sono veritiere al meglio delle tue conoscenze.</div>
+      </div>
+
+    </div>
+  </form>
+  {% endif %}
+</div>
+<script>
+function toggleAnon(si){
+  document.getElementById('segnalante-fields').style.display = si?'none':'block';
+  document.getElementById('note-no').style.display = si?'none':'block';
+  document.getElementById('note-si').style.display = si?'block':'none';
+}
+</script>
+</body>
+</html>

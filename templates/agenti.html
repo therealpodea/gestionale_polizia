@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Agenti{% endblock %}
+{% block tb_title %}Registro Agenti{% endblock %}
+{% block tb_sub %} · Elenco personale{% endblock %}
+{% set active = 'agenti' %}
+{% block tb_right %}<a href="/dashboard/agenti/add" class="btn primary">➕ Aggiungi Agente</a>{% endblock %}
+{% block content %}
+<div class="card ani">
+  <form class="filter-bar" method="get">
+    <input class="f-input" name="q" placeholder="🔍 Cerca nome, CF, discord…" value="{{ q }}">
+    <select class="f-select" name="stato" onchange="this.form.submit()">
+      <option value="">Tutti gli stati</option>
+      {% for s in ['Attivo','Sospeso','In Prova','Congedato'] %}
+      <option {% if stato==s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <select class="f-select" name="grado" onchange="this.form.submit()">
+      <option value="">Tutti i gradi</option>
+      {% for g in gradi %}
+      <option {% if grado==g %}selected{% endif %}>{{ g }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn primary">Cerca</button>
+    <span style="margin-left:auto;font-size:9px;color:#3d5472;letter-spacing:1px">{{ agenti|length }} risultati</span>
+  </form>
+  <table class="tbl">
+    <thead><tr>
+      <th>Agente</th><th>Codice Fiscale</th><th>Discord</th><th>Grado</th><th>Stato</th><th>Sanzione</th><th>Ingresso</th><th>Azioni</th>
+    </tr></thead>
+    <tbody>
+    {% if agenti %}
+    {% for a in agenti %}
+    <tr class="clickable" onclick="window.location='/dashboard/agenti/{{ a._id }}'">
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#003d8f,#1a6dd4);flex-shrink:0">{{ a.nome[0] if a.nome else '?' }}{{ a.cognome[0] if a.cognome else '' }}</div>
+        <b style="font-size:12px;letter-spacing:.3px">{{ a.cognome }} {{ a.nome }}</b>
+      </div></td>
+      <td style="color:#8ba8cc;font-size:12px;letter-spacing:1px">{{ a.cf or '—' }}</td>
+      <td style="color:#6aaeff;font-weight:600">@{{ a.nick or a.username }}</td>
+      <td style="font-size:11px;letter-spacing:1px;color:#3b8eea">{{ a.grado }}</td>
+      <td>{% if a.stato=='Attivo' %}<span class="badge green">● Attivo</span>
+          {% elif a.stato=='Sospeso' %}<span class="badge red">● Sospeso</span>
+          {% elif a.stato=='In Prova' %}<span class="badge warn">● In Prova</span>
+          {% else %}<span class="badge blue">● Congedato</span>{% endif %}</td>
+      <td>{% if a.sanzione %}
+          {% if a.sanzione=='SOSPENSIONE' %}<span class="badge red">🔴 {{ a.sanzione }}</span>
+          {% else %}<span class="badge warn">🟠 {{ a.sanzione }}</span>{% endif %}
+          {% else %}<span class="badge green">✅ Nessuna</span>{% endif %}</td>
+      <td style="color:#3d5472;font-size:12px;font-style:italic">{{ a.data_ingresso or '—' }}</td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;gap:4px">
+          <a href="/dashboard/agenti/{{ a._id }}" class="btn">📋</a>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr><td colspan="8" style="text-align:center;padding:28px;font-style:italic;color:#3d5472">Nessun agente trovato.</td></tr>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

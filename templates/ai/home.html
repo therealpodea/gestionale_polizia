@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Affari Interni — Polizia d'Estovia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#04060f;color:#e8f0ff;min-height:100vh}
+    :root{--bdr2:rgba(239,68,68,.1)}
+    .hero{background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(220,38,38,.02)),#04060f;border-bottom:1px solid var(--bdr2);padding:60px 40px;text-align:center}
+    .hero-icon{font-size:64px;margin-bottom:20px}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.5px;color:#f87171;text-transform:uppercase;margin-bottom:16px}
+    .hero-title{font-family:'Cinzel',serif;font-size:34px;font-weight:700;color:#e8f0ff;margin-bottom:10px}
+    .hero-title b{background:linear-gradient(135deg,#f87171,#fca5a5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-sub{font-size:14px;color:#8ba8cc;max-width:520px;margin:0 auto;line-height:1.7}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:800px;margin:40px auto;padding:0 40px}
+    .card{background:linear-gradient(145deg,#060914,#04060f);border:1px solid rgba(239,68,68,.12);border-radius:10px;padding:28px;text-decoration:none;color:inherit;transition:all .25s;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ef4444,transparent)}
+    .card:hover{border-color:rgba(239,68,68,.25);transform:translateY(-2px);box-shadow:0 16px 40px rgba(239,68,68,.08)}
+    .card-icon{font-size:32px;margin-bottom:14px}
+    .card-title{font-size:16px;font-weight:700;color:#f87171;margin-bottom:6px}
+    .card-desc{font-size:13px;color:#8ba8cc;line-height:1.6}
+    .footer{text-align:center;padding:40px;font-size:12px;color:#3d5472;border-top:1px solid rgba(239,68,68,.06)}
+    .login-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:6px 14px;background:rgba(0,82,180,.08);border:1px solid rgba(59,142,234,.2);border-radius:20px;color:#3b8eea;font-size:11px;font-weight:600;text-decoration:none;letter-spacing:.5px}
+    .warning-box{max-width:600px;margin:24px auto 0;padding:14px 20px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:8px;font-size:12px;color:#fbbf24;line-height:1.6;text-align:left}
+  </style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-icon">🔍</div>
+  <div class="hero-badge">⚖️ Sezione Riservata</div>
+  <div class="hero-title">Affari <b>Interni</b></div>
+  <div class="hero-sub">Portale ufficiale per le segnalazioni di condotta degli agenti della Polizia d'Estovia. Tutte le segnalazioni sono trattate con la massima riservatezza.</div>
+  <div class="warning-box">
+    ⚠️ <strong>Avviso:</strong> Le segnalazioni false o diffamatorie sono perseguibili. Utilizza questo portale solo per segnalazioni fondate e veritiere.
+  </div>
+  <a href="/auth/login" class="login-link" style="margin-top:20px">🔐 Accesso Personale</a>
+</div>
+<div class="cards">
+  <a href="/ai/segnala" class="card">
+    <div class="card-icon">📋</div>
+    <div class="card-title">Invia Segnalazione</div>
+    <div class="card-desc">Segnala un comportamento scorretto, un abuso di potere o una condotta illecita da parte di un agente. Puoi scegliere di inviare la segnalazione in forma anonima.</div>
+  </a>
+  <a href="/cittadini" class="card" style="border-color:rgba(59,142,234,.12)">
+    <div class="card-icon" style="color:#3b8eea">🚔</div>
+    <div class="card-title" style="color:#3b8eea">Portale Cittadini</div>
+    <div class="card-desc">Torna al portale principale della Polizia d'Estovia per altri servizi.</div>
+  </a>
+</div>
+<div class="footer">Polizia d'Estovia — Ufficio Affari Interni · <a href="/auth/login" style="color:#3b8eea">Accesso personale</a></div>
+</body>
+</html>

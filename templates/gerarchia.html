@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Gerarchia{% endblock %}
+{% block tb_title %}Gerarchia{% endblock %}
+{% block tb_sub %} · Struttura del Dipartimento{% endblock %}
+{% set active = 'gerarchia' %}
+{% block content %}
+<div class="card ani">
+  <div class="card-head"><span>🏛️</span><h3>Struttura Gerarchica del Dipartimento</h3><div class="ch-right"><span class="badge blue">{{ agenti|length }} agenti</span></div></div>
+  {% if agenti %}
+  {% for a in agenti %}
+  {% set i = loop.index %}
+  <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid rgba(0,82,180,.05);transition:background .15s" onmouseover="this.style.background='rgba(0,82,180,.04)'" onmouseout="this.style.background=''">
+    <div style="font-size:18px;font-weight:800;width:28px;text-align:center;flex-shrink:0;color:{% if i==1 %}#FFD700{% elif i==2 %}#C0C0C0{% elif i==3 %}#CD7F32{% else %}rgba(59,142,234,.3){% endif %}">{{ i }}</div>
+    <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#003d8f,#1a6dd4);flex-shrink:0">{{ a.nome[0] if a.nome else '?' }}{{ a.cognome[0] if a.cognome else '' }}</div>
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:600;color:#e8f0ff">{{ a.nome }} {{ a.cognome }}</div>
+      <div style="font-size:10px;letter-spacing:1px;color:#3b8eea;margin-top:1px">🎖️ {{ a.grado }}</div>
+    </div>
+    {% if a.stato=='Attivo' %}<span class="badge green">● Attivo</span>
+    {% elif a.stato=='Sospeso' %}<span class="badge red">● Sospeso</span>
+    {% elif a.stato=='In Prova' %}<span class="badge warn">● In Prova</span>
+    {% else %}<span class="badge blue">● Congedato</span>{% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <div style="padding:40px;text-align:center;font-style:italic;color:#3d5472">Nessun agente nel dipartimento.</div>
+  {% endif %}
+</div>
+{% endblock %}

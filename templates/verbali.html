@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Verbali{% endblock %}
+{% block tb_title %}Verbali Operativi{% endblock %}
+{% block tb_sub %} · Rapporti di servizio{% endblock %}
+{% set active = 'verbali' %}
+{% block tb_right %}<button class="btn primary" onclick="openModal('modal-nuovo')">📝 Nuovo Verbale</button>{% endblock %}
+{% block content %}
+<div class="card ani">
+  <div class="card-head"><span>📝</span><h3>Archivio Verbali</h3><div class="ch-right"><span class="badge blue">{{ verbali|length }}</span></div></div>
+  {% if verbali %}
+  {% for v in verbali %}
+  <div style="padding:14px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">
+          <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:#e8f0ff">{{ v.titolo }}</span>
+          {% if v.esito=='Positivo' %}<span class="badge green">✅ Positivo</span>
+          {% elif v.esito=='Negativo' %}<span class="badge red">❌ Negativo</span>
+          {% else %}<span class="badge blue">➖ Neutro</span>{% endif %}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-bottom:8px">
+          <div style="font-size:11px;color:#3d5472">📍 <span style="color:#8ba8cc">{{ v.luogo }}</span></div>
+          <div style="font-size:11px;color:#3d5472">⏱ <span style="color:#8ba8cc">{{ v.data_ora }}</span></div>
+          {% if v.soggetti %}<div style="font-size:11px;color:#3d5472">👤 <span style="color:#8ba8cc">{{ v.soggetti }}</span></div>{% endif %}
+          {% if v.agenti_int %}<div style="font-size:11px;color:#3d5472">👮 <span style="color:#8ba8cc">{{ v.agenti_int }}</span></div>{% endif %}
+        </div>
+        <div style="font-size:13px;color:#8ba8cc;line-height:1.5">{{ v.descrizione }}</div>
+        {% if v.note %}<div style="font-size:12px;color:#3d5472;margin-top:4px;font-style:italic">📎 {{ v.note }}</div>{% endif %}
+        <div style="font-size:11px;color:#3d5472;margin-top:6px">✍️ {{ v.autore }} · {{ v.data }}</div>
+      </div>
+      {% if user.permission >= 50 %}
+      <form method="post" action="/dashboard/verbali/elimina">
+        <input type="hidden" name="verbale_id" value="{{ v._id }}">
+        <button type="submit" class="btn danger" onclick="return confirm('Eliminare questo verbale?')" style="font-size:11px;padding:5px 10px;flex-shrink:0">🗑</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div style="padding:40px;text-align:center;font-style:italic;color:#3d5472">Nessun verbale depositato.</div>
+  {% endif %}
+</div>
+
+<!-- MODAL NUOVO VERBALE -->
+<div class="overlay" id="modal-nuovo">
+  <div class="modal lg">
+    <div class="modal-head"><div class="modal-title">NUOVO VERBALE OPERATIVO</div><button class="m-close" onclick="closeModal('modal-nuovo')">✕</button></div>
+    <div class="modal-body">
+      <form method="post" action="/dashboard/verbali/add">
+        <div class="form-grid">
+          <div class="form-row">
+            <div class="fg">
+              <label class="flbl">Tipo Operazione *</label>
+              <select class="fselect" name="tipo" required>
+                <option value="">— Seleziona —</option>
+                {% for t in ['Controllo Documenti','Fermo di Polizia','Arresto','Perquisizione','Pattugliamento','Intervento','Incidente Stradale','Operazione Speciale','Altro'] %}
+                <option>{{ t }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="fg"><label class="flbl">Luogo *</label><input class="finput" name="luogo" required placeholder="Es. Via Roma, 12"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="flbl">Data e Ora</label><input class="finput" name="data_ora" type="datetime-local"></div>
+            <div class="fg"><label class="flbl">Esito</label>
+              <select class="fselect" name="esito">
+                <option>Positivo</option><option>Negativo</option><option>Neutro</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="flbl">Soggetti Coinvolti</label><input class="finput" name="soggetti" placeholder="Nomi/CF dei soggetti"></div>
+            <div class="fg"><label class="flbl">Agenti Intervenuti</label><input class="finput" name="agenti_int" placeholder="Nomi degli agenti presenti"></div>
+          </div>
+          <div class="fg"><label class="flbl">Descrizione Operazione *</label><textarea class="ftextarea" name="descrizione" rows="4" required placeholder="Descrivi dettagliatamente lo svolgimento dell'operazione…"></textarea></div>
+          <div class="fg"><label class="flbl">Note Aggiuntive</label><textarea class="ftextarea" name="note" rows="2" placeholder="Eventuali note o osservazioni…"></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="fbtn primary">📝 Deposita Verbale</button>
+          <button type="button" class="fbtn secondary" onclick="closeModal('modal-nuovo')">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

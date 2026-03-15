@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Statistiche{% endblock %}
+{% block tb_title %}Statistiche{% endblock %}
+{% block tb_sub %} · Analisi del Dipartimento{% endblock %}
+{% set active = 'statistiche' %}
+{% block extra_head %}
+<style>
+canvas{max-height:220px}
+</style>
+{% endblock %}
+{% block content %}
+<!-- KPI -->
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px" class="ani">
+  <div class="kpi blue"><div class="kpi-icon">👮</div><div class="kpi-val">{{ attivi+sospesi+inprova+congedati }}</div><div class="kpi-lbl">Organico</div></div>
+  <div class="kpi green"><div class="kpi-icon">✅</div><div class="kpi-val">{{ attivi }}</div><div class="kpi-lbl">In Servizio</div></div>
+  <div class="kpi warn"><div class="kpi-icon">⚠️</div><div class="kpi-val">{{ sospesi }}</div><div class="kpi-lbl">Sospesi</div></div>
+  <div class="kpi purple"><div class="kpi-icon">🔼</div><div class="kpi-val">{{ tot_prom }}</div><div class="kpi-lbl">Promozioni</div></div>
+  <div class="kpi" style="border-color:rgba(245,158,11,.2)"><div class="kpi-icon">🚨</div><div class="kpi-val" style="color:#f59e0b">{{ tot_san }}</div><div class="kpi-lbl" style="color:rgba(245,158,11,.55)">Sanzioni</div></div>
+</div>
+
+<div class="grid-2 mt-4">
+  <!-- Trend 12 mesi -->
+  <div class="card ani" style="animation-delay:.05s">
+    <div class="card-head"><span>📈</span><h3>Trend Ultimi 12 Mesi</h3></div>
+    <div style="padding:16px"><canvas id="chartTrend"></canvas></div>
+  </div>
+
+  <!-- Donut stati -->
+  <div class="card ani" style="animation-delay:.08s">
+    <div class="card-head"><span>🍩</span><h3>Distribuzione Stati</h3></div>
+    <div style="padding:16px;display:flex;align-items:center;justify-content:center"><canvas id="chartDonut" style="max-width:200px;max-height:200px"></canvas></div>
+  </div>
+</div>
+
+<div class="grid-2 mt-4">
+  <!-- Gradi -->
+  <div class="card ani" style="animation-delay:.1s">
+    <div class="card-head"><span>🎖️</span><h3>Distribuzione Gradi</h3></div>
+    <div style="padding:16px"><canvas id="chartGradi"></canvas></div>
+  </div>
+
+  <!-- Top sanzionati -->
+  <div class="card ani" style="animation-delay:.12s">
+    <div class="card-head"><span>🏆</span><h3>Più Sanzionati</h3></div>
+    <div style="padding:8px 0">
+    {% if top_san %}
+    {% for t in top_san %}
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+      <div style="font-size:18px;font-weight:800;width:28px;text-align:center;color:rgba(59,142,234,.4)">{{ loop.index }}</div>
+      <div style="flex:1;font-size:14px;font-weight:600;color:#e8f0ff">{{ t._id }}</div>
+      <span class="badge warn">{{ t.count }} sanzioni</span>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div style="padding:24px;text-align:center;color:#3d5472;font-style:italic">Nessuna sanzione registrata.</div>
+    {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const chartDefaults = {
+  plugins: {
+    tooltip: {
+      backgroundColor:'rgba(4,6,15,.95)',
+      borderColor:'rgba(59,142,234,.2)',
+      borderWidth:1,
+      titleFont:{family:"'Inter',sans-serif",size:11},
+      bodyFont:{family:"'Inter',sans-serif",size:11},
+      padding:10,
+    },
+    legend:{labels:{color:'rgba(139,168,204,.7)',font:{family:"'Inter',sans-serif",size:10}}}
+  }
+};
+
+// Trend
+new Chart(document.getElementById('chartTrend'),{
+  type:'line',
+  data:{
+    labels: {{ mesi_labels | tojson }},
+    datasets:[
+      {label:'Promozioni',data:{{ mesi_prom | tojson }},borderColor:'#3b8eea',backgroundColor:'rgba(59,142,234,.08)',tension:.4,pointRadius:3,borderWidth:2},
+      {label:'Sanzioni',  data:{{ mesi_san  | tojson }},borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.08)',tension:.4,pointRadius:3,borderWidth:2},
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,...chartDefaults,
+    scales:{
+      x:{grid:{color:'rgba(59,142,234,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}}},
+      y:{grid:{color:'rgba(59,142,234,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}},beginAtZero:true}
+    }
+  }
+});
+
+// Donut
+const donutData  = [{{ attivi }},{{ inprova }},{{ sospesi }},{{ congedati }}].filter(v=>v>0);
+const donutLbls  = ['In Servizio','In Prova','Sospesi','Congedati'];
+const donutCols  = ['#10b981','#06b6d4','#ef4444','#3d6490'];
+const tot = {{ attivi+inprova+sospesi+congedati }};
+const filtLbls   = donutLbls.filter((_,i)=>[{{ attivi }},{{ inprova }},{{ sospesi }},{{ congedati }}][i]>0);
+const filtCols   = donutCols.filter((_,i)=>[{{ attivi }},{{ inprova }},{{ sospesi }},{{ congedati }}][i]>0);
+new Chart(document.getElementById('chartDonut'),{
+  type:'doughnut',
+  data:{labels:filtLbls,datasets:[{data:donutData,backgroundColor:filtCols.map(c=>c+'88'),borderColor:filtCols,borderWidth:2}]},
+  options:{responsive:false,cutout:'70%',...chartDefaults,
+    plugins:{...chartDefaults.plugins,
+      tooltip:{...chartDefaults.plugins.tooltip,callbacks:{label:i=>` ${i.label}: ${i.raw} (${Math.round(i.raw/tot*100)}%)`}}
+    }
+  }
+});
+
+// Gradi
+const gradi     = {{ gradi | tojson }};
+const gradeCnt  = {{ grade_count | tojson }};
+const topGradi  = gradi.filter(g=>gradeCnt[g]>0).reverse();
+new Chart(document.getElementById('chartGradi'),{
+  type:'bar',
+  data:{
+    labels:topGradi.map(g=>g.length>18?g.substring(0,18)+'…':g),
+    datasets:[{
+      data:topGradi.map(g=>gradeCnt[g]),
+      backgroundColor:'rgba(59,142,234,.25)',
+      borderColor:'#3b8eea',
+      borderWidth:2,borderRadius:4,
+    }]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,...chartDefaults,
+    plugins:{...chartDefaults.plugins,legend:{display:false}},
+    scales:{
+      x:{grid:{color:'rgba(59,142,234,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}},beginAtZero:true},
+      y:{grid:{display:false},ticks:{color:'rgba(139,168,204,.6)',font:{size:9}}}
+    }
+  }
+});
+</script>
+{% endblock %}

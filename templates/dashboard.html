@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block tb_title %}Dashboard{% endblock %}
+{% block tb_sub %} · Panoramica Dipartimento{% endblock %}
+{% set active = 'dashboard' %}
+
+{% block content %}
+<!-- KPI -->
+<div class="kpi-grid ani">
+  <div class="kpi blue"><div class="kpi-icon">👮</div><div class="kpi-val">{{ agenti }}</div><div class="kpi-lbl">Organico Totale</div></div>
+  <div class="kpi green"><div class="kpi-icon">✅</div><div class="kpi-val">{{ attivi }}</div><div class="kpi-lbl">In Servizio</div></div>
+  <div class="kpi warn"><div class="kpi-icon">⚠️</div><div class="kpi-val">{{ sospesi }}</div><div class="kpi-lbl">Sospesi</div></div>
+  <div class="kpi purple"><div class="kpi-icon">🔼</div><div class="kpi-val">{{ promozioni }}</div><div class="kpi-lbl">Promozioni Tot.</div></div>
+</div>
+
+<div class="grid-2 mt-4">
+  <!-- Ultime azioni -->
+  <div class="card ani" style="animation-delay:.05s">
+    <div class="card-head"><span>📋</span><h3>Ultime Azioni</h3><div class="ch-right"><a href="/dashboard/storico" class="btn">Vedi tutte →</a></div></div>
+    {% if ultime_azioni %}
+    {% for a in ultime_azioni %}
+    <div style="display:flex;gap:12px;padding:11px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+      <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;background:{% if a.tipo=='Promozione' %}#1a6dd4{% elif a.tipo=='Sanzione' %}#f59e0b{% elif a.tipo=='Degrado' or a.tipo=='Licenziamento' %}#ef4444{% else %}#06b6d4{% endif %}"></div>
+      <div>
+        <div style="font-size:13px;color:#e8f0ff"><b style="font-size:10px;letter-spacing:.5px;color:#1a6dd4">{{ a.agente_nome }}</b> — {{ a.tipo }}: {{ a.vecchio }} → {{ a.nuovo }}</div>
+        <div style="font-size:11px;color:#3d5472;font-style:italic">{{ a.motivo }} · {{ a.data }}</div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div style="padding:24px;color:#3d5472;font-style:italic;text-align:center">Nessuna azione registrata.</div>
+    {% endif %}
+  </div>
+
+  <!-- Distribuzione gradi -->
+  <div class="card ani" style="animation-delay:.08s">
+    <div class="card-head"><span>📊</span><h3>Distribuzione Gradi</h3></div>
+    <div style="padding:14px 18px;display:flex;flex-direction:column;gap:10px">
+    {% for g in gradi | reverse %}
+    {% if grade_count[g] > 0 %}
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:12px;color:#8ba8cc;width:140px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ g }}</div>
+      <div style="flex:1;height:6px;background:rgba(0,82,180,.07);border-radius:4px;overflow:hidden">
+        <div style="height:100%;background:#1a6dd4;border-radius:4px;width:{{ (grade_count[g] / agenti * 100) | int }}%"></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;width:26px;text-align:right;color:#3b8eea">{{ grade_count[g] }}</div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Ultimi comunicati -->
+<div class="card ani mt-4" style="animation-delay:.12s">
+  <div class="card-head"><span>📢</span><h3>Ultimi Comunicati</h3><div class="ch-right"><a href="/dashboard/comunicati" class="btn">Vedi tutti →</a></div></div>
+  {% if ultimi_com %}
+  {% for c in ultimi_com %}
+  <div style="padding:14px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+      {% if c.priorita == 'urgente' %}<span class="badge red">🔴 URGENTE</span>
+      {% elif c.priorita == 'importante' %}<span class="badge warn">🟡 IMPORTANTE</span>
+      {% else %}<span class="badge blue">🔵 INFO</span>{% endif %}
+      <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:#e8f0ff">{{ c.titolo }}</span>
+    </div>
+    <div style="font-size:13px;color:#8ba8cc;line-height:1.5">{{ c.corpo[:120] }}{% if c.corpo|length > 120 %}…{% endif %}</div>
+    <div style="font-size:11px;color:#3d5472;margin-top:4px;font-style:italic">{{ c.data }}</div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div style="padding:20px;color:#3d5472;font-style:italic;text-align:center">Nessun comunicato.</div>
+  {% endif %}
+</div>
+{% endblock %}

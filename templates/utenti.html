@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Gestione Utenti{% endblock %}
+{% block tb_title %}Gestione Utenti{% endblock %}
+{% block tb_sub %} · Approvazione e permessi{% endblock %}
+{% set active = 'utenti' %}
+{% block content %}
+
+{% if in_attesa %}
+<div class="card ani mb-4" style="border-color:rgba(245,158,11,.2)">
+  <div class="card-head"><span>⏳</span><h3>In Attesa di Approvazione</h3><div class="ch-right"><span class="badge warn">{{ in_attesa|length }}</span></div></div>
+  <table class="tbl">
+    <thead><tr><th>Utente</th><th>Discord ID</th><th>Registrato</th><th>Grado iniziale</th><th>Azioni</th></tr></thead>
+    <tbody>
+    {% for a in in_attesa %}
+    <tr>
+      <td><b>{{ a.nick or a.username }}</b></td>
+      <td style="color:#3b8eea;font-size:12px">{{ a.discord_id }}</td>
+      <td style="color:#3d5472;font-size:12px">{{ a.timestamp }}</td>
+      <td>
+        <form method="post" action="/dashboard/utenti/approva" style="display:flex;gap:6px;align-items:center">
+          <input type="hidden" name="agente_id" value="{{ a._id }}">
+          <select name="grado" class="f-select" style="padding:5px 8px;font-size:11px">
+            {% for g in ['Agente','Agente Scelto','Caporale','Sergente'] %}<option>{{ g }}</option>{% endfor %}
+          </select>
+          <button type="submit" class="btn success">✅ Approva</button>
+        </form>
+      </td>
+      <td>
+        <form method="post" action="/dashboard/utenti/rifiuta">
+          <input type="hidden" name="agente_id" value="{{ a._id }}">
+          <button type="submit" class="btn danger" onclick="return confirm('Rifiutare e rimuovere?')">❌ Rifiuta</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="card ani" style="animation-delay:.05s">
+  <div class="card-head"><span>👮</span><h3>Tutti gli Utenti</h3><div class="ch-right"><span class="badge blue">{{ tutti|length }}</span></div></div>
+  <table class="tbl">
+    <thead><tr><th>Agente</th><th>Grado</th><th>Discord ID</th><th>Livello</th><th>Stato</th><th>Azioni</th></tr></thead>
+    <tbody>
+    {% if tutti %}
+    {% for a in tutti %}
+    <tr>
+      <td><b>{{ a.nome }} {{ a.cognome }}</b><div style="font-size:11px;color:#3d5472">@{{ a.nick or a.username }}</div></td>
+      <td style="font-size:11px;color:#3b8eea;letter-spacing:.5px">{{ a.grado }}</td>
+      <td style="font-size:11px;color:#3d5472">{{ a.discord_id or '—' }}</td>
+      <td>
+        {% if a.permission >= 100 %}<span class="badge blue">Dirigenza</span>
+        {% elif a.permission >= 50 %}<span class="badge purple">Ispettorato</span>
+        {% else %}<span class="badge green">Agente</span>{% endif %}
+      </td>
+      <td>
+        {% if a.stato=='Attivo' %}<span class="badge green">● Attivo</span>
+        {% elif a.stato=='Sospeso' %}<span class="badge red">● Sospeso</span>
+        {% else %}<span class="badge blue">● {{ a.stato }}</span>{% endif %}
+      </td>
+      <td>
+        <form method="post" action="/dashboard/utenti/aggiorna" style="display:flex;gap:6px;align-items:center">
+          <input type="hidden" name="agente_id" value="{{ a._id }}">
+          <select name="permission" class="f-select" style="padding:5px 8px;font-size:11px">
+            <option value="10" {% if a.permission==10 %}selected{% endif %}>Agente (10)</option>
+            <option value="50" {% if a.permission==50 %}selected{% endif %}>Ispettorato (50)</option>
+            <option value="100" {% if a.permission==100 %}selected{% endif %}>Dirigenza (100)</option>
+          </select>
+          <button type="submit" class="btn primary" style="font-size:10px;padding:5px 10px">Aggiorna</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr><td colspan="6" style="text-align:center;padding:28px;font-style:italic;color:#3d5472">Nessun utente.</td></tr>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

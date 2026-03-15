@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Storico Azioni{% endblock %}
+{% block tb_title %}Storico Azioni{% endblock %}
+{% block tb_sub %} · Log completo operazioni{% endblock %}
+{% set active = 'storico' %}
+{% block content %}
+<div class="card ani">
+  <form class="filter-bar" method="get">
+    <input class="f-input" name="q" placeholder="🔍 Cerca agente, motivazione…" value="{{ q }}">
+    <select class="f-select" name="tipo" onchange="this.form.submit()">
+      <option value="">Tutti i tipi</option>
+      {% for t in ['Promozione','Degrado','Sanzione','Rimozione Sanzione','Cambio Stato','Ingresso','Licenziamento'] %}
+      <option {% if tipo==t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn primary">Cerca</button>
+    <span style="margin-left:auto;font-size:9px;color:#3d5472;letter-spacing:1px">{{ storico|length }} voci</span>
+  </form>
+  <table class="tbl">
+    <thead><tr><th>Agente</th><th>Tipo</th><th>Da</th><th>A</th><th>Motivazione</th><th>Data</th><th>Operatore</th></tr></thead>
+    <tbody>
+    {% if storico %}
+    {% for s in storico %}
+    <tr>
+      <td><b style="font-size:11px;color:#3b8eea;letter-spacing:.3px">{{ s.agente_nome }}</b></td>
+      <td>
+        {% if s.tipo=='Promozione' %}<span class="badge green">🔼 Promozione</span>
+        {% elif s.tipo=='Degrado' %}<span class="badge red">🔽 Degrado</span>
+        {% elif s.tipo=='Sanzione' %}<span class="badge warn">⚠️ Sanzione</span>
+        {% elif s.tipo=='Rimozione Sanzione' %}<span class="badge green">✅ Rim. Sanzione</span>
+        {% elif s.tipo=='Ingresso' %}<span class="badge blue" style="color:#22d3ee">➕ Ingresso</span>
+        {% elif s.tipo=='Licenziamento' %}<span class="badge red">⛔ Licenziamento</span>
+        {% else %}<span class="badge blue">🔄 {{ s.tipo }}</span>{% endif %}
+      </td>
+      <td style="color:#8ba8cc;font-size:13px">{{ s.vecchio }}</td>
+      <td style="font-weight:600;font-size:13px">{{ s.nuovo }}</td>
+      <td style="color:#8ba8cc;font-size:12px;font-style:italic;max-width:200px">{{ s.motivo }}</td>
+      <td style="color:#3d5472;font-size:12px;font-style:italic">{{ s.data }}</td>
+      <td style="color:#3d5472;font-size:12px">{{ s.operatore }}</td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr><td colspan="7" style="text-align:center;padding:28px;font-style:italic;color:#3d5472">Nessuna azione registrata.</td></tr>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

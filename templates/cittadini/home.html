@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Portale Cittadini — Polizia d'Estovia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#04060f;color:#e8f0ff;min-height:100vh}
+    :root{--blu:#003d8f;--blu2:#0052b4;--blu3:#1a6dd4;--blu4:#3b8eea;--t1:#e8f0ff;--t2:#8ba8cc;--t3:#3d5472;--bdr2:rgba(59,142,234,.1)}
+    .hero{background:linear-gradient(135deg,rgba(0,61,143,.15),rgba(0,82,180,.05)),#04060f;border-bottom:1px solid var(--bdr2);padding:60px 40px;text-align:center}
+    .hero-icon{font-size:64px;margin-bottom:20px}
+    .hero-title{font-family:'Cinzel',serif;font-size:36px;font-weight:700;color:#e8f0ff;margin-bottom:10px}
+    .hero-title b{background:linear-gradient(135deg,#38bdf8,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-sub{font-size:14px;color:#8ba8cc;max-width:500px;margin:0 auto;line-height:1.7}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1000px;margin:40px auto;padding:0 40px}
+    .card{background:linear-gradient(145deg,#060914,#04060f);border:1px solid var(--bdr2);border-radius:10px;padding:28px;text-decoration:none;color:inherit;transition:all .25s;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blu2),transparent)}
+    .card:hover{border-color:rgba(59,142,234,.3);transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+    .card-icon{font-size:32px;margin-bottom:14px}
+    .card-title{font-size:16px;font-weight:700;color:#e8f0ff;margin-bottom:6px}
+    .card-desc{font-size:13px;color:#8ba8cc;line-height:1.6}
+    .card.ai{border-color:rgba(239,68,68,.12)}
+    .card.ai::before{background:linear-gradient(90deg,transparent,#ef4444,transparent)}
+    .card.ai:hover{border-color:rgba(239,68,68,.25)}
+    .card-title.ai{color:#f87171}
+    .footer{text-align:center;padding:40px;font-size:12px;color:#3d5472;border-top:1px solid var(--bdr2);margin-top:20px}
+    .badge-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:6px 14px;background:rgba(0,82,180,.08);border:1px solid rgba(59,142,234,.2);border-radius:20px;color:#3b8eea;font-size:11px;font-weight:600;text-decoration:none;letter-spacing:.5px}
+    .divider{max-width:1000px;margin:0 auto;padding:0 40px 0}
+    .divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(59,142,234,.1),transparent);margin-bottom:24px}
+    .section-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3d5472;margin-bottom:16px}
+  </style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-icon">🚔</div>
+  <div class="hero-title">Polizia <b>d'Estovia</b></div>
+  <div class="hero-sub">Portale dei servizi per i cittadini del territorio di Estovia. Segnalazioni, informazioni e accesso ai servizi del Dipartimento.</div>
+  <a href="/auth/login" class="badge-link">🔐 Accesso Personale</a>
+</div>
+
+<div class="divider" style="margin-top:36px"><div class="section-label">Servizi disponibili</div></div>
+
+<div class="cards" style="margin-top:0">
+  <a href="/cittadini/segnalazione" class="card">
+    <div class="card-icon">🚨</div>
+    <div class="card-title">Segnalazione Pubblica</div>
+    <div class="card-desc">Segnala un evento, un incidente stradale o una situazione di pericolo nel territorio. La segnalazione verrà presa in carico dal Dipartimento.</div>
+  </a>
+  <a href="/cittadini/cerca" class="card">
+    <div class="card-icon">🔎</div>
+    <div class="card-title">Cerca un Agente</div>
+    <div class="card-desc">Verifica le credenziali di un agente del Dipartimento o cerca un operatore per nome o codice fiscale.</div>
+  </a>
+  <a href="/cittadini/norme" class="card">
+    <div class="card-icon">📖</div>
+    <div class="card-title">Normativa</div>
+    <div class="card-desc">Consulta i regolamenti, le normative e le procedure operative pubbliche della Polizia d'Estovia.</div>
+  </a>
+  <a href="/cittadini/contatti" class="card">
+    <div class="card-icon">📞</div>
+    <div class="card-title">Contatti</div>
+    <div class="card-desc">Numeri di emergenza, uffici e recapiti del Dipartimento di Polizia d'Estovia.</div>
+  </a>
+</div>
+
+<div class="divider"><div class="divider-line"></div><div class="section-label">Segnalazioni riservate</div></div>
+
+<div class="cards" style="margin-top:0;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));max-width:700px">
+  <a href="/ai" class="card ai">
+    <div class="card-icon">🔍</div>
+    <div class="card-title ai">Segnalazione Affari Interni</div>
+    <div class="card-desc">Segnala comportamenti scorretti o illeciti da parte di un agente. Trattata con la massima riservatezza dall'Ufficio Affari Interni. Può essere inviata in forma anonima.</div>
+  </a>
+</div>
+
+<div class="footer">Polizia d'Estovia — Portale Cittadini · <a href="/auth/login" style="color:#3b8eea">Accesso personale</a> · <a href="/ai" style="color:#f87171">Affari Interni</a></div>
+</body>
+</html>

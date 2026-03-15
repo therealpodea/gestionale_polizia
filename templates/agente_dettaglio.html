@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}{{ agente.nome }} {{ agente.cognome }}{% endblock %}
+{% block tb_title %}{{ agente.nome }} {{ agente.cognome }}{% endblock %}
+{% block tb_sub %} · {{ agente.grado }}{% endblock %}
+{% set active = 'agenti' %}
+{% block tb_right %}
+{% if user.permission >= 50 %}
+<button class="btn primary" onclick="openModal('modal-azione')">📋 Nuova Azione</button>
+<button class="btn" onclick="openModal('modal-modifica')">✏️ Modifica</button>
+{% if user.permission >= 100 %}
+<button class="btn danger" onclick="openModal('modal-elimina')">🗑️ Elimina</button>
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Scheda -->
+<div class="card ani">
+  <div style="padding:24px;display:flex;align-items:flex-start;gap:22px">
+    <div style="width:72px;height:72px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;background:linear-gradient(135deg,#003d8f,#1a6dd4);border:2px solid rgba(59,142,234,.3);flex-shrink:0">
+      {{ agente.nome[0] if agente.nome else '?' }}{{ agente.cognome[0] if agente.cognome else '' }}
+    </div>
+    <div style="flex:1">
+      <div style="font-size:20px;font-weight:800;color:#e8f0ff">{{ agente.nome }} {{ agente.cognome }}</div>
+      <div style="font-size:12px;font-weight:700;color:#3b8eea;letter-spacing:2px;margin-top:3px">🎖️ {{ agente.grado }}</div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px">
+        <div><div style="font-size:8px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;margin-bottom:2px">Discord</div><div style="font-size:14px;color:#a78bfa">@{{ agente.nick or agente.username }}</div></div>
+        <div><div style="font-size:8px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;margin-bottom:2px">CF</div><div style="font-size:11px;color:#3b8eea;letter-spacing:1px">{{ agente.cf or '—' }}</div></div>
+        <div><div style="font-size:8px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;margin-bottom:2px">In servizio dal</div><div style="font-size:14px;color:#8ba8cc">{{ agente.data_ingresso or '—' }}</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      {% if agente.stato=='Attivo' %}<span class="badge green">● Attivo</span>
+      {% elif agente.stato=='Sospeso' %}<span class="badge red">● Sospeso</span>
+      {% elif agente.stato=='In Prova' %}<span class="badge warn">● In Prova</span>
+      {% else %}<span class="badge blue">● Congedato</span>{% endif %}
+      {% if agente.sanzione %}<span class="badge red">🚨 {{ agente.sanzione }}</span>{% endif %}
+    </div>
+  </div>
+  {% if agente.note %}
+  <div style="margin:0 24px 16px;padding:10px 14px;background:rgba(0,82,180,.04);border:1px solid rgba(0,82,180,.08);border-radius:8px;font-size:13px;color:#8ba8cc;font-style:italic">📝 {{ agente.note }}</div>
+  {% endif %}
+</div>
+
+<!-- Storico -->
+<div class="card ani mt-4" style="animation-delay:.05s">
+  <div class="card-head"><span>📋</span><h3>Storico Carriera</h3><div class="ch-right"><span class="badge blue">{{ storico|length }} voci</span></div></div>
+  <div style="padding:8px 16px">
+    {% if storico %}
+    {% for s in storico %}
+    <div class="timeline-item">
+      <div class="tl-dot" style="background:{% if s.tipo=='Promozione' %}#1a6dd4{% elif s.tipo=='Sanzione' %}#f59e0b{% elif s.tipo=='Degrado' or s.tipo=='Licenziamento' %}#ef4444{% elif s.tipo=='Ingresso' %}#06b6d4{% else %}#10b981{% endif %}"></div>
+      <div>
+        <div class="tl-text">
+          {% if s.tipo=='Promozione' %}<span class="badge green">🔼 Promozione</span>
+          {% elif s.tipo=='Degrado' %}<span class="badge red">🔽 Degrado</span>
+          {% elif s.tipo=='Sanzione' %}<span class="badge warn">⚠️ Sanzione</span>
+          {% elif s.tipo=='Rimozione Sanzione' %}<span class="badge green">✅ Rim. Sanzione</span>
+          {% elif s.tipo=='Ingresso' %}<span class="badge blue" style="color:#22d3ee;border-color:rgba(6,182,212,.2)">➕ Ingresso</span>
+          {% elif s.tipo=='Licenziamento' %}<span class="badge red">⛔ Licenziamento</span>
+          {% else %}<span class="badge blue">🔄 {{ s.tipo }}</span>{% endif %}
+          <span style="color:#8ba8cc;font-size:13px">{{ s.vecchio }} → <b>{{ s.nuovo }}</b></span>
+        </div>
+        <div class="tl-meta">{{ s.motivo }} · {{ s.data }} · op. {{ s.operatore }}</div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div style="padding:20px 0;font-style:italic;color:#3d5472">Nessuna azione registrata.</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- MODAL AZIONE -->
+<div class="overlay" id="modal-azione">
+  <div class="modal md">
+    <div class="modal-head">
+      <div><div class="modal-title">NUOVA AZIONE</div><div style="font-size:12px;color:#3d5472;margin-top:2px">{{ agente.nome }} {{ agente.cognome }}</div></div>
+      <button class="m-close" onclick="closeModal('modal-azione')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form method="post" action="/dashboard/azioni/registra">
+        <input type="hidden" name="agente_id" value="{{ agente._id }}">
+        <div class="form-grid">
+          <div class="fg">
+            <label class="flbl">Tipo *</label>
+            <select class="fselect" name="tipo" id="act-tipo" onchange="actTipoChange()">
+              <option>Promozione</option><option>Degrado</option>
+              <option>Sanzione</option><option>Rimozione Sanzione</option>
+              <option>Cambio Stato</option><option>Licenziamento</option>
+            </select>
+          </div>
+          <div class="fg" id="wrap-grado">
+            <label class="flbl">Nuovo Grado *</label>
+            <select class="fselect" name="nuovo" id="act-grado">
+              {% for g in gradi %}<option {% if g==agente.grado %}selected{% endif %}>{{ g }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="fg" id="wrap-stato" style="display:none">
+            <label class="flbl">Nuovo Stato *</label>
+            <select class="fselect" name="nuovo" id="act-stato">
+              {% for s in ['Attivo','In Prova','Sospeso','Congedato'] %}<option>{{ s }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="fg" id="wrap-sanzione" style="display:none">
+            <label class="flbl">Sanzione *</label>
+            <select class="fselect" name="nuovo" id="act-sanzione">
+              {% for s in sanzioni %}<option>{{ s }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="fg">
+            <label class="flbl">Data</label>
+            <input class="finput" name="data" type="date" value="{{ '' }}">
+          </div>
+          <div class="fg full">
+            <label class="flbl">Motivazione *</label>
+            <textarea class="ftextarea" name="motivo" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="fbtn primary">Registra</button>
+          <button type="button" class="fbtn secondary" onclick="closeModal('modal-azione')">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFICA -->
+<div class="overlay" id="modal-modifica">
+  <div class="modal md">
+    <div class="modal-head">
+      <div class="modal-title">MODIFICA AGENTE</div>
+      <button class="m-close" onclick="closeModal('modal-modifica')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form method="post" action="/dashboard/agenti/modifica">
+        <input type="hidden" name="agente_id" value="{{ agente._id }}">
+        <div class="form-grid">
+          <div class="form-row">
+            <div class="fg"><label class="flbl">Nome</label><input class="finput" name="nome" value="{{ agente.nome }}"></div>
+            <div class="fg"><label class="flbl">Cognome</label><input class="finput" name="cognome" value="{{ agente.cognome }}"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="flbl">CF</label><input class="finput" name="cf" value="{{ agente.cf }}"></div>
+            <div class="fg"><label class="flbl">Nick</label><input class="finput" name="nick" value="{{ agente.nick }}"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="flbl">Grado</label>
+              <select class="fselect" name="grado">
+                {% for g in gradi %}<option {% if g==agente.grado %}selected{% endif %}>{{ g }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="fg"><label class="flbl">Stato</label>
+              <select class="fselect" name="stato">
+                {% for s in ['Attivo','In Prova','Sospeso','Congedato'] %}<option {% if s==agente.stato %}selected{% endif %}>{{ s }}</option>{% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="flbl">Data Ingresso</label><input class="finput" name="data_ingresso" type="date" value="{{ agente.data_ingresso }}"></div>
+          </div>
+          <div class="fg full"><label class="flbl">Note</label><textarea class="ftextarea" name="note">{{ agente.note }}</textarea></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="fbtn primary">Salva</button>
+          <button type="button" class="fbtn secondary" onclick="closeModal('modal-modifica')">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ELIMINA -->
+<div class="overlay" id="modal-elimina">
+  <div class="modal sm">
+    <div class="modal-head"><div class="modal-title">CONFERMA ELIMINAZIONE</div><button class="m-close" onclick="closeModal('modal-elimina')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:var(--danger-dim);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:12px;margin-bottom:16px;font-size:13px;color:#f87171">
+        Stai per eliminare <b>{{ agente.nome }} {{ agente.cognome }}</b> e tutto lo storico associato. Operazione irreversibile.
+      </div>
+      <form method="post" action="/dashboard/agenti/elimina">
+        <input type="hidden" name="agente_id" value="{{ agente._id }}">
+        <div class="form-actions">
+          <button type="submit" class="fbtn danger">Elimina Definitivamente</button>
+          <button type="button" class="fbtn secondary" onclick="closeModal('modal-elimina')">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function actTipoChange(){
+  const t = document.getElementById('act-tipo').value;
+  document.getElementById('wrap-grado').style.display   = (t==='Promozione'||t==='Degrado') ? 'flex' : 'none';
+  document.getElementById('wrap-stato').style.display   = t==='Cambio Stato' ? 'flex' : 'none';
+  document.getElementById('wrap-sanzione').style.display = t==='Sanzione' ? 'flex' : 'none';
+  // Per Rimozione Sanzione e Licenziamento non serve input nuovo
+  if(t==='Rimozione Sanzione') document.getElementById('act-grado').value = 'Nessuna';
+  if(t==='Licenziamento') document.getElementById('act-stato') && (document.getElementById('wrap-stato').style.display='none');
+}
+</script>
+{% endblock %}

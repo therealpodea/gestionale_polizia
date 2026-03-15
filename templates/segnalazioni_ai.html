@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Affari Interni{% endblock %}
+{% block tb_title %}Affari Interni{% endblock %}
+{% block tb_sub %} · Segnalazioni riservate{% endblock %}
+{% set active = 'affari_interni' %}
+{% block content %}
+
+<!-- KPI -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px" class="ani">
+  <div class="kpi" style="border-color:rgba(239,68,68,.2)">
+    <div class="kpi-icon">🚨</div>
+    <div class="kpi-val" style="color:#ef4444">{{ segnalazioni|selectattr('stato','eq','aperta')|list|length }}</div>
+    <div class="kpi-lbl" style="color:rgba(239,68,68,.5)">Aperte</div>
+    <div class="kpi::before" style="background:linear-gradient(90deg,transparent,rgba(239,68,68,.5),transparent)"></div>
+  </div>
+  <div class="kpi blue">
+    <div class="kpi-icon">🔄</div>
+    <div class="kpi-val">{{ segnalazioni|selectattr('stato','eq','in_corso')|list|length }}</div>
+    <div class="kpi-lbl">In Istruttoria</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-icon">✅</div>
+    <div class="kpi-val">{{ segnalazioni|selectattr('stato','eq','chiusa')|list|length }}</div>
+    <div class="kpi-lbl">Chiuse</div>
+  </div>
+  <div class="kpi" style="border-color:rgba(139,92,246,.2)">
+    <div class="kpi-icon">📋</div>
+    <div class="kpi-val" style="color:#a78bfa">{{ segnalazioni|length }}</div>
+    <div class="kpi-lbl" style="color:rgba(139,92,246,.5)">Totale</div>
+  </div>
+</div>
+
+<!-- Lista segnalazioni -->
+<div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(239,68,68,.12)">
+  <div class="card-head" style="background:rgba(239,68,68,.02)">
+    <span>🔍</span>
+    <h3 style="color:rgba(239,68,68,.5)">Segnalazioni agli Affari Interni</h3>
+    <div class="ch-right">
+      <span class="badge" style="background:rgba(239,68,68,.1);color:#f87171;border-color:rgba(239,68,68,.2)">RISERVATO</span>
+    </div>
+  </div>
+
+  {% if segnalazioni %}
+  {% for s in segnalazioni %}
+  {% set col_stato = '#ef4444' if s.stato=='aperta' else '#3b8eea' if s.stato=='in_corso' else '#10b981' %}
+  {% set label_stato = 'APERTA' if s.stato=='aperta' else 'IN ISTRUTTORIA' if s.stato=='in_corso' else 'CHIUSA' %}
+  {% set col_prio = '#ef4444' if s.priorita=='urgente' else '#f59e0b' if s.priorita=='alta' else '#3b8eea' %}
+
+  <div style="border-bottom:1px solid rgba(239,68,68,.06);padding:0" id="seg-{{ s._id }}">
+    <!-- Header card segnalazione -->
+    <div style="padding:14px 20px 10px;display:flex;align-items:flex-start;gap:12px">
+      <!-- Indicatore priorità -->
+      <div style="width:3px;border-radius:2px;background:{{ col_prio }};align-self:stretch;flex-shrink:0;min-height:60px"></div>
+
+      <div style="flex:1;min-width:0">
+        <!-- Riga titolo + badges -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:700;color:#e8f0ff">
+            Segnalazione contro: <span style="color:#f87171">{{ s.agente_nome }}</span>
+            {% if s.agente_cf %}<span style="color:#3d5472;font-size:11px">({{ s.agente_cf }})</span>{% endif %}
+          </span>
+          <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;letter-spacing:1px;font-weight:700">{{ label_stato }}</span>
+          {% if s.priorita == 'urgente' %}
+          <span style="padding:2px 8px;border-radius:10px;background:rgba(239,68,68,.15);color:#f87171;font-size:9px;letter-spacing:1px;font-weight:700;border:1px solid rgba(239,68,68,.25)">🔴 URGENTE</span>
+          {% elif s.priorita == 'alta' %}
+          <span style="padding:2px 8px;border-radius:10px;background:rgba(245,158,11,.12);color:#fbbf24;font-size:9px;letter-spacing:1px;font-weight:700;border:1px solid rgba(245,158,11,.2)">🟡 ALTA</span>
+          {% endif %}
+          {% if s.anonima %}
+          <span style="padding:2px 8px;border-radius:10px;background:rgba(139,92,246,.1);color:#a78bfa;font-size:9px;letter-spacing:1px;border:1px solid rgba(139,92,246,.2)">🎭 ANONIMA</span>
+          {% endif %}
+        </div>
+
+        <!-- Griglia dettagli -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 16px;margin-bottom:10px">
+          <div style="font-size:11px;color:#3d5472">📅 Episodio: <span style="color:#8ba8cc">{{ s.data_episodio or '—' }}</span></div>
+          <div style="font-size:11px;color:#3d5472">📍 Luogo: <span style="color:#8ba8cc">{{ s.luogo }}</span></div>
+          <div style="font-size:11px;color:#3d5472">📨 Ricevuta: <span style="color:#8ba8cc">{{ s.data }}</span></div>
+          {% if not s.anonima and s.segnalante_nome %}
+          <div style="font-size:11px;color:#3d5472">👤 Segnalante: <span style="color:#8ba8cc">{{ s.segnalante_nome }}</span></div>
+          {% elif s.anonima %}
+          <div style="font-size:11px;color:#3d5472">👤 Segnalante: <span style="color:#a78bfa">Anonimo</span></div>
+          {% endif %}
+        </div>
+
+        <!-- Descrizione -->
+        <div style="font-size:13px;color:#8ba8cc;line-height:1.6;background:rgba(0,0,0,.15);border-radius:6px;padding:10px 12px;margin-bottom:8px;border:1px solid rgba(239,68,68,.06)">
+          {{ s.descrizione }}
+        </div>
+
+        <!-- Segnalante (se non anonima) -->
+        {% if not s.anonima and (s.segnalante_cf or s.segnalante_contatto) %}
+        <div style="font-size:12px;color:#3d5472;margin-bottom:8px">
+          {% if s.segnalante_cf %}CF: <span style="color:#8ba8cc">{{ s.segnalante_cf }}</span>{% endif %}
+          {% if s.segnalante_contatto %} · Contatto: <span style="color:#8ba8cc">{{ s.segnalante_contatto }}</span>{% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Prove -->
+        {% if s.prove %}
+        <div style="font-size:12px;margin-bottom:8px">
+          <span style="color:#3d5472;font-size:10px;letter-spacing:1px;text-transform:uppercase">📎 Prove / Link:</span>
+          <div style="color:#3b8eea;margin-top:3px;font-size:12px;line-height:1.7;white-space:pre-wrap">{{ s.prove }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Note interne (se presenti) -->
+        {% if s.note_interne %}
+        <div style="background:rgba(0,82,180,.06);border:1px solid rgba(0,82,180,.12);border-radius:6px;padding:10px 12px;margin-bottom:8px">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(59,142,234,.5);margin-bottom:4px">📝 Note Interne</div>
+          <div style="font-size:13px;color:#8ba8cc">{{ s.note_interne }}</div>
+          {% if s.aggiornata_da %}<div style="font-size:11px;color:#3d5472;margin-top:4px">Aggiornato da {{ s.aggiornata_da }} il {{ s.aggiornata_il }}</div>{% endif %}
+        </div>
+        {% endif %}
+
+      </div><!-- /flex:1 -->
+
+      <!-- Azioni (colonna destra) -->
+      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;min-width:160px">
+        <!-- Cambio stato -->
+        <form method="post" action="/dashboard/affari-interni/stato">
+          <input type="hidden" name="segnalazione_id" value="{{ s._id }}">
+          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3d5472;margin-bottom:4px">Stato</div>
+          <select name="stato" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--bdr2);background:var(--bg3);color:#e8f0ff;font-family:'Inter',sans-serif;font-size:11px;cursor:pointer;margin-bottom:6px">
+            <option value="aperta"   {% if s.stato=='aperta'   %}selected{% endif %}>🔴 Aperta</option>
+            <option value="in_corso" {% if s.stato=='in_corso' %}selected{% endif %}>🔵 In Istruttoria</option>
+            <option value="chiusa"   {% if s.stato=='chiusa'   %}selected{% endif %}>✅ Chiusa</option>
+          </select>
+          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3d5472;margin-bottom:4px">Note interne</div>
+          <textarea name="note_interne" rows="2" placeholder="Aggiungi note riservate…" style="width:100%;background:rgba(255,255,255,.02);border:1px solid var(--bdr2);border-radius:6px;color:#e8f0ff;font-size:11px;padding:6px 8px;font-family:'Inter',sans-serif;resize:vertical;margin-bottom:6px">{{ s.note_interne or '' }}</textarea>
+          <button type="submit" class="btn primary" style="width:100%;font-size:10px;padding:6px">Aggiorna</button>
+        </form>
+
+        <!-- Elimina -->
+        <form method="post" action="/dashboard/affari-interni/elimina">
+          <input type="hidden" name="segnalazione_id" value="{{ s._id }}">
+          <button type="submit" class="btn danger" style="width:100%;font-size:10px;padding:6px" onclick="return confirm('Eliminare definitivamente questa segnalazione?')">🗑 Elimina</button>
+        </form>
+      </div>
+
+    </div><!-- /padding row -->
+  </div><!-- /seg card -->
+
+  {% endfor %}
+  {% else %}
+  <div style="padding:50px;text-align:center;font-style:italic;color:#3d5472">
+    <div style="font-size:32px;margin-bottom:12px">🔍</div>
+    Nessuna segnalazione ricevuta.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
