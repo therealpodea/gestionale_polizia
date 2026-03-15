@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Documenti Cittadini{% endblock %}
+{% block tb_title %}Documenti Cittadini{% endblock %}
+{% block tb_sub %} · Registro anagrafico pubblico{% endblock %}
+{% set active = 'documenti_cittadini' %}
+
+{% block content %}
+<!-- Filtri -->
+<div class="card ani">
+  <form class="filter-bar" method="get">
+    <input class="f-input" name="q" placeholder="🔍 Cerca nome, cognome, CF…" value="{{ q }}" style="width:280px">
+    <select class="f-select" name="filtro" onchange="this.form.submit()">
+      <option value="">Tutti</option>
+      <option value="con_fedina" {% if filtro=='con_fedina' %}selected{% endif %}>⚠️ Con fedina</option>
+      <option value="senza_fedina" {% if filtro=='senza_fedina' %}selected{% endif %}>✅ Fedina pulita</option>
+      <option value="con_denunce" {% if filtro=='con_denunce' %}selected{% endif %}>⚖️ Con denunce</option>
+    </select>
+    <button type="submit" class="btn primary">Cerca</button>
+    {% if q or filtro %}<a href="/dashboard/documenti-cittadini" class="btn">✕ Reset</a>{% endif %}
+    <span style="margin-left:auto;font-size:9px;color:var(--t3);letter-spacing:1px">{{ cittadini|length }} cittadini registrati</span>
+  </form>
+
+  {% if cittadini %}
+  <table class="tbl">
+    <thead><tr>
+      <th>Cittadino</th><th>Codice Fiscale</th><th>Dati</th><th>Fedina</th><th>Registrato</th><th>Azioni</th>
+    </tr></thead>
+    <tbody>
+    {% for c in cittadini %}
+    <tr class="clickable" onclick="window.location='/dashboard/documenti-cittadini/{{ c._id }}'">
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;border-radius:50%;overflow:hidden;border:1.5px solid var(--bdr2);flex-shrink:0;background:linear-gradient(135deg,var(--blu),var(--blu3));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">
+            {% if c.avatar_url %}<img src="{{ c.avatar_url }}" style="width:100%;height:100%;object-fit:cover">
+            {% else %}{{ (c.nome or c.nick or '?')[0]|upper }}{% endif %}
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--t1)">{{ c.nome }} {{ c.cognome }}</div>
+            <div style="font-size:10px;color:var(--t3)">@{{ c.username }}</div>
+          </div>
+        </div>
+      </td>
+      <td style="font-size:11px;color:var(--blu4);letter-spacing:1px">{{ c.cf or '—' }}</td>
+      <td>
+        <div style="font-size:11px;color:var(--t3)">
+          {% if c.data_nascita %}📅 {{ c.data_nascita }}<br>{% endif %}
+          {% if c.nazionalita %}🌍 {{ c.nazionalita }}<br>{% endif %}
+          {% if c.professione %}💼 {{ c.professione }}{% endif %}
+        </div>
+      </td>
+      <td>
+        {% set n = c.fedina|length if c.fedina else 0 %}
+        {% if n == 0 %}<span class="badge green">✅ Pulita</span>
+        {% elif n <= 2 %}<span class="badge warn">⚠️ {{ n }} voci</span>
+        {% else %}<span class="badge red">🔴 {{ n }} voci</span>{% endif %}
+      </td>
+      <td style="font-size:11px;color:var(--t3)">{{ c.data_registrazione or '—' }}</td>
+      <td onclick="event.stopPropagation()">
+        <a href="/dashboard/documenti-cittadini/{{ c._id }}" class="btn primary" style="font-size:10px;padding:5px 10px">📋 Scheda</a>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="padding:60px;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">👥</div>
+    <div style="font-size:14px;font-weight:600;color:var(--t3)">
+      {% if q or filtro %}Nessun cittadino trovato{% else %}Nessun cittadino registrato nel portale{% endif %}
+    </div>
+    <div style="font-size:12px;color:var(--t3);margin-top:6px">I cittadini appaiono qui quando si registrano nel portale pubblico tramite Discord</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

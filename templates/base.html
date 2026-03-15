@@ -178,10 +178,12 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sb-logo">
-      <div class="sb-logo-icon" style="overflow:hidden">
+      <div class="sb-logo-icon" style="overflow:hidden;padding:0">
         {% if settings and settings.logo_url %}
         <img src="{{ settings.logo_url }}" style="width:100%;height:100%;object-fit:cover;border-radius:7px" alt="Logo">
-        {% else %}🚔{% endif %}
+        {% else %}
+        <img src="https://i.ibb.co/1GnGhNGr/logo-polizia-d-estovia-removebg-preview-1.png" style="width:100%;height:100%;object-fit:cover;border-radius:7px" alt="Logo">
+        {% endif %}
       </div>
       <div>
         <div class="sb-logo-name">{{ settings.nome if settings and settings.nome else "Polizia d'Estovia" }}</div>
@@ -190,11 +192,17 @@
     </div>
 
     {% if user.permission >= 100 %}
-    <div class="sb-badge high">DIRIGENZA</div>
+      {% if user.ruolo_principale == 'staff' or user.livello == 'staff' %}
+      <div class="sb-badge high" style="color:#ffd700;border-color:rgba(255,215,0,.25);background:rgba(255,215,0,.06)">⭐ STAFF</div>
+      {% else %}
+      <div class="sb-badge high">DIRIGENZA</div>
+      {% endif %}
     {% elif user.is_ai %}
     <div class="sb-badge high" style="color:rgba(240,96,96,.7);border-color:rgba(224,53,53,.2)">AFFARI INTERNI</div>
     {% elif user.permission >= 50 %}
     <div class="sb-badge high">ISPETTORATO</div>
+    {% elif user.ruolo_principale == 'accademia' or user.livello == 'accademia' %}
+    <div class="sb-badge default" style="color:rgba(96,168,255,.5)">ACCADEMIA</div>
     {% else %}
     <div class="sb-badge default">AGENTE</div>
     {% endif %}
@@ -229,6 +237,10 @@
       <a href="/dashboard/verbali" class="nav-item {% if active == 'verbali' %}active{% endif %}">
         <span class="nav-icon">📝</span>Verbali
       </a>
+      <a href="/dashboard/denunce" class="nav-item {% if active == 'denunce' %}active{% endif %}">
+        <span class="nav-icon">⚖️</span>Denunce
+        <span class="nav-badge d" id="nb-denunce" style="display:none">0</span>
+      </a>
       <a href="/dashboard/documentazione" class="nav-item {% if active == 'documentazione' %}active{% endif %}">
         <span class="nav-icon">📚</span>Documentazione
       </a>
@@ -256,6 +268,9 @@
       <div class="sb-sec">Sistema</div>
       <a href="/dashboard/utenti" class="nav-item {% if active == 'utenti' %}active{% endif %}">
         <span class="nav-icon">⚙️</span>Gestione Utenti
+      </a>
+      <a href="/dashboard/documenti-cittadini" class="nav-item {% if active == 'documenti_cittadini' %}active{% endif %}">
+        <span class="nav-icon">👥</span>Documenti Cittadini
       </a>
       <a href="/dashboard/impostazioni" class="nav-item {% if active == 'impostazioni' %}active{% endif %}">
         <span class="nav-icon">🎨</span>Impostazioni
@@ -308,6 +323,7 @@ fetch('/api/badge_counts', {credentials:'include'})
     set('nb-segnalazioni', data.segnalazioni_aperte);
     set('nb-ai', data.ai_aperte);
     set('nb-pec', data.pec_unread);
+    set('nb-denunce', data.denunce_aperte);
   }).catch(()=>{});
 
 function openModal(id){ document.getElementById(id).classList.add('open'); }
