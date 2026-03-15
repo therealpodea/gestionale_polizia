@@ -19,6 +19,7 @@ from routers.dashboard import router as dashboard_router
 from routers.cittadini import router as cittadini_router
 from routers.api import router as api_router
 from routers.affari_interni import router as ai_router
+from routers.impostazioni import router as impostazioni_router
 
 # ── Assicura che le cartelle necessarie esistano ───────────────────────────────
 os.makedirs("static", exist_ok=True)
@@ -91,6 +92,7 @@ app.include_router(dashboard_router)
 app.include_router(cittadini_router)
 app.include_router(api_router)
 app.include_router(ai_router)
+app.include_router(impostazioni_router)
 
 
 @app.get("/", response_class=HTMLResponse)
