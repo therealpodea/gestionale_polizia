@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Portale Cittadini{% endblock %} — Polizia d'Estovia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:#04060f;color:#e8f0ff;-webkit-font-smoothing:antialiased;min-height:100vh}
+    :root{
+      --blu:#003d8f;--blu2:#0052b4;--blu3:#1a6dd4;--blu4:#3b8eea;--blu5:#6aaeff;
+      --t1:#e8f0ff;--t2:#8ba8cc;--t3:#3d5472;
+      --bdr:rgba(59,142,234,.18);--bdr2:rgba(59,142,234,.10);
+      --green:#10b981;--green2:#34d399;
+      --warn:#f59e0b;--warn2:#fbbf24;
+      --danger:#ef4444;--danger2:#f87171;
+      --purple:#8b5cf6;--purple2:#a78bfa;
+      --green-dim:rgba(16,185,129,.12);--warn-dim:rgba(245,158,11,.12);
+      --danger-dim:rgba(239,68,68,.12);--blue-dim:rgba(0,61,143,.18);
+    }
+
+    /* Nav */
+    .nav{position:sticky;top:0;z-index:100;background:rgba(4,6,15,.95);border-bottom:1px solid var(--bdr2);backdrop-filter:blur(20px)}
+    .nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:60px;gap:24px}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo-icon{font-size:28px}
+    .nav-logo-text{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--t1)}
+    .nav-logo-sub{font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase}
+    .nav-links{display:flex;align-items:center;gap:4px;margin-left:auto}
+    .nav-link{padding:7px 14px;border-radius:5px;font-size:12px;font-weight:500;color:var(--t2);text-decoration:none;transition:all .2s;border:1px solid transparent}
+    .nav-link:hover{color:var(--t1);background:rgba(0,82,180,.08);border-color:var(--bdr2)}
+    .nav-link.active{color:var(--blu4);background:rgba(0,61,143,.15);border-color:rgba(0,82,180,.2)}
+    .nav-link.cta{background:linear-gradient(135deg,rgba(0,61,143,.3),rgba(26,109,212,.15));border-color:rgba(59,142,234,.35);color:var(--blu4);font-weight:600}
+    .nav-link.cta:hover{transform:translateY(-1px);background:linear-gradient(135deg,rgba(0,82,180,.4),rgba(26,109,212,.2))}
+
+    /* Layout */
+    .page{max-width:1100px;margin:0 auto;padding:32px 24px}
+    .page-sm{max-width:720px;margin:0 auto;padding:32px 24px}
+    .page-md{max-width:860px;margin:0 auto;padding:32px 24px}
+
+    /* Cards */
+    .card{background:linear-gradient(145deg,#060914,#04060f);border:1px solid var(--bdr2);border-radius:10px;overflow:hidden;position:relative}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,82,180,.3),transparent)}
+    .card-head{display:flex;align-items:center;gap:10px;padding:14px 20px;background:rgba(0,82,180,.03);border-bottom:1px solid var(--bdr2)}
+    .card-head h3{font-family:'Cinzel',serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(59,142,234,.55)}
+
+    /* Forms */
+    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .flbl{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--t3)}
+    .flbl span{color:var(--danger2)}
+    .finput,.fselect,.ftextarea{background:rgba(255,255,255,.03);border:1px solid var(--bdr2);border-radius:6px;color:var(--t1);font-size:14px;outline:none;transition:all .2s;font-family:'Inter',sans-serif;width:100%}
+    .finput{padding:10px 14px}.fselect{padding:10px 12px}.ftextarea{padding:10px 14px;resize:vertical}
+    .finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--bdr);background:rgba(0,82,180,.05);box-shadow:0 0 0 3px rgba(59,142,234,.08)}
+    .finput::placeholder,.ftextarea::placeholder{color:rgba(59,142,234,.2)}
+    .fselect option{background:#060914}
+    .fhint{font-size:11px;color:var(--t3);margin-top:3px}
+
+    /* Buttons */
+    .fbtn{padding:11px 24px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid;transition:all .22s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px}
+    .fbtn.primary{background:linear-gradient(135deg,rgba(0,61,143,.3),rgba(26,109,212,.15));border-color:rgba(59,142,234,.4);color:var(--blu4)}
+    .fbtn.primary:hover{background:linear-gradient(135deg,rgba(0,82,180,.4),rgba(26,109,212,.25));transform:translateY(-1px);box-shadow:0 8px 24px rgba(59,142,234,.15)}
+    .fbtn.secondary{background:rgba(0,0,0,.2);border-color:var(--bdr2);color:var(--t2)}
+    .fbtn.secondary:hover{background:rgba(0,82,180,.08);color:var(--t1)}
+    .fbtn.danger{background:var(--danger-dim);border-color:rgba(239,68,68,.3);color:var(--danger2)}
+
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap}
+    .badge.green{background:var(--green-dim);color:var(--green2);border:1px solid rgba(16,185,129,.2)}
+    .badge.red{background:var(--danger-dim);color:var(--danger2);border:1px solid rgba(239,68,68,.2)}
+    .badge.warn{background:var(--warn-dim);color:var(--warn2);border:1px solid rgba(245,158,11,.2)}
+    .badge.blue{background:var(--blue-dim);color:var(--blu4);border:1px solid rgba(0,82,180,.22)}
+    .badge.purple{background:rgba(139,92,246,.12);color:var(--purple2);border:1px solid rgba(139,92,246,.2)}
+
+    /* Alerts */
+    .alert{padding:14px 18px;border-radius:8px;font-size:13px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px}
+    .alert.success{background:var(--green-dim);border:1px solid rgba(16,185,129,.25);color:var(--green2)}
+    .alert.error{background:var(--danger-dim);border:1px solid rgba(239,68,68,.25);color:var(--danger2)}
+    .alert.info{background:var(--blue-dim);border:1px solid rgba(59,142,234,.2);color:var(--blu4)}
+    .alert.warn{background:var(--warn-dim);border:1px solid rgba(245,158,11,.2);color:var(--warn2)}
+
+    /* Toggle anonima */
+    .toggle-wrap{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(0,82,180,.04);border:1px solid var(--bdr2);border-radius:8px;cursor:pointer;margin-bottom:16px}
+    .toggle{width:40px;height:22px;background:rgba(0,82,180,.15);border-radius:11px;position:relative;transition:all .3s;border:1px solid var(--bdr2);flex-shrink:0}
+    .toggle.on{background:linear-gradient(90deg,var(--blu2),var(--blu3));border-color:rgba(59,142,234,.4)}
+    .toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .3s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+    .toggle.on::after{transform:translateX(18px)}
+
+    /* Footer */
+    .footer{border-top:1px solid var(--bdr2);padding:32px 24px;text-align:center;color:var(--t3);font-size:12px}
+    .footer a{color:var(--t3);text-decoration:none}
+    .footer a:hover{color:var(--t2)}
+
+    /* Misc */
+    .section-title{font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(59,142,234,.45);margin-bottom:16px}
+    .divider{height:1px;background:var(--bdr2);margin:24px 0}
+    .text-muted{color:var(--t3)}
+    .mt-4{margin-top:24px}
+    .mb-4{margin-bottom:24px}
+    @media(max-width:640px){.form-row{grid-template-columns:1fr}.nav-links .nav-link:not(.cta){display:none}}
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/cittadini" class="nav-logo">
+      <span class="nav-logo-icon">🚔</span>
+      <div>
+        <div class="nav-logo-text">Polizia d'Estovia</div>
+        <div class="nav-logo-sub">Portale Cittadini</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/cittadini" class="nav-link {% if active == 'home' %}active{% endif %}">🏠 Home</a>
+      <a href="/cittadini/fedina" class="nav-link {% if active == 'fedina' %}active{% endif %}">📋 Fedina Penale</a>
+      <a href="/cittadini/segnalazione" class="nav-link {% if active == 'segnalazione' %}active{% endif %}">🚨 Segnalazione</a>
+      <a href="/cittadini/affari-interni" class="nav-link {% if active == 'ai' %}active{% endif %}">🔍 Affari Interni</a>
+      <a href="/cittadini/accedi" class="nav-link cta">👤 Accedi</a>
+    </div>
+  </div>
+</nav>
+{% block content %}{% endblock %}
+<footer class="footer">
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="font-size:18px;margin-bottom:8px">🚔</div>
+    <div style="font-family:'Cinzel',serif;font-weight:700;color:var(--t2);margin-bottom:4px">Polizia d'Estovia</div>
+    <div style="color:var(--t3);font-size:11px;margin-bottom:12px">Portale Pubblico Cittadini — Servizi online del Dipartimento</div>
+    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:11px">
+      <a href="/cittadini">Home</a>
+      <a href="/cittadini/fedina">Fedina Penale</a>
+      <a href="/cittadini/segnalazione">Segnalazioni</a>
+      <a href="/cittadini/affari-interni">Affari Interni</a>
+      <a href="/cittadini/norme">Normativa</a>
+    </div>
+  </div>
+</footer>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
