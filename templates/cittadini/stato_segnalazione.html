@@ -36,11 +36,60 @@
   <!-- Cerca per codice -->
   <div class="card ani mb-4">
     <div style="padding:16px 20px;display:flex;gap:10px;align-items:center">
-      <input class="finput" id="search-codice" placeholder="🔍 Cerca per codice pratica (es. SEG-XXXXX o DEN-XXXXX)" style="flex:1">
+      <input class="finput" id="search-codice" placeholder="🔍 Cerca per codice pratica (es. SEG-XXXXX)" style="flex:1" value="{{ codice or '' }}">
       <button onclick="cercaCodice()" class="fbtn primary" style="padding:10px 18px">Cerca</button>
     </div>
     <div id="search-result" style="display:none;padding:0 20px 16px"></div>
   </div>
+
+  {% if pratica_trovata %}
+  <!-- Pratica trovata per codice - mostrala con chat -->
+  {% set d = pratica_trovata %}
+  {% set col_stato = '#e03535' if d.stato=='aperta' else '#1560c8' if d.stato=='in_analisi' else '#e8970a' if d.stato=='info_richieste' else '#0ea572' if d.stato=='risolta' else '#7c4fd4' %}
+  <div class="alert info ani">🔍 Pratica trovata tramite codice <b>{{ codice }}</b></div>
+  <div class="pratica-card ani" style="border-left:3px solid {{ col_stato }}">
+    <div class="pratica-header" onclick="togglePratica('trovata')">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:700;color:var(--t1)">
+            {% if pratica_tipo == 'denuncia' %}⚖️ Denuncia contro <span style="color:var(--danger2)">{{ d.denunciato_nome }}</span>
+            {% else %}🚨 {{ d.titolo }}{% endif %}
+          </span>
+          <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;font-weight:700">{{ d.stato | upper }}</span>
+        </div>
+        <div style="font-size:10px;color:var(--t3)">Codice: <span style="color:var(--blu4)">{{ d.id }}</span> · {{ d.data_fatto or d.data }}</div>
+      </div>
+      <div style="font-size:18px;color:var(--t3)" id="arrow-trovata">›</div>
+    </div>
+    <div class="pratica-body open" id="body-trovata">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--bdr2)">
+        <div style="font-size:12px;color:var(--t2);line-height:1.6">{{ d.descrizione or d.corpo }}</div>
+        {% if d.risposta_agente or d.risposta_operatore %}
+        <div style="margin-top:10px;padding:10px 12px;background:rgba(14,165,114,.06);border:1px solid rgba(14,165,114,.12);border-radius:7px">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(46,201,138,.5);margin-bottom:4px">Risposta dal Dipartimento</div>
+          <div style="font-size:12px;color:var(--t1)">{{ d.risposta_agente or d.risposta_operatore }}</div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="chat-box" id="chat-trovata">
+        {% if d.messaggi %}
+        {% for m in d.messaggi %}
+        <div class="msg {% if m.da == 'cittadino' %}mine{% else %}theirs{% endif %}">
+          <div>{{ m.testo }}</div>
+          <div class="msg-meta">{% if m.da == 'cittadino' %}Tu{% else %}🚔 {{ m.nome_mittente or 'Agente' }}{% endif %} · {{ m.timestamp }}</div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="text-align:center;color:var(--t3);font-size:12px;margin:auto">Nessun messaggio ancora.</div>
+        {% endif %}
+      </div>
+      <div class="msg-input-wrap">
+        <input class="finput" id="input-trovata" placeholder="Scrivi un messaggio al Dipartimento…" style="flex:1" onkeydown="if(event.key==='Enter')inviaMsg('{{ pratica_tipo }}s','{{ d._id }}','trovata')">
+        <button onclick="inviaMsg('{{ pratica_tipo }}s','{{ d._id }}','trovata')" class="fbtn primary" style="padding:9px 16px;font-size:12px">Invia</button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
   <!-- Tab denunce / segnalazioni -->
   <div style="display:flex;gap:2px;margin-bottom:18px;background:rgba(0,0,0,.2);border:1px solid var(--bdr2);border-radius:8px;padding:4px" class="ani">
@@ -200,11 +249,12 @@ function togglePratica(id){
   }
 }
 
-async function inviaMsg(tipo, id){
-  const input = document.getElementById('input-' + tipo[0] + id);
-  const testo = input.value.trim();
+async function inviaMsg(tipo, id, chatKey){
+  chatKey = chatKey || (tipo[0] + id);
+  const input = document.getElementById('input-' + chatKey);
+  const testo = input ? input.value.trim() : '';
   if(!testo) return;
-  input.value = '';
+  if(input) input.value = '';
   try {
     const res = await fetch(`/cittadini/chat/${tipo}/${id}`, {
       method: 'POST',
@@ -213,7 +263,7 @@ async function inviaMsg(tipo, id){
     });
     if(res.ok){
       const data = await res.json();
-      aggiungiMessaggio(tipo[0] + id, testo, data.timestamp, true);
+      aggiungiMessaggio(chatKey, testo, data.timestamp, true);
     }
   } catch(e){ console.error(e); }
 }

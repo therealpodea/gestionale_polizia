@@ -672,43 +672,49 @@ async def stato_segnalazione(request: Request, codice: str = ""):
     cittadino = await _get_cittadino(request)
     denunce = []
     segnalazioni = []
+    pratica_trovata = None
+    pratica_tipo = None
+
+    # Se c'è un codice, cerca la pratica
+    if codice:
+        codice = codice.strip().upper()
+        d = _ser(await db["denunce"].find_one({"id": codice}))
+        if d:
+            pratica_trovata = d
+            pratica_tipo = "denuncia"
+        else:
+            s = _ser(await db["segnalazioni_pubbliche"].find_one({"id": codice}))
+            if s:
+                pratica_trovata = s
+                pratica_tipo = "segnalazione"
 
     if cittadino:
         discord_id = cittadino.get("discord_id", "")
         cf = cittadino.get("cf", "")
 
-        # Cerca denunce per discord_id (salvato al momento della denuncia se loggato)
-        # oppure per CF se disponibile
         filt_d = {"$or": []}
         if discord_id:
             filt_d["$or"].append({"denunciante_discord_id": discord_id})
         if cf:
             filt_d["$or"].append({"denunciante_cf": cf})
-        if not filt_d["$or"]:
-            filt_d = {}
 
-        if filt_d:
+        if filt_d["$or"]:
             denunce = _ser_list(
                 await db["denunce"].find(filt_d).sort("timestamp", -1).to_list(50)
             )
 
-        # Cerca segnalazioni per CF o discord_id
-        filt_s = {"$or": []}
-        if discord_id:
-            filt_s["$or"].append({"denunciante_discord_id": discord_id})
         if cf:
-            filt_s["$or"].append({"cf": cf})
-        if filt_s["$or"]:
             segnalazioni = _ser_list(
-                await db["segnalazioni_pubbliche"].find(filt_s).sort("timestamp", -1).to_list(50)
+                await db["segnalazioni_pubbliche"].find({"cf": cf}).sort("timestamp", -1).to_list(50)
             )
 
     return templates.TemplateResponse("cittadini/stato_segnalazione.html", {
-        "request":      request,
-        "cittadino":    cittadino,
-        "denunce":      denunce,
-        "segnalazioni": segnalazioni,
-        "codice":       codice.upper() if codice else "",
-        "dipartimento": config.DIPARTIMENTO_NOME,
-        "cf_mancante":  cittadino and not cittadino.get("cf"),
+        "request":        request,
+        "cittadino":      cittadino,
+        "denunce":        denunce,
+        "segnalazioni":   segnalazioni,
+        "codice":         codice if codice else "",
+        "pratica_trovata":pratica_trovata,
+        "pratica_tipo":   pratica_tipo,
+        "dipartimento":   config.DIPARTIMENTO_NOME,
     })
