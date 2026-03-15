@@ -1,0 +1,84 @@
+{% extends "cittadini/base_cittadini.html" %}
+{% block title %}Home{% endblock %}
+{% set active = 'home' %}
+
+{% block content %}
+<!-- Hero -->
+<div style="background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,61,143,.25) 0%,transparent 70%);border-bottom:1px solid var(--bdr2);padding:64px 24px 56px">
+  <div style="max-width:720px;margin:0 auto;text-align:center">
+    <div style="font-size:52px;margin-bottom:16px">🚔</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:var(--t1);margin-bottom:10px">Portale Cittadini</h1>
+    <p style="font-size:16px;color:var(--t2);margin-bottom:6px">Polizia d'Estovia — Servizi Pubblici Online</p>
+    <p style="font-size:13px;color:var(--t3);max-width:520px;margin:0 auto 32px">Accedi ai servizi digitali del Dipartimento: consulta la tua fedina penale, presenta segnalazioni e gestisci i tuoi dati.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="/cittadini/accedi" class="fbtn primary" style="font-size:14px;padding:13px 28px">👤 Accedi / Registrati</a>
+      <a href="/cittadini/segnalazione" class="fbtn secondary" style="font-size:14px;padding:13px 28px">🚨 Presenta Segnalazione</a>
+    </div>
+  </div>
+</div>
+
+<!-- Servizi -->
+<div class="page">
+  <div class="section-title" style="text-align:center;margin-bottom:28px">Servizi disponibili</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:40px">
+
+    <a href="/cittadini/fedina" style="text-decoration:none">
+      <div class="card" style="padding:24px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='rgba(59,142,234,.3)'" onmouseout="this.style.borderColor='rgba(59,142,234,.1)'">
+        <div style="font-size:32px;margin-bottom:12px">📋</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px">Fedina Penale</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.6">Registra e consulta la tua fedina penale. Visualizza infrazioni, sanzioni e lo storico dei tuoi procedimenti.</div>
+        <div style="margin-top:14px;font-size:11px;color:var(--blu4);font-weight:600">Accedi al servizio →</div>
+      </div>
+    </a>
+
+    <a href="/cittadini/segnalazione" style="text-decoration:none">
+      <div class="card" style="padding:24px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='rgba(59,142,234,.3)'" onmouseout="this.style.borderColor='rgba(59,142,234,.1)'">
+        <div style="font-size:32px;margin-bottom:12px">🚨</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px">Segnalazioni</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.6">Presenta una segnalazione al Dipartimento. Segnala episodi, comportamenti o situazioni che richiedono l'intervento della Polizia.</div>
+        <div style="margin-top:14px;font-size:11px;color:var(--blu4);font-weight:600">Invia segnalazione →</div>
+      </div>
+    </a>
+
+    <a href="/cittadini/affari-interni" style="text-decoration:none">
+      <div class="card" style="padding:24px;cursor:pointer;transition:all .2s;border-color:rgba(239,68,68,.1)" onmouseover="this.style.borderColor='rgba(239,68,68,.3)'" onmouseout="this.style.borderColor='rgba(239,68,68,.1)'">
+        <div style="font-size:32px;margin-bottom:12px">🔍</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px">Affari Interni</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.6">Segnala comportamenti scorretti da parte di agenti di Polizia. Le segnalazioni sono gestite in modo riservato dall'Ufficio AI.</div>
+        <div style="margin-top:14px;font-size:11px;color:#f87171;font-weight:600">Invia segnalazione riservata →</div>
+      </div>
+    </a>
+
+    <a href="/cittadini/stato-segnalazione" style="text-decoration:none">
+      <div class="card" style="padding:24px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='rgba(59,142,234,.3)'" onmouseout="this.style.borderColor='rgba(59,142,234,.1)'">
+        <div style="font-size:32px;margin-bottom:12px">🔎</div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px">Stato Segnalazione</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.6">Verifica lo stato delle tue segnalazioni. Accedi con le tue credenziali per visualizzare aggiornamenti e risposte del Dipartimento.</div>
+        <div style="margin-top:14px;font-size:11px;color:var(--blu4);font-weight:600">Controlla stato →</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Info box -->
+  <div class="card" style="padding:24px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:28px;margin-bottom:8px">⚖️</div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Tutela dei diritti</div>
+        <div style="font-size:12px;color:var(--t3)">Tutti i cittadini hanno diritto a presentare segnalazioni e ricevere risposta</div>
+      </div>
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:28px;margin-bottom:8px">🔒</div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Privacy garantita</div>
+        <div style="font-size:12px;color:var(--t3)">Le segnalazioni riservate agli Affari Interni sono trattate con la massima riservatezza</div>
+      </div>
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:28px;margin-bottom:8px">📱</div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Servizio 24/7</div>
+        <div style="font-size:12px;color:var(--t3)">Accedi ai servizi digitali del Dipartimento in qualsiasi momento</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
