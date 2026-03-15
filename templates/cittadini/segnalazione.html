@@ -1,0 +1,111 @@
+{% extends "cittadini/base_cittadini.html" %}
+{% block title %}Segnalazione{% endblock %}
+{% set active = 'segnalazione' %}
+
+{% block content %}
+<div class="page-sm">
+  <div style="padding:28px 0 20px">
+    <div style="font-size:36px;margin-bottom:10px">🚨</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">Invia una Segnalazione</h1>
+    <p style="font-size:13px;color:var(--t3)">Segnala al Dipartimento episodi, situazioni o comportamenti che richiedono attenzione</p>
+  </div>
+
+  {% if inviata %}
+  <div class="alert success" style="padding:20px">
+    <div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px">✅ Segnalazione inviata con successo</div>
+      <div style="font-size:13px">La tua segnalazione è stata ricevuta dal Dipartimento e sarà esaminata dagli agenti competenti.</div>
+      {% if codice %}
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(0,82,180,.1);border:1px solid rgba(59,142,234,.2);border-radius:6px">
+        <div style="font-size:11px;color:var(--t3);margin-bottom:4px">CODICE SEGNALAZIONE</div>
+        <div style="font-size:16px;font-weight:700;color:var(--blu4);letter-spacing:2px">{{ codice }}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px">Conserva questo codice per verificare lo stato della segnalazione</div>
+      </div>
+      {% endif %}
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <a href="/cittadini/stato-segnalazione" class="fbtn primary" style="font-size:12px;padding:8px 18px">🔎 Verifica stato</a>
+        <a href="/cittadini" class="fbtn secondary" style="font-size:12px;padding:8px 18px">🏠 Torna alla home</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+
+  {% if errore %}
+  <div class="alert error">⚠️ {{ errore }}</div>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-head"><span>🚨</span><h3>Modulo Segnalazione</h3></div>
+    <div style="padding:24px">
+      <form method="post" action="/cittadini/segnalazione">
+
+        <div class="section-title">Dati segnalante</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Nome e Cognome <span style="color:var(--danger2)">*</span></label>
+            <input class="finput" name="nome" placeholder="Mario Rossi" required>
+          </div>
+          <div class="form-group">
+            <label class="flbl">Codice Fiscale</label>
+            <input class="finput" name="cf" placeholder="Opzionale" style="text-transform:uppercase">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flbl">Contatto</label>
+          <input class="finput" name="contatto" placeholder="Discord / Telefono (opzionale)">
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-title">Dettagli segnalazione</div>
+
+        <div class="form-group">
+          <label class="flbl">Titolo <span style="color:var(--danger2)">*</span></label>
+          <input class="finput" name="titolo" placeholder="Breve descrizione dell'episodio" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flbl">Data episodio</label>
+            <input class="finput" name="data_episodio" type="date">
+          </div>
+          <div class="form-group">
+            <label class="flbl">Luogo</label>
+            <input class="finput" name="luogo" placeholder="Dove è avvenuto">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Tipo segnalazione</label>
+          <select class="fselect" name="tipo">
+            <option value="generale">📋 Segnalazione generale</option>
+            <option value="crimine">🔴 Crimine / Reato</option>
+            <option value="ordine_pubblico">🚔 Ordine pubblico</option>
+            <option value="incidente">🚗 Incidente / Sinistro</option>
+            <option value="altro">❓ Altro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Descrizione <span style="color:var(--danger2)">*</span></label>
+          <textarea class="ftextarea" name="corpo" rows="6" placeholder="Descrivi in dettaglio l'episodio..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="flbl">Priorità</label>
+          <select class="fselect" name="priorita">
+            <option value="normale">🔵 Normale</option>
+            <option value="alta">🟡 Alta</option>
+            <option value="urgente">🔴 Urgente</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="fbtn primary" style="flex:1;justify-content:center">🚨 Invia Segnalazione</button>
+          <a href="/cittadini" class="fbtn secondary">Annulla</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
