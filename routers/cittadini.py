@@ -1,11 +1,9 @@
 """
 Portale pubblico per i cittadini.
-Registrazione, fedina penale, segnalazioni, stato segnalazioni.
+Login tramite Discord OAuth — deve essere nel server della Polizia.
 """
 from __future__ import annotations
 from datetime import datetime
-import re
-import hashlib
 import random
 import string
 
@@ -13,6 +11,7 @@ from bson import ObjectId
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+import httpx
 
 import config
 
@@ -20,6 +19,7 @@ router    = APIRouter(tags=["cittadini"])
 templates = Jinja2Templates(directory="templates")
 
 COOKIE_CITTADINO = "cittadino_session"
+DISCORD_REDIRECT_CITTADINI = config.DISCORD_REDIRECT_URI.replace("/auth/callback", "/cittadini/callback")
 
 
 def uid():
@@ -28,8 +28,8 @@ def uid():
 def oggi():
     return datetime.now().strftime("%Y-%m-%d")
 
-def hash_pw(pw: str) -> str:
-    return hashlib.sha256(pw.encode()).hexdigest()
+def _gen_codice():
+    return "SEG-" + "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
 def _ser(doc):
     if doc and "_id" in doc:
@@ -39,109 +39,139 @@ def _ser(doc):
 def _ser_list(docs):
     return [_ser(dict(d)) for d in docs]
 
-def _gen_codice() -> str:
-    """Genera codice univoco per segnalazione."""
-    return "SEG-" + "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
 async def _get_cittadino(request: Request):
-    """Legge il cittadino dalla sessione cookie."""
-    cf = request.cookies.get(COOKIE_CITTADINO)
-    if not cf:
+    discord_id = request.cookies.get(COOKIE_CITTADINO)
+    if not discord_id:
         return None
     from database import get_db
     db = get_db()
-    return _ser(await db["cittadini"].find_one({"cf": cf}))
+    return _ser(await db["cittadini"].find_one({"discord_id": discord_id}))
 
 
-# ── Home pubblica ─────────────────────────────────────────────────────────────
+# ── Home ──────────────────────────────────────────────────────────────────────
 @router.get("/cittadini", response_class=HTMLResponse)
 async def cittadini_home(request: Request):
+    cittadino = await _get_cittadino(request)
     return templates.TemplateResponse("cittadini/home.html", {
         "request":      request,
+        "cittadino":    cittadino,
         "dipartimento": config.DIPARTIMENTO_NOME,
     })
 
 
-# ── Accedi / Registrati ───────────────────────────────────────────────────────
-@router.get("/cittadini/accedi", response_class=HTMLResponse)
-async def accedi_form(request: Request, tab: str = "login"):
-    cittadino = await _get_cittadino(request)
-    if cittadino:
-        return RedirectResponse("/cittadini/fedina")
-    return templates.TemplateResponse("cittadini/accedi.html", {
-        "request": request,
-        "tab":     tab,
-        "errore":  None,
-        "dipartimento": config.DIPARTIMENTO_NOME,
-    })
+# ── Discord OAuth ─────────────────────────────────────────────────────────────
+@router.get("/cittadini/login")
+async def cittadini_login():
+    url = (
+        f"https://discord.com/api/oauth2/authorize"
+        f"?client_id={config.DISCORD_CLIENT_ID}"
+        f"&redirect_uri={DISCORD_REDIRECT_CITTADINI}"
+        f"&response_type=code"
+        f"&scope=identify+guilds.members.read"
+    )
+    return RedirectResponse(url)
 
 
-@router.post("/cittadini/accedi")
-async def accedi_post(
-    request:  Request,
-    azione:   str = Form("login"),
-    cf:       str = Form(""),
-    password: str = Form(""),
-    password2:str = Form(""),
-    nome:     str = Form(""),
-    cognome:  str = Form(""),
-    data_nascita: str = Form(""),
-    contatto: str = Form(""),
-):
+@router.get("/cittadini/callback")
+async def cittadini_callback(request: Request, code: str):
     from database import get_db
     db = get_db()
-    cf = cf.strip().upper()
 
-    if azione == "login":
-        cittadino = await db["cittadini"].find_one({"cf": cf})
-        if not cittadino or cittadino.get("password") != hash_pw(password):
-            return templates.TemplateResponse("cittadini/accedi.html", {
+    async with httpx.AsyncClient() as client:
+        # 1. Code → token
+        token_res = await client.post(
+            f"{config.DISCORD_API_BASE}/oauth2/token",
+            data={
+                "client_id":     config.DISCORD_CLIENT_ID,
+                "client_secret": config.DISCORD_CLIENT_SECRET,
+                "grant_type":    "authorization_code",
+                "code":          code,
+                "redirect_uri":  DISCORD_REDIRECT_CITTADINI,
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        if token_res.status_code != 200:
+            return templates.TemplateResponse("cittadini/accesso_negato.html", {
                 "request": request,
-                "tab":     "login",
-                "errore":  "Codice Fiscale o password errati.",
-                "dipartimento": config.DIPARTIMENTO_NOME,
-            })
-        resp = RedirectResponse("/cittadini/fedina", status_code=303)
-        resp.set_cookie(COOKIE_CITTADINO, cf, httponly=True, samesite="lax", max_age=86400*7)
-        return resp
+                "motivo": "Errore durante l'autenticazione Discord. Riprova.",
+            }, status_code=403)
+        access_token = token_res.json()["access_token"]
 
-    else:  # register
-        if not cf or not nome.strip() or not cognome.strip() or not password:
-            return templates.TemplateResponse("cittadini/accedi.html", {
+        # 2. Profilo utente
+        user_res = await client.get(
+            f"{config.DISCORD_API_BASE}/users/@me",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        if user_res.status_code != 200:
+            return templates.TemplateResponse("cittadini/accesso_negato.html", {
                 "request": request,
-                "tab":     "register",
-                "errore":  "Compila tutti i campi obbligatori.",
-                "dipartimento": config.DIPARTIMENTO_NOME,
-            })
-        if password != password2:
-            return templates.TemplateResponse("cittadini/accedi.html", {
+                "motivo": "Impossibile ottenere il profilo Discord.",
+            }, status_code=403)
+        user = user_res.json()
+
+        # 3. Verifica membership nel server
+        member_res = await client.get(
+            f"{config.DISCORD_API_BASE}/users/@me/guilds/{config.DISCORD_GUILD_ID}/member",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        if member_res.status_code != 200:
+            return templates.TemplateResponse("cittadini/accesso_negato.html", {
                 "request": request,
-                "tab":     "register",
-                "errore":  "Le password non coincidono.",
-                "dipartimento": config.DIPARTIMENTO_NOME,
-            })
-        existing = await db["cittadini"].find_one({"cf": cf})
-        if existing:
-            return templates.TemplateResponse("cittadini/accedi.html", {
-                "request": request,
-                "tab":     "register",
-                "errore":  "Esiste già un account con questo Codice Fiscale.",
-                "dipartimento": config.DIPARTIMENTO_NOME,
-            })
+                "motivo": "Non sei membro del server Discord della Polizia d'Estovia. Per accedere al portale cittadini devi essere nel server.",
+                "username": user.get("username", ""),
+            }, status_code=403)
+
+        member_data = member_res.json()
+        nick = member_data.get("nick") or user.get("username")
+
+    discord_id = user["id"]
+    avatar = user.get("avatar")
+    avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{avatar}.png" if avatar else ""
+
+    # 4. Crea o aggiorna cittadino nel DB
+    existing = await db["cittadini"].find_one({"discord_id": discord_id})
+    if existing:
+        await db["cittadini"].update_one(
+            {"discord_id": discord_id},
+            {"$set": {
+                "username":   user.get("username"),
+                "nick":       nick,
+                "avatar_url": avatar_url,
+                "ultimo_accesso": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            }}
+        )
+        # Se non ha completato il profilo, vai alla compilazione
+        if not existing.get("cf"):
+            resp = RedirectResponse("/cittadini/profilo", status_code=303)
+            resp.set_cookie(COOKIE_CITTADINO, discord_id, httponly=True, samesite="lax", max_age=86400*7)
+            return resp
+    else:
+        # Nuovo cittadino — crea scheda vuota
         await db["cittadini"].insert_one({
-            "cf":                 cf,
-            "nome":               nome.strip(),
-            "cognome":            cognome.strip(),
-            "data_nascita":       data_nascita,
-            "contatto":           contatto.strip(),
-            "password":           hash_pw(password),
-            "fedina":             [],
+            "discord_id":   discord_id,
+            "username":     user.get("username"),
+            "nick":         nick,
+            "avatar_url":   avatar_url,
+            "cf":           "",
+            "nome":         "",
+            "cognome":      "",
+            "data_nascita": "",
+            "sesso":        "",
+            "nazionalita":  "",
+            "luogo_nascita":"",
+            "telefono":     "",
+            "professione":  "",
+            "fedina":       [],
             "data_registrazione": oggi(),
-            "timestamp":          datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "ultimo_accesso": datetime.now().strftime("%Y-%m-%d %H:%M"),
         })
-        resp = RedirectResponse("/cittadini/fedina", status_code=303)
-        resp.set_cookie(COOKIE_CITTADINO, cf, httponly=True, samesite="lax", max_age=86400*7)
+        resp = RedirectResponse("/cittadini/profilo", status_code=303)
+        resp.set_cookie(COOKIE_CITTADINO, discord_id, httponly=True, samesite="lax", max_age=86400*7)
         return resp
+
+    resp = RedirectResponse("/cittadini/fedina", status_code=303)
+    resp.set_cookie(COOKIE_CITTADINO, discord_id, httponly=True, samesite="lax", max_age=86400*7)
+    return resp
 
 
 @router.get("/cittadini/logout")
@@ -149,6 +179,76 @@ async def cittadini_logout():
     resp = RedirectResponse("/cittadini")
     resp.delete_cookie(COOKIE_CITTADINO)
     return resp
+
+
+# ── Profilo (compilazione dati) ───────────────────────────────────────────────
+@router.get("/cittadini/profilo", response_class=HTMLResponse)
+async def profilo_form(request: Request):
+    cittadino = await _get_cittadino(request)
+    if not cittadino:
+        return RedirectResponse("/cittadini/login")
+    return templates.TemplateResponse("cittadini/profilo.html", {
+        "request":   request,
+        "cittadino": cittadino,
+        "errore":    None,
+        "dipartimento": config.DIPARTIMENTO_NOME,
+    })
+
+
+@router.post("/cittadini/profilo")
+async def profilo_salva(
+    request:      Request,
+    nome:         str = Form(...),
+    cognome:      str = Form(...),
+    cf:           str = Form(...),
+    data_nascita: str = Form(""),
+    sesso:        str = Form(""),
+    nazionalita:  str = Form(""),
+    luogo_nascita:str = Form(""),
+    telefono:     str = Form(""),
+    professione:  str = Form(""),
+):
+    cittadino = await _get_cittadino(request)
+    if not cittadino:
+        return RedirectResponse("/cittadini/login")
+
+    from database import get_db
+    db = get_db()
+
+    cf = cf.strip().upper()
+    if not nome.strip() or not cognome.strip() or not cf:
+        return templates.TemplateResponse("cittadini/profilo.html", {
+            "request":   request,
+            "cittadino": cittadino,
+            "errore":    "Nome, cognome e codice fiscale sono obbligatori.",
+            "dipartimento": config.DIPARTIMENTO_NOME,
+        })
+
+    # Controlla CF duplicato (altro utente)
+    existing = await db["cittadini"].find_one({"cf": cf, "discord_id": {"$ne": cittadino["discord_id"]}})
+    if existing:
+        return templates.TemplateResponse("cittadini/profilo.html", {
+            "request":   request,
+            "cittadino": cittadino,
+            "errore":    "Questo Codice Fiscale è già associato a un altro account.",
+            "dipartimento": config.DIPARTIMENTO_NOME,
+        })
+
+    await db["cittadini"].update_one(
+        {"discord_id": cittadino["discord_id"]},
+        {"$set": {
+            "nome":          nome.strip(),
+            "cognome":       cognome.strip(),
+            "cf":            cf,
+            "data_nascita":  data_nascita,
+            "sesso":         sesso,
+            "nazionalita":   nazionalita.strip(),
+            "luogo_nascita": luogo_nascita.strip(),
+            "telefono":      telefono.strip(),
+            "professione":   professione.strip(),
+        }}
+    )
+    return RedirectResponse("/cittadini/fedina", status_code=303)
 
 
 # ── Fedina penale ─────────────────────────────────────────────────────────────
@@ -167,7 +267,7 @@ async def fedina(request: Request, cerca_cf: str = ""):
         from database import get_db
         db = get_db()
         segnalazioni = _ser_list(
-            await db["segnalazioni_pubbliche"].find({"cf": cittadino["cf"]}).sort("timestamp", -1).to_list(50)
+            await db["segnalazioni_pubbliche"].find({"cf": cittadino.get("cf", "")}).sort("timestamp", -1).to_list(50)
         )
 
     return templates.TemplateResponse("cittadini/fedina.html", {
@@ -199,7 +299,6 @@ async def segnalazione_invia(
     request:       Request,
     nome:          str = Form(""),
     cf:            str = Form(""),
-    contatto:      str = Form(""),
     titolo:        str = Form(...),
     corpo:         str = Form(...),
     tipo:          str = Form("generale"),
@@ -207,7 +306,7 @@ async def segnalazione_invia(
     luogo:         str = Form(""),
     priorita:      str = Form("normale"),
 ):
-    if not nome.strip() or not titolo.strip() or not corpo.strip():
+    if not titolo.strip() or not corpo.strip():
         cittadino = await _get_cittadino(request)
         return templates.TemplateResponse("cittadini/segnalazione.html", {
             "request":      request,
@@ -222,11 +321,16 @@ async def segnalazione_invia(
     db = get_db()
     codice = _gen_codice()
 
+    # Se loggato, prendi i dati dal profilo
+    cittadino = await _get_cittadino(request)
+    if cittadino and cittadino.get("cf"):
+        nome = f"{cittadino.get('nome', '')} {cittadino.get('cognome', '')}".strip()
+        cf = cittadino.get("cf", "")
+
     await db["segnalazioni_pubbliche"].insert_one({
         "id":            codice,
         "nome":          nome.strip(),
         "cf":            cf.strip().upper(),
-        "contatto":      contatto.strip(),
         "titolo":        titolo.strip(),
         "corpo":         corpo.strip(),
         "tipo":          tipo,
@@ -240,7 +344,6 @@ async def segnalazione_invia(
         "data":          oggi(),
     })
 
-    cittadino = await _get_cittadino(request)
     return templates.TemplateResponse("cittadini/segnalazione.html", {
         "request":      request,
         "cittadino":    cittadino,
@@ -296,6 +399,12 @@ async def ai_invia(
     is_anonima = anonima == "si"
     codice = _gen_codice()
 
+    # Se loggato e non anonima, usa dati profilo
+    cittadino = await _get_cittadino(request)
+    if cittadino and not is_anonima and not segnalante_nome:
+        segnalante_nome = f"{cittadino.get('nome', '')} {cittadino.get('cognome', '')}".strip()
+        segnalante_cf = cittadino.get("cf", "")
+
     await db["segnalazioni_ai"].insert_one({
         "id":                    codice,
         "titolo":                titolo.strip(),
@@ -322,7 +431,6 @@ async def ai_invia(
         "fonte":                 "portale_pubblico",
     })
 
-    cittadino = await _get_cittadino(request)
     return templates.TemplateResponse("cittadini/affari_interni.html", {
         "request":      request,
         "cittadino":    cittadino,
@@ -349,7 +457,7 @@ async def stato_segnalazione(request: Request, codice: str = ""):
         if not segnalazione:
             errore = f"Nessuna segnalazione trovata con codice {codice.upper()}"
 
-    if cittadino:
+    if cittadino and cittadino.get("cf"):
         segnalazioni = _ser_list(
             await db["segnalazioni_pubbliche"].find({"cf": cittadino["cf"]}).sort("timestamp", -1).to_list(50)
         )
@@ -365,34 +473,11 @@ async def stato_segnalazione(request: Request, codice: str = ""):
     })
 
 
-# ── Cerca agente (pubblico) ───────────────────────────────────────────────────
-@router.get("/cittadini/cerca", response_class=HTMLResponse)
-async def cittadini_cerca(request: Request, q: str = ""):
-    from database import get_db
-    db = get_db()
-    agenti = []
-    if q:
-        agenti = _ser_list(await db["agenti"].find({
-            "approvato": True,
-            "$or": [
-                {"nome":    {"$regex": q, "$options": "i"}},
-                {"cognome": {"$regex": q, "$options": "i"}},
-                {"cf":      {"$regex": q, "$options": "i"}},
-                {"nick":    {"$regex": q, "$options": "i"}},
-            ]
-        }).to_list(20))
-    return templates.TemplateResponse("cittadini/cerca.html", {
-        "request":      request,
-        "dipartimento": config.DIPARTIMENTO_NOME,
-        "q":            q,
-        "agenti":       agenti,
-    })
-
-
-# ── Pagine statiche ───────────────────────────────────────────────────────────
-@router.get("/cittadini/norme", response_class=HTMLResponse)
-async def cittadini_norme(request: Request):
-    return templates.TemplateResponse("cittadini/norme.html", {
-        "request":      request,
+# ── Accesso negato ────────────────────────────────────────────────────────────
+@router.get("/cittadini/accesso-negato", response_class=HTMLResponse)
+async def accesso_negato(request: Request, motivo: str = ""):
+    return templates.TemplateResponse("cittadini/accesso_negato.html", {
+        "request": request,
+        "motivo":  motivo or "Accesso non autorizzato.",
         "dipartimento": config.DIPARTIMENTO_NOME,
     })
