@@ -532,15 +532,16 @@ async def denuncia_invia(
     codice = _gen_codice()
 
     cittadino = await _get_cittadino(request)
-    if cittadino and cittadino.get("cf") and not denunciante_cf:
-        denunciante_nome = f"{cittadino.get('nome','')} {cittadino.get('cognome','')}".strip()
+    if cittadino and not denunciante_cf:
+        denunciante_nome = f"{cittadino.get('nome','')} {cittadino.get('cognome','')}".strip() or cittadino.get("nick","")
         denunciante_cf   = cittadino.get("cf", "")
 
     await db["denunce"].insert_one({
-        "id":                  codice,
-        "denunciante_nome":    denunciante_nome.strip(),
-        "denunciante_cf":      denunciante_cf.strip().upper(),
-        "denunciante_contatto":denunciante_contatto.strip(),
+        "id":                       codice,
+        "denunciante_nome":         denunciante_nome.strip(),
+        "denunciante_cf":           denunciante_cf.strip().upper(),
+        "denunciante_discord_id":   cittadino["discord_id"] if cittadino else "",
+        "denunciante_contatto":     denunciante_contatto.strip(),
         "denunciato_nome":     denunciato_nome.strip(),
         "denunciato_cf":       denunciato_cf.strip().upper(),
         "denunciato_desc":     denunciato_desc.strip(),
@@ -672,13 +673,35 @@ async def stato_segnalazione(request: Request, codice: str = ""):
     denunce = []
     segnalazioni = []
 
-    if cittadino and cittadino.get("cf"):
-        denunce = _ser_list(
-            await db["denunce"].find({"denunciante_cf": cittadino["cf"]}).sort("timestamp", -1).to_list(50)
-        )
-        segnalazioni = _ser_list(
-            await db["segnalazioni_pubbliche"].find({"cf": cittadino["cf"]}).sort("timestamp", -1).to_list(50)
-        )
+    if cittadino:
+        discord_id = cittadino.get("discord_id", "")
+        cf = cittadino.get("cf", "")
+
+        # Cerca denunce per discord_id (salvato al momento della denuncia se loggato)
+        # oppure per CF se disponibile
+        filt_d = {"$or": []}
+        if discord_id:
+            filt_d["$or"].append({"denunciante_discord_id": discord_id})
+        if cf:
+            filt_d["$or"].append({"denunciante_cf": cf})
+        if not filt_d["$or"]:
+            filt_d = {}
+
+        if filt_d:
+            denunce = _ser_list(
+                await db["denunce"].find(filt_d).sort("timestamp", -1).to_list(50)
+            )
+
+        # Cerca segnalazioni per CF o discord_id
+        filt_s = {"$or": []}
+        if discord_id:
+            filt_s["$or"].append({"denunciante_discord_id": discord_id})
+        if cf:
+            filt_s["$or"].append({"cf": cf})
+        if filt_s["$or"]:
+            segnalazioni = _ser_list(
+                await db["segnalazioni_pubbliche"].find(filt_s).sort("timestamp", -1).to_list(50)
+            )
 
     return templates.TemplateResponse("cittadini/stato_segnalazione.html", {
         "request":      request,
@@ -687,4 +710,5 @@ async def stato_segnalazione(request: Request, codice: str = ""):
         "segnalazioni": segnalazioni,
         "codice":       codice.upper() if codice else "",
         "dipartimento": config.DIPARTIMENTO_NOME,
+        "cf_mancante":  cittadino and not cittadino.get("cf"),
     })
