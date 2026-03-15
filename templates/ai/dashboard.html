@@ -3,78 +3,125 @@
 {% block tb_title %}Affari Interni{% endblock %}
 {% block tb_sub %} · Segnalazioni riservate{% endblock %}
 {% set active = 'ai' %}
+{% block tb_right %}
+<span class="badge" style="background:rgba(239,68,68,.1);color:#f87171;border-color:rgba(239,68,68,.2)">🔒 RISERVATO</span>
+{% endblock %}
 
 {% block content %}
 <!-- KPI -->
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px" class="ani">
   <div class="kpi" style="border-color:rgba(239,68,68,.2)">
-    <div class="kpi-icon">🚨</div>
+    <div class="kpi-icon" style="color:#ef4444">🚨</div>
     <div class="kpi-val" style="color:#ef4444">{{ n_aperte }}</div>
     <div class="kpi-lbl" style="color:rgba(239,68,68,.5)">Aperte</div>
   </div>
-  <div class="kpi blue"><div class="kpi-icon">🔍</div><div class="kpi-val">{{ n_corso }}</div><div class="kpi-lbl">In Istruttoria</div></div>
-  <div class="kpi green"><div class="kpi-icon">✅</div><div class="kpi-val">{{ n_chiuse }}</div><div class="kpi-lbl">Chiuse</div></div>
+  <div class="kpi blue">
+    <div class="kpi-icon">🔄</div>
+    <div class="kpi-val">{{ n_corso }}</div>
+    <div class="kpi-lbl">In Istruttoria</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-icon">✅</div>
+    <div class="kpi-val">{{ n_chiuse }}</div>
+    <div class="kpi-lbl">Chiuse</div>
+  </div>
   <div class="kpi" style="border-color:rgba(139,92,246,.2)">
-    <div class="kpi-icon">📦</div>
+    <div class="kpi-icon" style="color:#a78bfa">📦</div>
     <div class="kpi-val" style="color:#a78bfa">{{ n_archivio }}</div>
     <div class="kpi-lbl" style="color:rgba(139,92,246,.5)">Archiviate</div>
   </div>
 </div>
 
 <!-- Filtri -->
-<div class="card ani mt-4" style="border-color:rgba(239,68,68,.1);animation-delay:.05s">
+<div class="card ani mt-4" style="animation-delay:.05s;border-color:rgba(239,68,68,.1)">
   <form class="filter-bar" method="get">
-    <input class="f-input" name="q" placeholder="🔍 Cerca agente, titolo…" value="{{ q }}">
+    <input class="f-input" name="q" placeholder="🔍 Cerca agente, titolo, CF…" value="{{ q }}">
     <select class="f-select" name="stato" onchange="this.form.submit()">
       <option value="">Tutti gli stati</option>
-      <option value="aperta"     {% if stato=='aperta'     %}selected{% endif %}>🔴 Aperta</option>
-      <option value="in_corso"   {% if stato=='in_corso'   %}selected{% endif %}>🔵 In Istruttoria</option>
-      <option value="chiusa"     {% if stato=='chiusa'     %}selected{% endif %}>✅ Chiusa</option>
-      <option value="archiviata" {% if stato=='archiviata' %}selected{% endif %}>📦 Archiviata</option>
+      <option value="aperta" {% if stato=='aperta' %}selected{% endif %}>🔴 Aperte</option>
+      <option value="in_corso" {% if stato=='in_corso' %}selected{% endif %}>🔵 In Istruttoria</option>
+      <option value="chiusa" {% if stato=='chiusa' %}selected{% endif %}>✅ Chiuse</option>
+      <option value="archiviata" {% if stato=='archiviata' %}selected{% endif %}>📦 Archiviate</option>
+    </select>
+    <select class="f-select" name="priorita" onchange="this.form.submit()">
+      <option value="">Tutte le priorità</option>
+      <option value="urgente" {% if priorita=='urgente' %}selected{% endif %}>🔴 Urgente</option>
+      <option value="alta" {% if priorita=='alta' %}selected{% endif %}>🟡 Alta</option>
+      <option value="normale" {% if priorita=='normale' %}selected{% endif %}>🔵 Normale</option>
     </select>
     <button type="submit" class="btn primary">Filtra</button>
-    <span style="margin-left:auto;font-size:9px;color:#3d5472;letter-spacing:1px">{{ segnalazioni|length }} segnalazioni</span>
+    <span style="margin-left:auto;font-size:9px;color:#3d5472;letter-spacing:1px">{{ segnalazioni|length }} risultati</span>
   </form>
 
+  <!-- Lista segnalazioni -->
   {% if segnalazioni %}
   {% for s in segnalazioni %}
-  {% set col_stato = '#ef4444' if s.stato=='aperta' else '#3b8eea' if s.stato=='in_corso' else '#10b981' if s.stato=='chiusa' else '#8b5cf6' %}
-  {% set col_prio  = '#ef4444' if s.priorita=='urgente' else '#f59e0b' if s.priorita=='alta' else '#3b8eea' %}
+  {% set col_prio = '#ef4444' if s.priorita=='urgente' else '#f59e0b' if s.priorita=='alta' else '#3b8eea' %}
+  {% set col_stato = '#ef4444' if s.stato=='aperta' else '#3b8eea' if s.stato=='in_corso' else '#10b981' if s.stato=='chiusa' else '#a78bfa' %}
 
-  <div style="border-bottom:1px solid rgba(239,68,68,.05)">
-    <div style="padding:14px 20px;display:flex;align-items:flex-start;gap:12px">
-      <div style="width:3px;min-height:60px;border-radius:2px;background:{{ col_prio }};flex-shrink:0;align-self:stretch"></div>
+  <div style="border-bottom:1px solid rgba(239,68,68,.05);padding:0;transition:background .15s" onmouseover="this.style.background='rgba(239,68,68,.02)'" onmouseout="this.style.background=''">
+    <div style="padding:14px 20px;display:flex;align-items:flex-start;gap:14px">
+      <!-- Barra priorità -->
+      <div style="width:3px;border-radius:2px;background:{{ col_prio }};align-self:stretch;flex-shrink:0;min-height:50px"></div>
+
+      <!-- Contenuto principale -->
       <div style="flex:1;min-width:0">
-        <!-- Badges -->
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px">
-          <a href="/dashboard/ai/{{ s._id }}" style="font-size:13px;font-weight:700;color:#f87171;text-decoration:none;hover:underline">
-            [{{ s.agente_nome }}] {{ s.titolo }}
-          </a>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:700;color:#e8f0ff">
+            Segnalazione contro: <span style="color:#f87171">{{ s.agente_nome }}</span>
+          </span>
           <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;letter-spacing:1px;font-weight:700">
             {% if s.stato=='aperta' %}APERTA{% elif s.stato=='in_corso' %}IN ISTRUTTORIA{% elif s.stato=='chiusa' %}CHIUSA{% else %}ARCHIVIATA{% endif %}
           </span>
           {% if s.priorita=='urgente' %}<span class="badge red">🔴 URGENTE</span>
           {% elif s.priorita=='alta' %}<span class="badge warn">🟡 ALTA</span>{% endif %}
           {% if s.anonima %}<span class="badge purple">🎭 ANONIMA</span>{% endif %}
+          {% if s.risposta_operatore %}<span class="badge green">💬 Risposto</span>{% endif %}
+          {% if s.assegnata_a %}<span class="badge blue">👤 {{ s.assegnata_a }}</span>{% endif %}
         </div>
-        <!-- Info -->
-        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:#3d5472;margin-bottom:7px">
-          {% if not s.anonima and s.segnalante_nome %}<span>👤 {{ s.segnalante_nome }}</span>{% elif s.anonima %}<span>👤 Anonimo</span>{% endif %}
-          {% if s.luogo %}<span>📍 {{ s.luogo }}</span>{% endif %}
-          {% if s.data_episodio %}<span>📅 {{ s.data_episodio }}</span>{% endif %}
-          <span>📨 {{ s.data }}</span>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px 16px;margin-bottom:8px">
+          <div style="font-size:11px;color:#3d5472">📅 <span style="color:#8ba8cc">{{ s.data_episodio or s.data }}</span></div>
+          <div style="font-size:11px;color:#3d5472">📍 <span style="color:#8ba8cc">{{ s.luogo or '—' }}</span></div>
+          <div style="font-size:11px;color:#3d5472">📨 <span style="color:#8ba8cc">{{ s.timestamp }}</span></div>
+          {% if not s.anonima and s.segnalante_nome %}
+          <div style="font-size:11px;color:#3d5472">👤 <span style="color:#8ba8cc">{{ s.segnalante_nome }}</span></div>
+          {% endif %}
         </div>
-        <!-- Desc preview -->
-        <div style="font-size:13px;color:#8ba8cc;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ s.descrizione }}</div>
+
+        <div style="font-size:13px;color:#8ba8cc;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
+          {{ s.descrizione }}
+        </div>
+
+        {% if s.note_interne %}
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,82,180,.06);border-left:2px solid rgba(59,142,234,.3);border-radius:0 4px 4px 0;font-size:12px;color:#8ba8cc;font-style:italic">
+          📝 {{ s.note_interne[:80] }}{% if s.note_interne|length > 80 %}…{% endif %}
+        </div>
+        {% endif %}
       </div>
-      <a href="/dashboard/ai/{{ s._id }}" class="btn primary" style="flex-shrink:0;font-size:11px">Apri →</a>
+
+      <!-- Azioni rapide -->
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+        <a href="/dashboard/ai/{{ s._id }}" class="btn primary" style="font-size:11px;padding:6px 12px;white-space:nowrap">🔍 Gestisci</a>
+        <form method="post" action="/dashboard/ai/stato">
+          <input type="hidden" name="seg_id" value="{{ s._id }}">
+          <select name="stato" onchange="this.form.submit()" style="width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--bdr2);background:var(--bg3);color:#e8f0ff;font-family:'Inter',sans-serif;font-size:10px;cursor:pointer">
+            <option value="aperta"    {% if s.stato=='aperta'    %}selected{% endif %}>🔴 Aperta</option>
+            <option value="in_corso"  {% if s.stato=='in_corso'  %}selected{% endif %}>🔵 In Istruttoria</option>
+            <option value="chiusa"    {% if s.stato=='chiusa'    %}selected{% endif %}>✅ Chiusa</option>
+            <option value="archiviata"{% if s.stato=='archiviata'%}selected{% endif %}>📦 Archiviata</option>
+          </select>
+        </form>
+      </div>
     </div>
   </div>
   {% endfor %}
+
   {% else %}
-  <div style="padding:50px;text-align:center;font-style:italic;color:#3d5472">
-    <div style="font-size:36px;margin-bottom:12px">🔍</div>
-    Nessuna segnalazione{% if stato or q %} per i filtri selezionati{% endif %}.
+  <div style="padding:60px;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">🔍</div>
+    <div style="font-size:15px;font-weight:600;color:#3d5472">Nessuna segnalazione trovata</div>
+    <div style="font-size:12px;color:#3d5472;margin-top:6px">{% if q or stato %}Prova a cambiare i filtri{% else %}Non sono ancora pervenute segnalazioni{% endif %}</div>
   </div>
   {% endif %}
 </div>
