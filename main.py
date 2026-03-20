@@ -1,20 +1,16 @@
 import asyncio
 import os
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
 
-import nextcord
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from nextcord.ext import commands
 
 import config
 import database
 from auth import router as auth_router
-from bot.cogs import setup_bot
 from routers.dashboard import router as dashboard_router
 from routers.cittadini import router as cittadini_router
 from routers.api import router as api_router
@@ -24,57 +20,14 @@ from routers.documentazione import router as documentazione_router
 from routers.denunce import router as denunce_router
 from routers.documenti_cittadini import router as documenti_cittadini_router
 
-# ── Assicura che le cartelle necessarie esistano ───────────────────────────────
 os.makedirs("static", exist_ok=True)
 os.makedirs("templates", exist_ok=True)
 
-# ── Bot Discord ────────────────────────────────────────────────────────────────
-intents = nextcord.Intents.default()
-intents.members = True
-intents.message_content = True
 
-bot = commands.Bot(intents=intents)
-
-# Carica cogs
-if os.path.exists("./cogs"):
-    for file in os.listdir("./cogs"):
-        if file.endswith(".py") and file != "__init__.py":
-            try:
-                bot.load_extension(f"cogs.{file[:-3]}")
-                print(f"[COG] Caricato: {file}")
-            except Exception as e:
-                print(f"[COG] Impossibile caricare {file}: {e}")
-
-
-@bot.event
-async def on_ready():
-    print(f"✅ Bot connesso come {bot.user}")
-    if config.CANALE_LOG_ID:
-        channel = bot.get_channel(config.CANALE_LOG_ID)
-        if channel:
-            embed = nextcord.Embed(
-                title="🚔 Gestionale Polizia d'Estovia — Online",
-                description="Il sistema gestionale è ora operativo.",
-                color=0x0052b4,
-                timestamp=datetime.now(timezone.utc),
-            )
-            embed.add_field(
-                name="⏰ Avvio",
-                value=f"<t:{int(datetime.now().timestamp())}:F>",
-                inline=False,
-            )
-            embed.set_footer(text="Polizia d'Estovia — Gestionale Interno")
-            await channel.send(embed=embed)
-
-
-# ── FastAPI ────────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await database.connect_db()
-    db = database.get_db()
-    await setup_bot(bot, db)
-    # Avvia il bot in background senza bloccare il webserver
-    asyncio.create_task(run_bot())
+    print("✅ Database connesso")
     yield
     await database.close_db()
 
@@ -107,14 +60,6 @@ async def index(request: Request):
     if token:
         return RedirectResponse("/dashboard")
     return templates.TemplateResponse("login.html", {"request": request})
-
-
-# ── Avvio ──────────────────────────────────────────────────────────────────────
-async def run_bot():
-    try:
-        await bot.start(config.DISCORD_BOT_TOKEN)
-    except Exception as e:
-        print(f"[BOT] Errore avvio bot: {e}")
 
 
 async def main():
