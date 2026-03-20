@@ -19,7 +19,11 @@ router    = APIRouter(tags=["cittadini"])
 templates = Jinja2Templates(directory="templates")
 
 COOKIE_CITTADINO = "cittadino_session"
-DISCORD_REDIRECT_CITTADINI = config.DISCORD_REDIRECT_URI.replace("/auth/callback", "/cittadini/callback")
+import os
+DISCORD_REDIRECT_CITTADINI = os.getenv(
+    "DISCORD_REDIRECT_URI_CITTADINI",
+    config.DISCORD_REDIRECT_URI.replace("/auth/callback", "/cittadini/callback")
+)
 
 
 def uid():
