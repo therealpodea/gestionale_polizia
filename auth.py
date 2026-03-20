@@ -115,7 +115,7 @@ async def callback(request: Request, code: str):
     from database import get_db
     db = get_db()
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         token_res = await client.post(
             f"{DISCORD_API_BASE}/oauth2/token",
             data={
@@ -128,7 +128,13 @@ async def callback(request: Request, code: str):
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         if token_res.status_code != 200:
-            raise HTTPException(400, "Errore token Discord.")
+            error_detail = token_res.text
+            print(f"[AUTH ERROR] Token Discord fallito: {token_res.status_code} — {error_detail}")
+            return templates.TemplateResponse("accesso_negato.html", {
+                "request":  request,
+                "username": "",
+                "motivo":   f"Errore autenticazione Discord ({token_res.status_code}). Riprova tra qualche secondo.",
+            }, status_code=403)
         access_token = token_res.json()["access_token"]
 
         user_res = await client.get(
