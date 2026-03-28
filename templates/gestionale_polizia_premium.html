@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polizia d'Estovia — Gestionale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══ RESET & ROOT ══════════════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{height:100%;font-size:14px}
+body{font-family:'DM Sans',sans-serif;height:100vh;overflow:hidden;background:#05060f;color:#d4ddf5;-webkit-font-smoothing:antialiased}
+
+:root{
+  /* Backgrounds */
+  --bg-void:#03040c;
+  --bg-deep:#05060f;
+  --bg-base:#080b18;
+  --bg-surface:#0c1020;
+  --bg-raised:#101526;
+  --bg-hover:#141a2e;
+
+  /* Brand */
+  --ink:#0a1433;
+  --navy:#0f1f4a;
+  --royal:#1a3a8f;
+  --sapphire:#2152c8;
+  --azure:#3b72f0;
+  --sky:#6297ff;
+  --mist:#9ab8ff;
+  --fog:#c5d4ff;
+
+  /* Accents */
+  --gold:#d4a843;
+  --gold-dim:rgba(212,168,67,.12);
+  --gold-line:rgba(212,168,67,.25);
+  --emerald:#10c876;
+  --emerald-dim:rgba(16,200,118,.1);
+  --rose:#f04060;
+  --rose-dim:rgba(240,64,96,.1);
+  --amber:#f0900a;
+  --amber-dim:rgba(240,144,10,.1);
+  --violet:#8b5cf6;
+  --violet-dim:rgba(139,92,246,.1);
+  --teal:#0ab4d4;
+  --teal-dim:rgba(10,180,212,.1);
+
+  /* Text */
+  --tx1:#e8eeff;
+  --tx2:#a0b4d8;
+  --tx3:#4a6090;
+  --tx4:#2a3a5a;
+
+  /* Borders */
+  --bd1:rgba(59,114,240,.12);
+  --bd2:rgba(59,114,240,.06);
+  --bd3:rgba(59,114,240,.03);
+
+  /* Shadows */
+  --sh-sm:0 2px 8px rgba(0,0,0,.4);
+  --sh-md:0 8px 24px rgba(0,0,0,.5);
+  --sh-lg:0 20px 60px rgba(0,0,0,.7);
+
+  /* Layout */
+  --sb:240px;
+  --sb-collapsed:60px;
+  --topbar:52px;
+  --radius:10px;
+  --radius-sm:6px;
+  --radius-lg:14px;
+
+  /* Transitions */
+  --t1:all .15s ease;
+  --t2:all .22s ease;
+  --t3:all .3s ease;
+}
+
+/* ══ LAYOUT SHELL ══════════════════════════════════════════════════ */
+#shell{display:flex;height:100vh;background:var(--bg-void)}
+
+/* ══ AMBIENT BACKGROUND ════════════════════════════════════════════ */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0}
+.ambient-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35}
+.amb-1{width:600px;height:500px;top:-100px;left:0;background:radial-gradient(circle,rgba(26,58,143,.4),transparent 70%)}
+.amb-2{width:400px;height:400px;bottom:0;right:10%;background:radial-gradient(circle,rgba(59,114,240,.12),transparent 70%)}
+.amb-3{width:300px;height:300px;top:40%;left:30%;background:radial-gradient(circle,rgba(139,92,246,.06),transparent 70%)}
+
+/* ══ SIDEBAR ═══════════════════════════════════════════════════════ */
+.sidebar{
+  width:var(--sb);min-width:var(--sb);height:100%;
+  display:flex;flex-direction:column;
+  background:rgba(8,11,24,.85);
+  border-right:1px solid var(--bd1);
+  position:relative;z-index:10;
+  flex-shrink:0;
+  backdrop-filter:blur(20px);
+}
+
+/* Vertical accent line */
+.sidebar::after{
+  content:'';position:absolute;right:-1px;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,transparent 0%,rgba(59,114,240,.3) 30%,rgba(59,114,240,.2) 70%,transparent 100%);
+}
+
+/* Emblem / logo */
+.sb-emblem{
+  display:flex;align-items:center;gap:12px;
+  padding:18px 16px 14px;
+  border-bottom:1px solid var(--bd2);
+}
+.emblem-icon{
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--royal),var(--sapphire));
+  border:1px solid rgba(59,114,240,.3);
+  box-shadow:0 4px 16px rgba(26,58,143,.4),inset 0 1px 0 rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.emblem-text{min-width:0}
+.emblem-name{
+  font-family:'DM Serif Display',serif;font-size:12.5px;font-weight:400;
+  color:var(--tx1);letter-spacing:.3px;line-height:1.3;white-space:nowrap;
+}
+.emblem-sub{font-size:8px;color:var(--tx4);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+
+/* Rank badge */
+.sb-rank{
+  margin:10px 12px 4px;padding:5px 10px;border-radius:var(--radius-sm);
+  background:var(--gold-dim);border:1px solid var(--gold-line);
+  font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);text-align:center;
+}
+
+/* Nav */
+.sb-nav{flex:1;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column;gap:1px}
+.sb-nav::-webkit-scrollbar{width:2px}
+.sb-nav::-webkit-scrollbar-thumb{background:var(--bd1);border-radius:2px}
+
+.sb-section{
+  font-size:7.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--tx4);padding:10px 8px 4px;
+}
+
+.nav-link{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:var(--radius-sm);
+  cursor:pointer;font-size:12px;font-weight:500;
+  color:var(--tx3);border:1px solid transparent;
+  transition:var(--t1);text-decoration:none;
+  position:relative;
+}
+.nav-link:hover{color:var(--tx2);background:var(--bg-raised);border-color:var(--bd2)}
+.nav-link.active{
+  color:var(--azure);font-weight:600;
+  background:linear-gradient(90deg,rgba(33,82,200,.12),rgba(33,82,200,.04));
+  border-color:rgba(33,82,200,.2);
+}
+.nav-link.active::before{
+  content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);
+  width:3px;height:60%;background:var(--azure);border-radius:0 2px 2px 0;
+  box-shadow:0 0 8px rgba(59,114,240,.5);
+}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;opacity:.5;transition:opacity .15s}
+.nav-link:hover .nav-icon,.nav-link.active .nav-icon{opacity:1}
+.nav-label{flex:1}
+.nav-pill{
+  margin-left:auto;border-radius:20px;padding:1px 7px;
+  font-size:9px;font-weight:700;letter-spacing:.3px;
+}
+.pill-blue{background:rgba(59,114,240,.15);color:var(--sky);border:1px solid rgba(59,114,240,.2)}
+.pill-red{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(240,64,96,.2)}
+.pill-green{background:var(--emerald-dim);color:var(--emerald);border:1px solid rgba(16,200,118,.2)}
+.pill-gold{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-line)}
+
+.sb-divider{height:1px;background:var(--bd2);margin:6px 8px}
+
+/* User profile at bottom */
+.sb-profile{
+  padding:10px 8px 12px;border-top:1px solid var(--bd2);
+}
+.profile-card{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;
+  border-radius:var(--radius-sm);cursor:pointer;
+  transition:var(--t1);border:1px solid transparent;
+}
+.profile-card:hover{background:var(--bg-raised);border-color:var(--bd2)}
+.profile-av{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--royal),var(--azure));
+  border:1.5px solid rgba(59,114,240,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;overflow:hidden;
+}
+.profile-av img{width:100%;height:100%;object-fit:cover}
+.profile-info{flex:1;min-width:0}
+.profile-name{font-size:11.5px;font-weight:600;color:var(--tx1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-role{font-size:9px;color:var(--tx3);letter-spacing:.3px;margin-top:1px}
+.profile-status{width:6px;height:6px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald);flex-shrink:0}
+
+/* ══ MAIN AREA ═════════════════════════════════════════════════════ */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;height:100%;overflow:hidden;position:relative;z-index:1}
+
+/* Topbar */
+.topbar{
+  height:var(--topbar);min-height:var(--topbar);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;gap:14px;
+  background:rgba(8,11,24,.7);
+  border-bottom:1px solid var(--bd1);
+  backdrop-filter:blur(16px);
+  position:relative;z-index:5;
+}
+.topbar::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(59,114,240,.15) 30%,rgba(59,114,240,.15) 70%,transparent);
+}
+.tb-left{display:flex;align-items:center;gap:8px}
+.tb-title{font-family:'DM Serif Display',serif;font-size:17px;color:var(--tx1);font-weight:400;letter-spacing:-.2px}
+.tb-sep{width:1px;height:16px;background:var(--bd1)}
+.tb-sub{font-size:10.5px;color:var(--tx3)}
+.tb-right{display:flex;align-items:center;gap:8px}
+
+/* Breadcrumb */
+.breadcrumb{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3)}
+.bc-sep{opacity:.4}
+
+/* Content */
+.content{flex:1;overflow-y:auto;padding:22px;background:var(--bg-deep)}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--bd1);border-radius:2px}
+
+/* ══ COMPONENTS ════════════════════════════════════════════════════ */
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:var(--radius-sm);
+  cursor:pointer;font-size:11.5px;font-weight:600;letter-spacing:.2px;
+  border:1px solid var(--bd1);
+  background:var(--bg-raised);color:var(--tx2);
+  transition:var(--t1);text-decoration:none;
+  font-family:'DM Sans',sans-serif;
+}
+.btn:hover{background:var(--bg-hover);color:var(--tx1);border-color:var(--bd1)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--royal),var(--sapphire));
+  border-color:rgba(59,114,240,.4);color:#fff;
+  box-shadow:0 4px 16px rgba(26,58,143,.3);
+}
+.btn-primary:hover{
+  background:linear-gradient(135deg,var(--sapphire),var(--azure));
+  box-shadow:0 6px 20px rgba(33,82,200,.4);transform:translateY(-1px);
+}
+.btn-danger{background:var(--rose-dim);border-color:rgba(240,64,96,.25);color:var(--rose)}
+.btn-danger:hover{background:rgba(240,64,96,.18)}
+.btn-success{background:var(--emerald-dim);border-color:rgba(16,200,118,.25);color:var(--emerald)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--tx3)}
+.btn-ghost:hover{background:var(--bg-raised);color:var(--tx2);border-color:var(--bd2)}
+.btn-sm{padding:5px 10px;font-size:10.5px}
+.btn-icon{padding:7px;gap:0}
+
+/* Cards */
+.card{
+  background:linear-gradient(145deg,var(--bg-surface),var(--bg-base));
+  border:1px solid var(--bd1);border-radius:var(--radius);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(59,114,240,.2),transparent);
+}
+.card-header{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 18px;
+  border-bottom:1px solid var(--bd2);
+  background:rgba(16,21,38,.4);
+}
+.card-header-icon{
+  width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  background:rgba(33,82,200,.1);border:1px solid rgba(33,82,200,.15);
+}
+.card-title{
+  font-family:'DM Serif Display',serif;font-size:13px;color:var(--tx2);
+  font-weight:400;letter-spacing:.3px;
+}
+.card-actions{margin-left:auto;display:flex;align-items:center;gap:7px}
+.card-body{padding:18px}
+
+/* KPI Grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi-card{
+  background:linear-gradient(145deg,var(--bg-surface),var(--bg-base));
+  border:1px solid var(--bd1);border-radius:var(--radius);
+  padding:20px 22px;position:relative;overflow:hidden;
+  transition:var(--t2);cursor:default;
+}
+.kpi-card:hover{transform:translateY(-2px);border-color:rgba(59,114,240,.2)}
+.kpi-accent{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+}
+.kpi-bg-icon{
+  position:absolute;right:14px;bottom:10px;font-size:44px;opacity:.04;
+  line-height:1;user-select:none;pointer-events:none;
+}
+.kpi-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:10px}
+.kpi-value{font-size:38px;font-weight:300;color:var(--accent);line-height:1;letter-spacing:-2px;font-family:'DM Serif Display',serif}
+.kpi-meta{font-size:10px;color:var(--tx3);margin-top:6px;display:flex;align-items:center;gap:4px}
+.kpi-delta{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px}
+.delta-up{background:var(--emerald-dim);color:var(--emerald)}
+.delta-down{background:var(--rose-dim);color:var(--rose)}
+
+/* Color variants */
+.kpi-blue{--accent:var(--azure)}
+.kpi-green{--accent:var(--emerald)}
+.kpi-gold{--accent:var(--gold)}
+.kpi-violet{--accent:var(--violet)}
+.kpi-rose{--accent:var(--rose)}
+.kpi-teal{--accent:var(--teal)}
+
+/* Table */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{
+  padding:10px 16px;font-size:8.5px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--tx4);text-align:left;
+  background:rgba(16,21,38,.6);border-bottom:1px solid var(--bd2);
+  white-space:nowrap;position:sticky;top:0;
+}
+tbody td{
+  padding:12px 16px;font-size:12.5px;color:var(--tx1);
+  border-bottom:1px solid var(--bd3);vertical-align:middle;
+}
+tbody tr{transition:background .12s;cursor:default}
+tbody tr:hover td{background:rgba(33,82,200,.04)}
+tbody tr:last-child td{border-bottom:none}
+td.mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx2)}
+
+/* Badges */
+.badge{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;white-space:nowrap;
+}
+.badge-green{background:var(--emerald-dim);color:var(--emerald);border:1px solid rgba(16,200,118,.2)}
+.badge-red{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(240,64,96,.2)}
+.badge-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(240,144,10,.2)}
+.badge-blue{background:rgba(59,114,240,.1);color:var(--sky);border:1px solid rgba(59,114,240,.2)}
+.badge-violet{background:var(--violet-dim);color:var(--violet);border:1px solid rgba(139,92,246,.2)}
+.badge-teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(10,180,212,.2)}
+.badge-gold{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-line)}
+.badge-gray{background:rgba(74,96,144,.1);color:var(--tx3);border:1px solid rgba(74,96,144,.15)}
+.badge::before{content:'●';font-size:6px;opacity:.8}
+
+/* Search input */
+.search-input{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg-surface);border:1px solid var(--bd1);border-radius:var(--radius-sm);
+  padding:7px 12px;
+}
+.search-input input{
+  background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;
+  font-size:12px;color:var(--tx1);width:200px;
+}
+.search-input input::placeholder{color:var(--tx3)}
+.search-icon{color:var(--tx4);font-size:12px}
+
+/* Form elements */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px}
+.form-input,.form-select,.form-textarea{
+  width:100%;background:var(--bg-surface);border:1px solid var(--bd1);
+  border-radius:var(--radius-sm);padding:9px 12px;
+  font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--tx1);
+  outline:none;transition:border-color .15s;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(59,114,240,.4);background:var(--bg-raised)}
+.form-select option{background:var(--bg-surface)}
+.form-textarea{resize:vertical;min-height:90px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* Modal */
+.modal-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(3,4,12,.8);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg-surface);border:1px solid var(--bd1);
+  border-radius:var(--radius-lg);width:520px;max-width:92vw;
+  box-shadow:var(--sh-lg),0 0 0 1px rgba(59,114,240,.08);
+  transform:scale(.96) translateY(10px);transition:transform .2s;
+  overflow:hidden;max-height:88vh;display:flex;flex-direction:column;
+}
+.modal-overlay.open .modal{transform:scale(1) translateY(0)}
+.modal-header{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1px solid var(--bd2);flex-shrink:0;
+}
+.modal-icon{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  background:rgba(33,82,200,.1);border:1px solid rgba(33,82,200,.15);
+}
+.modal-title{font-family:'DM Serif Display',serif;font-size:16px;color:var(--tx1)}
+.modal-close{
+  margin-left:auto;width:28px;height:28px;border-radius:6px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--tx3);font-size:14px;border:1px solid transparent;
+  transition:var(--t1);background:none;
+}
+.modal-close:hover{background:var(--bg-raised);color:var(--tx1);border-color:var(--bd2)}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.modal-footer{
+  padding:14px 20px;border-top:1px solid var(--bd2);
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0;
+  background:rgba(8,11,24,.4);
+}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;padding:4px 0}
+.tl-item{display:flex;gap:14px;padding:10px 18px;position:relative}
+.tl-item+.tl-item::before{
+  content:'';position:absolute;left:26px;top:0;
+  width:1px;height:10px;background:var(--bd2);
+}
+.tl-dot{
+  width:12px;height:12px;border-radius:50%;flex-shrink:0;
+  margin-top:2px;border:2px solid var(--bg-surface);
+  box-shadow:0 0 0 1px var(--dot-color);background:var(--dot-color);
+}
+.tl-content{flex:1;min-width:0}
+.tl-event{font-size:12px;color:var(--tx1);font-weight:500;line-height:1.4}
+.tl-meta{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* Stats bar */
+.stat-bar{display:flex;flex-direction:column;gap:10px;padding:14px 18px}
+.stat-row{display:flex;align-items:center;gap:10px}
+.stat-name{font-size:11px;color:var(--tx2);width:120px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-track{flex:1;height:4px;background:var(--bd2);border-radius:2px;overflow:hidden}
+.stat-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--royal),var(--azure));transition:width .6s ease}
+.stat-count{font-size:11.5px;font-weight:700;color:var(--azure);width:28px;text-align:right}
+
+/* Comms grid */
+.comms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0}
+.comm-item{
+  padding:16px 20px;border-right:1px solid var(--bd3);border-bottom:1px solid var(--bd3);
+  transition:background .12s;
+}
+.comm-item:hover{background:rgba(33,82,200,.03)}
+
+/* Activity feed */
+.feed{display:flex;flex-direction:column}
+.feed-item{
+  display:flex;gap:12px;padding:11px 18px;
+  border-bottom:1px solid var(--bd3);transition:background .12s;
+}
+.feed-item:last-child{border-bottom:none}
+.feed-item:hover{background:rgba(33,82,200,.02)}
+.feed-accent{width:3px;border-radius:2px;flex-shrink:0;background:var(--accent-color)}
+.feed-body{flex:1;min-width:0}
+.feed-main{font-size:12px;color:var(--tx1);line-height:1.4}
+.feed-main b{color:var(--azure)}
+.feed-sub{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* Empty state */
+.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:48px 24px;color:var(--tx3);text-align:center;
+}
+.empty-icon{font-size:36px;opacity:.25;margin-bottom:12px}
+.empty-text{font-size:12.5px;font-style:italic}
+
+/* Utility */
+.mt-1{margin-top:8px}.mt-2{margin-top:12px}.mt-3{margin-top:16px}.mt-4{margin-top:22px}.mt-5{margin-top:28px}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.gap-1{gap:6px}.gap-2{gap:10px}.gap-3{gap:14px}.gap-4{gap:20px}
+.text-sm{font-size:11px}.text-xs{font-size:9.5px}
+.text-muted{color:var(--tx3)}.text-accent{color:var(--azure)}
+.font-mono{font-family:'JetBrains Mono',monospace}
+
+/* Divider */
+.divider{height:1px;background:var(--bd2);margin:16px 0}
+
+/* Info rows */
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 18px}
+.info-cell{display:flex;flex-direction:column;gap:3px}
+.info-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx4)}
+.info-value{font-size:13px;color:var(--tx1)}
+
+/* Agent card */
+.agent-card{
+  display:flex;align-items:center;gap:14px;padding:16px 20px;
+  border-bottom:1px solid var(--bd3);transition:background .12s;
+}
+.agent-card:hover{background:rgba(33,82,200,.03)}
+.agent-av{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--navy),var(--sapphire));
+  border:1px solid rgba(59,114,240,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--fog);
+}
+.agent-info{flex:1;min-width:0}
+.agent-name{font-size:13px;font-weight:600;color:var(--tx1)}
+.agent-meta{display:flex;gap:12px;margin-top:3px}
+.agent-meta-item{font-size:10.5px;color:var(--tx3)}
+
+/* Notification dot */
+.notif-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--azure);
+  box-shadow:0 0 8px rgba(59,114,240,.6);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(59,114,240,.6)}50%{box-shadow:0 0 14px rgba(59,114,240,.9)}}
+
+/* Page animations */
+.page{display:none;animation:fadeUp .2s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Toasts */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--bg-surface);border:1px solid var(--bd1);border-radius:var(--radius);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;
+  font-size:12px;color:var(--tx1);box-shadow:var(--sh-md);
+  animation:toastIn .25s ease,toastOut .25s ease 2.5s forwards;
+  min-width:260px;
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+.toast-icon{font-size:16px;flex-shrink:0}
+
+/* Citizen page styles */
+.cit-hero{
+  background:linear-gradient(135deg,var(--bg-surface),var(--bg-base));
+  border:1px solid var(--bd1);border-radius:var(--radius);
+  padding:26px 28px;display:flex;align-items:flex-start;gap:20px;
+  position:relative;overflow:hidden;
+}
+.cit-hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold) 30%,var(--azure) 70%,transparent);
+}
+.cit-av{
+  width:72px;height:72px;border-radius:16px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--ink),var(--navy));
+  border:2px solid var(--bd1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:24px;color:var(--fog);
+}
+.cit-name{font-family:'DM Serif Display',serif;font-size:22px;color:var(--tx1);font-weight:400}
+.cit-grade{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--azure);margin-top:4px}
+.cit-badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+
+/* Charts placeholder */
+.chart-area{
+  height:140px;display:flex;align-items:flex-end;justify-content:center;
+  gap:6px;padding:16px 18px 10px;
+}
+.chart-bar{
+  flex:1;border-radius:3px 3px 0 0;
+  background:linear-gradient(180deg,var(--azure),rgba(33,82,200,.3));
+  min-width:18px;max-width:40px;transition:all .3s;cursor:pointer;
+  position:relative;
+}
+.chart-bar:hover{filter:brightness(1.3)}
+.chart-bar::after{
+  content:attr(data-val);position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+  font-size:9px;color:var(--tx3);white-space:nowrap;opacity:0;transition:.15s;
+}
+.chart-bar:hover::after{opacity:1}
+
+/* Quick actions */
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.qa-btn{
+  display:flex;flex-direction:column;align-items:center;gap:7px;padding:16px 10px;
+  border-radius:var(--radius);border:1px solid var(--bd1);
+  background:var(--bg-surface);cursor:pointer;transition:var(--t2);
+  color:var(--tx2);font-size:11px;font-weight:500;text-align:center;
+}
+.qa-btn:hover{background:var(--bg-raised);border-color:rgba(59,114,240,.2);color:var(--tx1);transform:translateY(-1px)}
+.qa-icon{font-size:22px}
+
+/* Status indicator */
+.status-bar{
+  display:flex;align-items:center;gap:6px;font-size:10px;color:var(--tx3);
+}
+.status-dot{width:5px;height:5px;border-radius:50%}
+.status-live{background:var(--emerald);box-shadow:0 0 6px var(--emerald)}
+.status-warn{background:var(--amber)}
+.status-off{background:var(--tx4)}
+
+/* Scrollbar global */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd1);border-radius:4px}
+
+/* Responsive stacking for grid */
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.kpi-grid{grid-template-columns:1fr 1fr};.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Ambient -->
+<div class="ambient">
+  <div class="ambient-blob amb-1"></div>
+  <div class="ambient-blob amb-2"></div>
+  <div class="ambient-blob amb-3"></div>
+</div>
+
+<!-- Shell -->
+<div id="shell">
+
+  <!-- ═══ SIDEBAR ═══════════════════════════════════════════════ -->
+  <nav class="sidebar">
+    <!-- Emblem -->
+    <div class="sb-emblem">
+      <div class="emblem-icon">🚔</div>
+      <div class="emblem-text">
+        <div class="emblem-name">Polizia d'Estovia</div>
+        <div class="emblem-sub">Gestionale Interno</div>
+      </div>
+    </div>
+
+    <!-- Rank -->
+    <div class="sb-rank">⭐ Staff — Accesso Completo</div>
+
+    <!-- Navigation -->
+    <div class="sb-nav">
+      <div class="sb-section">Principale</div>
+
+      <a class="nav-link active" onclick="showPage('dashboard')">
+        <span class="nav-icon">⬛</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a class="nav-link" onclick="showPage('agenti')">
+        <span class="nav-icon">👮</span>
+        <span class="nav-label">Agenti</span>
+        <span class="nav-pill pill-blue">24</span>
+      </a>
+      <a class="nav-link" onclick="showPage('storico')">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Storico Azioni</span>
+      </a>
+      <a class="nav-link" onclick="showPage('gerarchia')">
+        <span class="nav-icon">🏅</span>
+        <span class="nav-label">Gerarchia</span>
+      </a>
+
+      <div class="sb-section">Operativo</div>
+
+      <a class="nav-link" onclick="showPage('verbali')">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label">Verbali</span>
+        <span class="nav-pill pill-blue">7</span>
+      </a>
+      <a class="nav-link" onclick="showPage('denunce')">
+        <span class="nav-icon">📁</span>
+        <span class="nav-label">Denunce</span>
+        <span class="nav-pill pill-red">3</span>
+      </a>
+      <a class="nav-link" onclick="showPage('segnalazioni')">
+        <span class="nav-icon">🚨</span>
+        <span class="nav-label">Segnalazioni</span>
+        <span class="nav-pill pill-gold">2</span>
+      </a>
+      <a class="nav-link" onclick="showPage('comunicati')">
+        <span class="nav-icon">📢</span>
+        <span class="nav-label">Comunicati</span>
+      </a>
+      <a class="nav-link" onclick="showPage('pec')">
+        <span class="nav-icon">✉️</span>
+        <span class="nav-label">PEC / Messaggi</span>
+      </a>
+
+      <div class="sb-section">Speciale</div>
+
+      <a class="nav-link" onclick="showPage('ai')">
+        <span class="nav-icon">🔒</span>
+        <span class="nav-label">Affari Interni</span>
+      </a>
+      <a class="nav-link" onclick="showPage('cittadini')">
+        <span class="nav-icon">🏛️</span>
+        <span class="nav-label">Portale Cittadini</span>
+      </a>
+      <a class="nav-link" onclick="showPage('documentazione')">
+        <span class="nav-icon">📚</span>
+        <span class="nav-label">Documentazione</span>
+      </a>
+
+      <div class="sb-divider"></div>
+      <div class="sb-section">Sistema</div>
+
+      <a class="nav-link" onclick="showPage('statistiche')">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Statistiche</span>
+      </a>
+      <a class="nav-link" onclick="showPage('impostazioni')">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Impostazioni</span>
+      </a>
+    </div>
+
+    <!-- Profile -->
+    <div class="sb-profile">
+      <div class="profile-card" onclick="showPage('profilo')">
+        <div class="profile-av">QR</div>
+        <div class="profile-info">
+          <div class="profile-name">Questore Rossi</div>
+          <div class="profile-role">Grado: Questore</div>
+        </div>
+        <div class="profile-status"></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ MAIN ═══════════════════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar" id="topbar">
+      <div class="tb-left">
+        <span class="tb-title" id="tb-title">Dashboard</span>
+        <div class="tb-sep"></div>
+        <span class="tb-sub" id="tb-sub">Panoramica Dipartimento</span>
+      </div>
+      <div class="tb-right" id="tb-actions">
+        <div class="status-bar">
+          <div class="status-dot status-live"></div>
+          Sistema Operativo
+        </div>
+        <div style="width:1px;height:18px;background:var(--bd1)"></div>
+        <div style="font-size:10.5px;color:var(--tx3)">Mar 2026</div>
+        <button class="btn btn-ghost btn-sm btn-icon" title="Notifiche">🔔</button>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="showPage('impostazioni')" title="Impostazioni">⚙️</button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="content">
+
+      <!-- ══ PAGE: DASHBOARD ══════════════════════════════════ -->
+      <div class="page active" id="page-dashboard">
+
+        <!-- KPI -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-blue" style="--accent:var(--azure)">
+            <div class="kpi-accent"></div>
+            <div class="kpi-bg-icon">👮</div>
+            <div class="kpi-label">Organico Totale</div>
+            <div class="kpi-value">24</div>
+            <div class="kpi-meta">
+              <span class="kpi-delta delta-up">↑ 2</span>
+              <span>questo mese</span>
+            </div>
+          </div>
+          <div class="kpi-card kpi-green">
+            <div class="kpi-accent"></div>
+            <div class="kpi-bg-icon">✅</div>
+            <div class="kpi-label">In Servizio</div>
+            <div class="kpi-value">18</div>
+            <div class="kpi-meta">
+              <span style="color:var(--emerald)">75%</span>
+              <span>dell'organico</span>
+            </div>
+          </div>
+          <div class="kpi-card kpi-gold">
+            <div class="kpi-accent"></div>
+            <div class="kpi-bg-icon">⚠️</div>
+            <div class="kpi-label">Sospesi / Sanzioni</div>
+            <div class="kpi-value">3</div>
+            <div class="kpi-meta">
+              <span class="kpi-delta delta-down">↓ 1</span>
+              <span>rispetto al mese scorso</span>
+            </div>
+          </div>
+          <div class="kpi-card kpi-violet">
+            <div class="kpi-accent"></div>
+            <div class="kpi-bg-icon">🔼</div>
+            <div class="kpi-label">Promozioni Totali</div>
+            <div class="kpi-value">147</div>
+            <div class="kpi-meta">
+              <span>Da inizio servizio</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main grid -->
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:16px">
+
+          <!-- Left column -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+
+            <!-- Activity feed -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-icon">📋</div>
+                <span class="card-title">Ultime Azioni</span>
+                <div class="card-actions">
+                  <button class="btn btn-ghost btn-sm" onclick="showPage('storico')">Vedi tutto →</button>
+                </div>
+              </div>
+              <div class="feed">
+                <div class="feed-item">
+                  <div class="feed-accent" style="--accent-color:var(--azure)"></div>
+                  <div class="feed-body">
+                    <div class="feed-main"><b>Marco Ferretti</b> — Promozione: Sergente → <b>Maresciallo</b></div>
+                    <div class="feed-sub">Eccellente comportamento in servizio · 22 Mar 2026</div>
+                  </div>
+                  <span class="badge badge-blue">Promozione</span>
+                </div>
+                <div class="feed-item">
+                  <div class="feed-accent" style="--accent-color:var(--amber)"></div>
+                  <div class="feed-body">
+                    <div class="feed-main"><b>Luigi Bianchi</b> — Sanzione: <b>AVVISO FORMALE 1</b></div>
+                    <div class="feed-sub">Assenza ingiustificata · 21 Mar 2026</div>
+                  </div>
+                  <span class="badge badge-amber">Sanzione</span>
+                </div>
+                <div class="feed-item">
+                  <div class="feed-accent" style="--accent-color:var(--emerald)"></div>
+                  <div class="feed-body">
+                    <div class="feed-main"><b>Sara Costa</b> — Ingresso in organico come <b>Agente</b></div>
+                    <div class="feed-sub">Superato esame accademia · 20 Mar 2026</div>
+                  </div>
+                  <span class="badge badge-green">Ingresso</span>
+                </div>
+                <div class="feed-item">
+                  <div class="feed-accent" style="--accent-color:var(--azure)"></div>
+                  <div class="feed-body">
+                    <div class="feed-main"><b>Andrea Neri</b> — Promozione: Caporale → <b>Sergente</b></div>
+                    <div class="feed-sub">Review trimestrale · 19 Mar 2026</div>
+                  </div>
+                  <span class="badge badge-blue">Promozione</span>
+                </div>
+                <div class="feed-item">
+                  <div class="feed-accent" style="--accent-color:var(--rose)"></div>
+                  <div class="feed-body">
+                    <div class="feed-main"><b>Paolo Greco</b> — Sospensione: <b>7 giorni</b></div>
+                    <div class="feed-sub">Violazione regolamento · 18 Mar 2026</div>
+                  </div>
+                  <span class="badge badge-red">Sospensione</span>
+                </div>
+                <div class="feed-item">
+                  <div class="feed-accent" style="--accent-color:var(--teal)"></div>
+                  <div class="feed-body">
+                    <div class="feed-main"><b>Elena Russo</b> — Rimozione sanzione: <b>AVVISO FORMALE 1</b></div>
+                    <div class="feed-sub">Periodo di prova superato · 17 Mar 2026</div>
+                  </div>
+                  <span class="badge badge-teal">Rim. Sanzione</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-icon">📊</div>
+                <span class="card-title">Attività — Ultimi 7 Giorni</span>
+                <div class="card-actions">
+                  <span class="badge badge-blue">Azioni totali: 12</span>
+                </div>
+              </div>
+              <div class="chart-area">
+                <div class="chart-bar" style="height:35%" data-val="2"></div>
+                <div class="chart-bar" style="height:60%" data-val="4"></div>
+                <div class="chart-bar" style="height:45%" data-val="3"></div>
+                <div class="chart-bar" style="height:80%" data-val="5"></div>
+                <div class="chart-bar" style="height:50%" data-val="3"></div>
+                <div class="chart-bar" style="height:30%" data-val="2"></div>
+                <div class="chart-bar" style="height:55%" data-val="3" style="background:linear-gradient(180deg,var(--gold),rgba(212,168,67,.3))"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0 18px 10px;font-size:9px;color:var(--tx4)">
+                <span>Lun</span><span>Mar</span><span>Mer</span><span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right column -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+
+            <!-- Distribuzione gradi -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-icon">🏅</div>
+                <span class="card-title">Distribuzione Gradi</span>
+              </div>
+              <div class="stat-bar">
+                <div class="stat-row"><span class="stat-name">Questore</span><div class="stat-track"><div class="stat-fill" style="width:4%"></div></div><span class="stat-count">1</span></div>
+                <div class="stat-row"><span class="stat-name">Vice Questore</span><div class="stat-track"><div class="stat-fill" style="width:8%"></div></div><span class="stat-count">2</span></div>
+                <div class="stat-row"><span class="stat-name">Commissario</span><div class="stat-track"><div class="stat-fill" style="width:8%"></div></div><span class="stat-count">2</span></div>
+                <div class="stat-row"><span class="stat-name">Ispettore</span><div class="stat-track"><div class="stat-fill" style="width:12%"></div></div><span class="stat-count">3</span></div>
+                <div class="stat-row"><span class="stat-name">Maresciallo</span><div class="stat-track"><div class="stat-fill" style="width:16%"></div></div><span class="stat-count">4</span></div>
+                <div class="stat-row"><span class="stat-name">Sergente</span><div class="stat-track"><div class="stat-fill" style="width:20%"></div></div><span class="stat-count">5</span></div>
+                <div class="stat-row"><span class="stat-name">Caporale</span><div class="stat-track"><div class="stat-fill" style="width:12%"></div></div><span class="stat-count">3</span></div>
+                <div class="stat-row"><span class="stat-name">Agente Scelto</span><div class="stat-track"><div class="stat-fill" style="width:12%"></div></div><span class="stat-count">3</span></div>
+                <div class="stat-row"><span class="stat-name">Agente</span><div class="stat-track"><div class="stat-fill" style="width:4%"></div></div><span class="stat-count">1</span></div>
+              </div>
+            </div>
+
+            <!-- Quick actions -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-icon">⚡</div>
+                <span class="card-title">Azioni Rapide</span>
+              </div>
+              <div style="padding:14px 16px">
+                <div class="quick-actions">
+                  <div class="qa-btn" onclick="showPage('agenti');showToast('Aperto: Aggiungi Agente','💼')">
+                    <div class="qa-icon">👮</div>
+                    <span>Nuovo Agente</span>
+                  </div>
+                  <div class="qa-btn" onclick="showPage('verbali');showToast('Aperto: Nuovo Verbale','📝')">
+                    <div class="qa-icon">📝</div>
+                    <span>Verbale</span>
+                  </div>
+                  <div class="qa-btn" onclick="showPage('comunicati');showToast('Aperto: Comunicati','📢')">
+                    <div class="qa-icon">📢</div>
+                    <span>Comunicato</span>
+                  </div>
+                  <div class="qa-btn" onclick="showPage('denunce')">
+                    <div class="qa-icon">📁</div>
+                    <span>Denuncia</span>
+                  </div>
+                  <div class="qa-btn" onclick="showPage('pec')">
+                    <div class="qa-icon">✉️</div>
+                    <span>Invia PEC</span>
+                  </div>
+                  <div class="qa-btn" onclick="showPage('statistiche')">
+                    <div class="qa-icon">📊</div>
+                    <span>Statistiche</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ultimi comunicati -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-icon">📢</div>
+                <span class="card-title">Comunicati Recenti</span>
+                <div class="card-actions"><button class="btn btn-ghost btn-sm" onclick="showPage('comunicati')">Tutti →</button></div>
+              </div>
+              <div>
+                <div class="comm-item" style="border-right:none">
+                  <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+                    <span class="badge badge-red">🔴 Urgente</span>
+                    <span style="font-size:12px;font-weight:600;color:var(--tx1)">Allerta Pattuglie</span>
+                  </div>
+                  <div style="font-size:11.5px;color:var(--tx2);line-height:1.5">Pattugliamento rinforzato zona nord questo weekend…</div>
+                  <div style="font-size:10px;color:var(--tx3);margin-top:5px">22 Mar 2026</div>
+                </div>
+                <div class="comm-item" style="border-right:none;border-bottom:none">
+                  <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+                    <span class="badge badge-blue">🔵 Info</span>
+                    <span style="font-size:12px;font-weight:600;color:var(--tx1)">Aggiornamento Protocolli</span>
+                  </div>
+                  <div style="font-size:11.5px;color:var(--tx2);line-height:1.5">Nuove linee guida operative in vigore dal 1° Aprile…</div>
+                  <div style="font-size:10px;color:var(--tx3);margin-top:5px">20 Mar 2026</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: AGENTI ═══════════════════════════════════════ -->
+      <div class="page" id="page-agenti">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div>
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Gestione Agenti</div>
+            <div style="font-size:11px;color:var(--tx3);margin-top:2px">24 agenti registrati · 18 attivi</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div class="search-input">
+              <span class="search-icon">🔍</span>
+              <input type="text" placeholder="Cerca agente, CF, grado…" oninput="filterAgents(this.value)">
+            </div>
+            <select class="form-select" style="width:auto;padding:7px 12px;font-size:12px">
+              <option>Tutti gli stati</option>
+              <option>Attivo</option>
+              <option>Sospeso</option>
+              <option>In Prova</option>
+              <option>Congedato</option>
+            </select>
+            <button class="btn btn-primary" onclick="openModal('modal-agente')">+ Nuovo Agente</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-wrap">
+            <table id="agents-table">
+              <thead>
+                <tr>
+                  <th>Agente</th>
+                  <th>Grado</th>
+                  <th>Discord</th>
+                  <th>CF</th>
+                  <th>In Servizio Dal</th>
+                  <th>Stato</th>
+                  <th>Sanzione</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="agents-tbody">
+                <tr onclick="openAgentDetail('Marco Ferretti','Maresciallo','Attivo')" style="cursor:pointer">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div class="agent-av" style="width:34px;height:34px;font-size:11px;border-radius:8px">MF</div>
+                      <span>Marco Ferretti</span>
+                    </div>
+                  </td>
+                  <td><span style="color:var(--gold);font-weight:600">🎖️ Maresciallo</span></td>
+                  <td class="mono">@marco.f</td>
+                  <td class="mono">EST-001-MF</td>
+                  <td style="color:var(--tx2)">15 Gen 2025</td>
+                  <td><span class="badge badge-green">Attivo</span></td>
+                  <td><span style="color:var(--tx3)">—</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Scheda →</button></td>
+                </tr>
+                <tr onclick="openAgentDetail('Luigi Bianchi','Agente Scelto','Sospeso')" style="cursor:pointer">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div class="agent-av" style="width:34px;height:34px;font-size:11px;border-radius:8px;background:linear-gradient(135deg,#3a1a1a,#8f2020)">LB</div>
+                      <span>Luigi Bianchi</span>
+                    </div>
+                  </td>
+                  <td><span style="color:var(--tx2)">🎖️ Agente Scelto</span></td>
+                  <td class="mono">@luigib</td>
+                  <td class="mono">EST-002-LB</td>
+                  <td style="color:var(--tx2)">3 Mar 2025</td>
+                  <td><span class="badge badge-amber">Sospeso</span></td>
+                  <td><span class="badge badge-red" style="font-size:8px">AVV. FORMALE 1</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Scheda →</button></td>
+                </tr>
+                <tr onclick="openAgentDetail('Sara Costa','Agente','In Prova')" style="cursor:pointer">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div class="agent-av" style="width:34px;height:34px;font-size:11px;border-radius:8px">SC</div>
+                      <span>Sara Costa</span>
+                    </div>
+                  </td>
+                  <td><span style="color:var(--tx2)">🎖️ Agente</span></td>
+                  <td class="mono">@sarac</td>
+                  <td class="mono">EST-024-SC</td>
+                  <td style="color:var(--tx2)">20 Mar 2026</td>
+                  <td><span class="badge badge-violet">In Prova</span></td>
+                  <td><span style="color:var(--tx3)">—</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Scheda →</button></td>
+                </tr>
+                <tr onclick="openAgentDetail('Andrea Neri','Sergente','Attivo')" style="cursor:pointer">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div class="agent-av" style="width:34px;height:34px;font-size:11px;border-radius:8px">AN</div>
+                      <span>Andrea Neri</span>
+                    </div>
+                  </td>
+                  <td><span style="color:var(--tx2)">🎖️ Sergente</span></td>
+                  <td class="mono">@andrean</td>
+                  <td class="mono">EST-008-AN</td>
+                  <td style="color:var(--tx2)">5 Lug 2025</td>
+                  <td><span class="badge badge-green">Attivo</span></td>
+                  <td><span style="color:var(--tx3)">—</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Scheda →</button></td>
+                </tr>
+                <tr onclick="openAgentDetail('Elena Russo','Ispettore','Attivo')" style="cursor:pointer">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div class="agent-av" style="width:34px;height:34px;font-size:11px;border-radius:8px;background:linear-gradient(135deg,#1a2d5a,#2860c8)">ER</div>
+                      <span>Elena Russo</span>
+                    </div>
+                  </td>
+                  <td><span style="color:var(--gold);font-weight:600">🎖️ Ispettore</span></td>
+                  <td class="mono">@elenarus</td>
+                  <td class="mono">EST-003-ER</td>
+                  <td style="color:var(--tx2)">10 Feb 2025</td>
+                  <td><span class="badge badge-green">Attivo</span></td>
+                  <td><span style="color:var(--tx3)">—</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Scheda →</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: VERBALI ══════════════════════════════════════ -->
+      <div class="page" id="page-verbali">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div>
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Verbali Operativi</div>
+            <div style="font-size:11px;color:var(--tx3);margin-top:2px">Rapporti di servizio del dipartimento</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modal-verbale')">+ Nuovo Verbale</button>
+        </div>
+
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Titolo</th>
+                  <th>Luogo</th>
+                  <th>Data/Ora</th>
+                  <th>Agenti Coinvolti</th>
+                  <th>Esito</th>
+                  <th>Autore</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600">Controllo Zona Portuale</td>
+                  <td style="color:var(--tx2)">Porto Nord</td>
+                  <td class="mono">22/03/26 14:30</td>
+                  <td style="color:var(--tx2)">Ferretti, Costa</td>
+                  <td><span class="badge badge-green">✅ Positivo</span></td>
+                  <td style="color:var(--tx2)">Ferretti M.</td>
+                  <td><button class="btn btn-ghost btn-sm">Dettaglio</button></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">Fermo Sospetto Criminalità</td>
+                  <td style="color:var(--tx2)">Via Centrale 42</td>
+                  <td class="mono">21/03/26 09:15</td>
+                  <td style="color:var(--tx2)">Neri, Russo</td>
+                  <td><span class="badge badge-red">❌ Negativo</span></td>
+                  <td style="color:var(--tx2)">Neri A.</td>
+                  <td><button class="btn btn-ghost btn-sm">Dettaglio</button></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">Pattugliamento Notturno</td>
+                  <td style="color:var(--tx2)">Distretto Est</td>
+                  <td class="mono">20/03/26 23:00</td>
+                  <td style="color:var(--tx2)">Costa, Bianchi</td>
+                  <td><span class="badge badge-gray">➖ Neutro</span></td>
+                  <td style="color:var(--tx2)">Costa S.</td>
+                  <td><button class="btn btn-ghost btn-sm">Dettaglio</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: SEGNALAZIONI ══════════════════════════════════ -->
+      <div class="page" id="page-segnalazioni">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Segnalazioni</div>
+          <button class="btn btn-primary" onclick="openModal('modal-segnalazione')">🚨 Nuova Segnalazione</button>
+        </div>
+
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+          <div class="kpi-card kpi-rose"><div class="kpi-accent"></div><div class="kpi-label">Aperte</div><div class="kpi-value">2</div></div>
+          <div class="kpi-card kpi-blue"><div class="kpi-accent"></div><div class="kpi-label">In Lavorazione</div><div class="kpi-value">3</div></div>
+          <div class="kpi-card kpi-green"><div class="kpi-accent"></div><div class="kpi-label">Chiuse</div><div class="kpi-value">14</div></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div style="border:1px solid transparent;border-left:4px solid var(--rose);border-radius:var(--radius-sm);padding:16px 20px;margin:8px 14px;background:var(--bg-raised)">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                    <span style="font-size:13.5px;font-weight:600;color:var(--tx1)">Comportamento scorretto di un agente</span>
+                    <span class="badge badge-red">APERTA</span>
+                    <span class="badge badge-red" style="font-size:7.5px">ALTA PRIORITÀ</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">Un agente ha usato linguaggio inappropriato durante un controllo…</div>
+                  <div style="display:flex;gap:12px;font-size:10.5px;color:var(--tx3)">
+                    <span>📅 22 Mar 2026</span>
+                    <span>👤 Anonimo</span>
+                    <span>🏷️ Condotta</span>
+                  </div>
+                </div>
+                <button class="btn btn-sm">Gestisci</button>
+              </div>
+            </div>
+            <div style="border:1px solid transparent;border-left:4px solid var(--azure);border-radius:var(--radius-sm);padding:16px 20px;margin:8px 14px;background:var(--bg-raised)">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                    <span style="font-size:13.5px;font-weight:600;color:var(--tx1)">Ritardo nell'intervento zona mercato</span>
+                    <span class="badge badge-blue">IN LAVORAZIONE</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">Risposta all'allarme ritardata di 20 minuti senza giustificazione…</div>
+                  <div style="display:flex;gap:12px;font-size:10.5px;color:var(--tx3)">
+                    <span>📅 20 Mar 2026</span>
+                    <span>👤 Cittadino</span>
+                    <span>🏷️ Efficienza</span>
+                  </div>
+                </div>
+                <button class="btn btn-sm">Gestisci</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: DENUNCE ══════════════════════════════════════ -->
+      <div class="page" id="page-denunce">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Denunce</div>
+          <button class="btn btn-primary">+ Nuova Denuncia</button>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>#</th><th>Denunciante</th><th>Tipo Reato</th><th>Data</th><th>Stato</th><th>Assegnato a</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono" style="color:var(--tx3)">DEN-2026-031</td>
+                  <td>Giovanni Verdi</td>
+                  <td style="color:var(--tx2)">Furto con scasso</td>
+                  <td class="mono">22/03/2026</td>
+                  <td><span class="badge badge-amber">In corso</span></td>
+                  <td style="color:var(--tx2)">Ferretti M.</td>
+                  <td><button class="btn btn-ghost btn-sm">Dettaglio</button></td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color:var(--tx3)">DEN-2026-030</td>
+                  <td>Maria Ricci</td>
+                  <td style="color:var(--tx2)">Vandalismo</td>
+                  <td class="mono">21/03/2026</td>
+                  <td><span class="badge badge-blue">Aperta</span></td>
+                  <td style="color:var(--tx3)">Non assegnato</td>
+                  <td><button class="btn btn-ghost btn-sm">Dettaglio</button></td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color:var(--tx3)">DEN-2026-029</td>
+                  <td>Luca Ferrari</td>
+                  <td style="color:var(--tx2)">Aggressione</td>
+                  <td class="mono">19/03/2026</td>
+                  <td><span class="badge badge-green">Chiusa</span></td>
+                  <td style="color:var(--tx2)">Russo E.</td>
+                  <td><button class="btn btn-ghost btn-sm">Dettaglio</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: COMUNICATI ════════════════════════════════════ -->
+      <div class="page" id="page-comunicati">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Comunicati Ufficiali</div>
+          <button class="btn btn-primary">+ Nuovo Comunicato</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div style="padding:18px 22px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <span class="badge badge-red">🔴 Urgente</span>
+                    <span style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--tx1)">Allerta Operativa — Pattuglie Rinforzate</span>
+                  </div>
+                  <div style="font-size:13px;color:var(--tx2);line-height:1.6;max-width:700px">
+                    A causa di eventi speciali nel weekend del 22-24 marzo, tutte le pattuglie sono invitate a rinforzare la presenza nella zona nord della città. È richiesta la disponibilità immediata per turni extra.
+                  </div>
+                  <div style="font-size:10.5px;color:var(--tx3);margin-top:10px">Pubblicato da Questore Rossi · 22 Mar 2026 09:00</div>
+                </div>
+                <div style="display:flex;gap:7px;flex-shrink:0">
+                  <button class="btn btn-ghost btn-sm">Modifica</button>
+                  <button class="btn btn-danger btn-sm">Elimina</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="padding:18px 22px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <span class="badge badge-blue">🔵 Info</span>
+                    <span style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--tx1)">Aggiornamento Protocolli Operativi 2026</span>
+                  </div>
+                  <div style="font-size:13px;color:var(--tx2);line-height:1.6;max-width:700px">
+                    Dal 1° Aprile 2026 entreranno in vigore i nuovi protocolli operativi. Tutti gli agenti sono invitati a leggere il documento allegato nella sezione Documentazione.
+                  </div>
+                  <div style="font-size:10.5px;color:var(--tx3);margin-top:10px">Pubblicato da V.Questore Neri · 20 Mar 2026</div>
+                </div>
+                <div style="display:flex;gap:7px;flex-shrink:0">
+                  <button class="btn btn-ghost btn-sm">Modifica</button>
+                  <button class="btn btn-danger btn-sm">Elimina</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: PEC ═══════════════════════════════════════════ -->
+      <div class="page" id="page-pec">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">PEC / Messaggi Ufficiali</div>
+          <button class="btn btn-primary">+ Nuova PEC</button>
+        </div>
+        <div style="display:grid;grid-template-columns:280px 1fr;gap:16px;height:calc(100vh - 180px)">
+          <div class="card" style="overflow-y:auto">
+            <div style="padding:12px">
+              <div class="search-input" style="width:100%;margin-bottom:12px">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Cerca…" style="width:100%">
+              </div>
+            </div>
+            <div>
+              <div style="padding:12px 16px;border-bottom:1px solid var(--bd3);cursor:pointer;background:rgba(33,82,200,.06);border-left:3px solid var(--azure)">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12px;font-weight:600;color:var(--tx1)">Comune di Estovia</span>
+                  <span style="font-size:9.5px;color:var(--tx3)">Oggi</span>
+                </div>
+                <div style="font-size:11px;color:var(--tx2)">Richiesta collaborazione per evento…</div>
+                <div class="notif-dot" style="margin-top:4px"></div>
+              </div>
+              <div style="padding:12px 16px;border-bottom:1px solid var(--bd3);cursor:pointer" onmouseenter="this.style.background='rgba(33,82,200,.03)'" onmouseleave="this.style.background=''">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12px;font-weight:600;color:var(--tx1)">Procura Repubblica</span>
+                  <span style="font-size:9.5px;color:var(--tx3)">Ieri</span>
+                </div>
+                <div style="font-size:11px;color:var(--tx2)">Trasmissione atti procedimento…</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--bd2)">
+              <div style="font-size:14px;font-weight:600;color:var(--tx1)">Comune di Estovia</div>
+              <div style="font-size:10.5px;color:var(--tx3)">22 Marzo 2026 · 10:34</div>
+            </div>
+            <div style="flex:1;padding:24px;overflow-y:auto">
+              <div style="max-width:600px">
+                <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--tx1);margin-bottom:16px">Richiesta collaborazione per evento del 30 marzo</div>
+                <div style="font-size:13.5px;color:var(--tx2);line-height:1.7">
+                  Gentile Dipartimento,<br><br>
+                  In riferimento all'evento pubblico programmato per il 30 marzo in Piazza Centrale, chiediamo la collaborazione del vostro dipartimento per garantire la sicurezza e il rispetto dell'ordine pubblico.<br><br>
+                  Sarà necessario disporre almeno 6 agenti in turni di 4 ore ciascuno dalle 14:00 alle 22:00.<br><br>
+                  Cordiali saluti,<br>
+                  <em>Il Segretario Comunale</em>
+                </div>
+              </div>
+            </div>
+            <div style="padding:14px 20px;border-top:1px solid var(--bd2);display:flex;gap:8px">
+              <button class="btn btn-primary">✉️ Rispondi</button>
+              <button class="btn">Archivia</button>
+              <button class="btn btn-danger">Elimina</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: AI / AFFARI INTERNI ══════════════════════════ -->
+      <div class="page" id="page-ai">
+        <div style="margin-bottom:18px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Affari Interni</div>
+            <span class="badge badge-violet">🔒 Riservato</span>
+          </div>
+          <div style="font-size:11px;color:var(--tx3)">Sezione riservata — accesso controllato</div>
+        </div>
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+          <div class="kpi-card kpi-violet"><div class="kpi-accent"></div><div class="kpi-label">Indagini Aperte</div><div class="kpi-value">4</div></div>
+          <div class="kpi-card kpi-gold"><div class="kpi-accent"></div><div class="kpi-label">In Revisione</div><div class="kpi-value">2</div></div>
+          <div class="kpi-card kpi-green"><div class="kpi-accent"></div><div class="kpi-label">Archiviate</div><div class="kpi-value">31</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">🔒</div>
+            <span class="card-title">Procedimenti Attivi</span>
+            <div class="card-actions"><button class="btn btn-primary btn-sm">+ Nuovo Procedimento</button></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Soggetto Indagine</th><th>Tipo</th><th>Avviato il</th><th>Responsabile</th><th>Stato</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono" style="color:var(--violet)">AI-2026-004</td>
+                  <td style="color:var(--tx1)">[REDATTO]</td>
+                  <td><span class="badge badge-violet">Condotta</span></td>
+                  <td class="mono">15/03/2026</td>
+                  <td style="color:var(--tx2)">Dir. Affari Interni</td>
+                  <td><span class="badge badge-amber">In corso</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Apri</button></td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color:var(--violet)">AI-2026-003</td>
+                  <td style="color:var(--tx1)">Agente P.G.</td>
+                  <td><span class="badge badge-red">Corruzione</span></td>
+                  <td class="mono">10/03/2026</td>
+                  <td style="color:var(--tx2)">Dir. Affari Interni</td>
+                  <td><span class="badge badge-red">Urgente</span></td>
+                  <td><button class="btn btn-ghost btn-sm">Apri</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: STORICO ══════════════════════════════════════ -->
+      <div class="page" id="page-storico">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Storico Azioni</div>
+          <div class="search-input">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Cerca nel registro…">
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Tipo</th><th>Agente</th><th>Vecchio</th><th>Nuovo</th><th>Motivo</th><th>Operatore</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">22/03/2026</td><td><span class="badge badge-blue">Promozione</span></td><td>Marco Ferretti</td><td style="color:var(--tx3)">Sergente</td><td style="color:var(--azure);font-weight:600">Maresciallo</td><td style="color:var(--tx2);max-width:200px;overflow:hidden;text-overflow:ellipsis">Eccellente comportamento in servizio</td><td style="color:var(--tx3)">Q.Rossi</td></tr>
+                <tr><td class="mono">21/03/2026</td><td><span class="badge badge-amber">Sanzione</span></td><td>Luigi Bianchi</td><td style="color:var(--tx3)">—</td><td style="color:var(--amber);font-weight:600">AVV. FORMALE 1</td><td style="color:var(--tx2)">Assenza ingiustificata</td><td style="color:var(--tx3)">Q.Rossi</td></tr>
+                <tr><td class="mono">20/03/2026</td><td><span class="badge badge-green">Ingresso</span></td><td>Sara Costa</td><td style="color:var(--tx3)">—</td><td style="color:var(--emerald);font-weight:600">Agente</td><td style="color:var(--tx2)">Superato esame accademia</td><td style="color:var(--tx3)">Q.Rossi</td></tr>
+                <tr><td class="mono">19/03/2026</td><td><span class="badge badge-blue">Promozione</span></td><td>Andrea Neri</td><td style="color:var(--tx3)">Caporale</td><td style="color:var(--azure);font-weight:600">Sergente</td><td style="color:var(--tx2)">Review trimestrale</td><td style="color:var(--tx3)">V.Q.Neri</td></tr>
+                <tr><td class="mono">18/03/2026</td><td><span class="badge badge-red">Sospensione</span></td><td>Paolo Greco</td><td style="color:var(--tx3)">Attivo</td><td style="color:var(--rose);font-weight:600">Sospeso (7gg)</td><td style="color:var(--tx2)">Violazione regolamento</td><td style="color:var(--tx3)">Q.Rossi</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: GERARCHIA ════════════════════════════════════ -->
+      <div class="page" id="page-gerarchia">
+        <div style="margin-bottom:18px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Gerarchia dei Gradi</div>
+        <div class="card">
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx4);margin-bottom:4px">— COMANDO —</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:12px 16px;background:var(--gold-dim);border:1px solid var(--gold-line);border-radius:var(--radius-sm)">
+                <div style="font-size:13px;font-weight:700;color:var(--gold);width:180px">Comandante</div>
+                <div style="font-size:11px;color:var(--tx3)">Grado massimo — Comando assoluto del dipartimento</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;padding:12px 16px;background:rgba(59,114,240,.06);border:1px solid var(--bd1);border-radius:var(--radius-sm)">
+                <div style="font-size:13px;font-weight:600;color:var(--azure);width:180px">Questore</div>
+                <div style="font-size:11px;color:var(--tx3)">Comando operativo del dipartimento</div>
+                <span class="badge badge-blue" style="margin-left:auto">1 agente</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;padding:12px 16px;background:rgba(59,114,240,.04);border:1px solid var(--bd2);border-radius:var(--radius-sm)">
+                <div style="font-size:12.5px;font-weight:600;color:var(--sky);width:180px">Vice Questore</div>
+                <div style="font-size:11px;color:var(--tx3)">Vice comando operativo</div>
+                <span class="badge badge-blue" style="margin-left:auto">2 agenti</span>
+              </div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx4);margin-top:8px;margin-bottom:4px">— UFFICIALI —</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.03);border:1px solid var(--bd2);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx1);width:180px">Commissario</div>
+                <div style="font-size:11px;color:var(--tx3)">Responsabile di reparto</div>
+                <span class="badge badge-gray" style="margin-left:auto">2 agenti</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.03);border:1px solid var(--bd2);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx1);width:180px">Vice Commissario</div>
+                <div style="font-size:11px;color:var(--tx3)">Supporto al commissario</div>
+                <span class="badge badge-gray" style="margin-left:auto">1 agente</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.03);border:1px solid var(--bd2);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx1);width:180px">Ispettore</div>
+                <div style="font-size:11px;color:var(--tx3)">Coordinamento squadre</div>
+                <span class="badge badge-gray" style="margin-left:auto">3 agenti</span>
+              </div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx4);margin-top:8px;margin-bottom:4px">— SOTTOUFFICIALI —</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.02);border:1px solid var(--bd3);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx2);width:180px">Maresciallo</div>
+                <div style="font-size:11px;color:var(--tx3)">Comando pattuglia</div>
+                <span class="badge badge-gray" style="margin-left:auto">4 agenti</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.02);border:1px solid var(--bd3);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx2);width:180px">Sergente</div>
+                <div style="font-size:11px;color:var(--tx3)">Capopattuglia</div>
+                <span class="badge badge-gray" style="margin-left:auto">5 agenti</span>
+              </div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx4);margin-top:8px;margin-bottom:4px">— TRUPPA —</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.01);border:1px solid var(--bd3);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx2);width:180px">Caporale</div><div style="font-size:11px;color:var(--tx3)">Agente esperto</div>
+                <span class="badge badge-gray" style="margin-left:auto">3</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.01);border:1px solid var(--bd3);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx2);width:180px">Agente Scelto</div><div style="font-size:11px;color:var(--tx3)">Agente qualificato</div>
+                <span class="badge badge-gray" style="margin-left:auto">3</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(59,114,240,.01);border:1px solid var(--bd3);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--tx2);width:180px">Agente</div><div style="font-size:11px;color:var(--tx3)">Agente base</div>
+                <span class="badge badge-gray" style="margin-left:auto">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: STATISTICHE ══════════════════════════════════ -->
+      <div class="page" id="page-statistiche">
+        <div style="margin-bottom:18px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Statistiche Dipartimento</div>
+        <div class="kpi-grid" style="margin-bottom:16px">
+          <div class="kpi-card kpi-blue"><div class="kpi-accent"></div><div class="kpi-label">Verbali questo mese</div><div class="kpi-value">34</div><div class="kpi-meta"><span class="kpi-delta delta-up">↑ 8%</span></div></div>
+          <div class="kpi-card kpi-green"><div class="kpi-accent"></div><div class="kpi-label">Denunce archiviate</div><div class="kpi-value">12</div><div class="kpi-meta"><span class="kpi-delta delta-up">↑ 3</span></div></div>
+          <div class="kpi-card kpi-gold"><div class="kpi-accent"></div><div class="kpi-label">Segnalazioni risolte</div><div class="kpi-value">8</div></div>
+          <div class="kpi-card kpi-teal"><div class="kpi-accent"></div><div class="kpi-label">Promozioni del mese</div><div class="kpi-value">3</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-header"><div class="card-header-icon">📈</div><span class="card-title">Promozioni per mese</span></div>
+            <div class="chart-area" style="height:160px">
+              <div class="chart-bar" style="height:40%" data-val="4"></div>
+              <div class="chart-bar" style="height:55%" data-val="6"></div>
+              <div class="chart-bar" style="height:30%" data-val="3"></div>
+              <div class="chart-bar" style="height:70%" data-val="7"></div>
+              <div class="chart-bar" style="height:50%" data-val="5"></div>
+              <div class="chart-bar" style="height:45%" data-val="5"></div>
+              <div class="chart-bar" style="height:80%" data-val="8"></div>
+              <div class="chart-bar" style="height:35%" data-val="3"></div>
+              <div class="chart-bar" style="height:60%" data-val="6"></div>
+              <div class="chart-bar" style="height:25%" data-val="2"></div>
+              <div class="chart-bar" style="height:65%" data-val="7"></div>
+              <div class="chart-bar" style="height:30%" data-val="3"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:0 18px 10px;font-size:9px;color:var(--tx4)">
+              <span>Apr</span><span>Mag</span><span>Giu</span><span>Lug</span><span>Ago</span><span>Set</span><span>Ott</span><span>Nov</span><span>Dic</span><span>Gen</span><span>Feb</span><span>Mar</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-header-icon">📊</div><span class="card-title">Tipo Azioni</span></div>
+            <div style="padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:12px;color:var(--tx2)">Promozioni</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:120px;height:6px;background:var(--bd2);border-radius:3px"><div style="width:65%;height:100%;background:var(--azure);border-radius:3px"></div></div>
+                  <span style="font-size:12px;font-weight:700;color:var(--azure)">96</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:12px;color:var(--tx2)">Sanzioni</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:120px;height:6px;background:var(--bd2);border-radius:3px"><div style="width:22%;height:100%;background:var(--amber);border-radius:3px"></div></div>
+                  <span style="font-size:12px;font-weight:700;color:var(--amber)">32</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:12px;color:var(--tx2)">Ingressi</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:120px;height:6px;background:var(--bd2);border-radius:3px"><div style="width:15%;height:100%;background:var(--emerald);border-radius:3px"></div></div>
+                  <span style="font-size:12px;font-weight:700;color:var(--emerald)">24</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:12px;color:var(--tx2)">Licenziamenti</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:120px;height:6px;background:var(--bd2);border-radius:3px"><div style="width:5%;height:100%;background:var(--rose);border-radius:3px"></div></div>
+                  <span style="font-size:12px;font-weight:700;color:var(--rose)">8</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: IMPOSTAZIONI ══════════════════════════════════ -->
+      <div class="page" id="page-impostazioni">
+        <div style="margin-bottom:18px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Impostazioni Sistema</div>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:20px">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <div class="nav-link active" style="font-size:12px">⚙️ Generale</div>
+            <div class="nav-link" style="font-size:12px">🎖️ Gradi</div>
+            <div class="nav-link" style="font-size:12px">⚠️ Sanzioni</div>
+            <div class="nav-link" style="font-size:12px">🔑 Permessi</div>
+            <div class="nav-link" style="font-size:12px">🔔 Notifiche</div>
+            <div class="nav-link" style="font-size:12px">🔗 Integrazioni</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card">
+              <div class="card-header"><div class="card-header-icon">⚙️</div><span class="card-title">Impostazioni Generali</span></div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Nome Dipartimento</label>
+                    <input class="form-input" type="text" value="Polizia d'Estovia">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">URL Favicon</label>
+                    <input class="form-input" type="text" placeholder="https://…">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">URL Logo</label>
+                    <input class="form-input" type="text" placeholder="https://…">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Colore Accento</label>
+                    <input class="form-input" type="color" value="#2152c8" style="height:40px;cursor:pointer">
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-top:8px">
+                  <button class="btn btn-primary" onclick="showToast('Impostazioni salvate','✅')">Salva modifiche</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-header-icon">🔗</div><span class="card-title">Integrazione Discord</span></div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Client ID</label>
+                    <input class="form-input" type="password" value="••••••••••••">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Guild ID</label>
+                    <input class="form-input" type="text" placeholder="123456789…">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Canale Log</label>
+                    <input class="form-input" type="text" placeholder="ID canale">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Canale Annunci</label>
+                    <input class="form-input" type="text" placeholder="ID canale">
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+                  <button class="btn" onclick="showToast('Connessione testata con successo!','🔗')">Testa connessione</button>
+                  <button class="btn btn-primary" onclick="showToast('Impostazioni Discord salvate','✅')">Salva</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: DOCUMENTAZIONE ════════════════════════════════ -->
+      <div class="page" id="page-documentazione">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Documentazione</div>
+          <button class="btn btn-primary">+ Aggiungi Documento</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="padding:14px 16px;background:var(--bg-raised);border:1px solid var(--bd2);border-radius:var(--radius-sm);display:flex;align-items:center;gap:14px">
+                <div style="font-size:24px">📄</div>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:600;color:var(--tx1)">Regolamento Interno 2026</div>
+                  <div style="font-size:10.5px;color:var(--tx3);margin-top:2px">Aggiornato il 1 Gen 2026 · PDF</div>
+                </div>
+                <button class="btn btn-ghost btn-sm">Scarica</button>
+              </div>
+              <div style="padding:14px 16px;background:var(--bg-raised);border:1px solid var(--bd2);border-radius:var(--radius-sm);display:flex;align-items:center;gap:14px">
+                <div style="font-size:24px">📋</div>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:600;color:var(--tx1)">Protocolli Operativi</div>
+                  <div style="font-size:10.5px;color:var(--tx3);margin-top:2px">Aggiornato il 15 Mar 2026 · PDF</div>
+                </div>
+                <button class="btn btn-ghost btn-sm">Scarica</button>
+              </div>
+              <div style="padding:14px 16px;background:var(--bg-raised);border:1px solid var(--bd2);border-radius:var(--radius-sm);display:flex;align-items:center;gap:14px">
+                <div style="font-size:24px">📚</div>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:600;color:var(--tx1)">Codice di Condotta</div>
+                  <div style="font-size:10.5px;color:var(--tx3);margin-top:2px">Aggiornato il 10 Feb 2026 · PDF</div>
+                </div>
+                <button class="btn btn-ghost btn-sm">Scarica</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: CITTADINI ════════════════════════════════════ -->
+      <div class="page" id="page-cittadini">
+        <div style="margin-bottom:18px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--tx1)">Portale Cittadini</div>
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+          <div class="kpi-card kpi-blue"><div class="kpi-accent"></div><div class="kpi-label">Schede Cittadini</div><div class="kpi-value">142</div></div>
+          <div class="kpi-card kpi-rose"><div class="kpi-accent"></div><div class="kpi-label">Con Fedina</div><div class="kpi-value">38</div></div>
+          <div class="kpi-card kpi-amber"><div class="kpi-accent"></div><div class="kpi-label">Pratiche Aperte</div><div class="kpi-value">12</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">🏛️</div>
+            <span class="card-title">Cerca Cittadino</span>
+          </div>
+          <div class="card-body">
+            <div class="search-input" style="width:100%;max-width:400px;margin-bottom:20px">
+              <span class="search-icon">🔍</span>
+              <input type="text" placeholder="Nome, CF, Discord…" style="width:100%">
+            </div>
+            <div class="empty">
+              <div class="empty-icon">🏛️</div>
+              <div class="empty-text">Inserisci il nome del cittadino per cercarlo nel registro</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- ══ MODALS ═════════════════════════════════════════════════════ -->
+
+<!-- Modal: Nuovo Agente -->
+<div class="modal-overlay" id="modal-agente">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon">👮</div>
+      <div class="modal-title">Aggiungi Nuovo Agente</div>
+      <button class="modal-close" onclick="closeModal('modal-agente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Nome</label><input class="form-input" type="text" placeholder="Marco"></div>
+        <div class="form-group"><label class="form-label">Cognome</label><input class="form-input" type="text" placeholder="Ferretti"></div>
+        <div class="form-group"><label class="form-label">Username Discord</label><input class="form-input" type="text" placeholder="@marco.f"></div>
+        <div class="form-group"><label class="form-label">Discord ID</label><input class="form-input" type="text" placeholder="123456789…"></div>
+        <div class="form-group"><label class="form-label">Codice Fiscale</label><input class="form-input" type="text" placeholder="EST-XXX-XX"></div>
+        <div class="form-group"><label class="form-label">Grado Iniziale</label>
+          <select class="form-select">
+            <option>Agente</option><option>Agente Scelto</option><option>Caporale</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Note</label><textarea class="form-textarea" placeholder="Note aggiuntive…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-agente')">Annulla</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-agente');showToast('Agente aggiunto con successo!','👮')">Aggiungi Agente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nuovo Verbale -->
+<div class="modal-overlay" id="modal-verbale">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon">📝</div>
+      <div class="modal-title">Nuovo Verbale Operativo</div>
+      <button class="modal-close" onclick="closeModal('modal-verbale')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Titolo Operazione</label><input class="form-input" type="text" placeholder="Es. Controllo zona portuale"></div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Luogo</label><input class="form-input" type="text" placeholder="Via/Zona"></div>
+        <div class="form-group"><label class="form-label">Data e Ora</label><input class="form-input" type="datetime-local"></div>
+        <div class="form-group"><label class="form-label">Agenti Coinvolti</label><input class="form-input" type="text" placeholder="Ferretti, Russo…"></div>
+        <div class="form-group"><label class="form-label">Esito</label>
+          <select class="form-select"><option>Positivo</option><option>Negativo</option><option>Neutro</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Soggetti / Persone</label><input class="form-input" type="text" placeholder="Nome, cognome soggetti…"></div>
+      <div class="form-group"><label class="form-label">Descrizione</label><textarea class="form-textarea" placeholder="Descrizione dettagliata dell'operazione…" style="min-height:120px"></textarea></div>
+      <div class="form-group"><label class="form-label">Note Aggiuntive</label><textarea class="form-textarea" placeholder="Note…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-verbale')">Annulla</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-verbale');showToast('Verbale registrato!','📝')">Registra Verbale</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nuova Segnalazione -->
+<div class="modal-overlay" id="modal-segnalazione">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon">🚨</div>
+      <div class="modal-title">Nuova Segnalazione</div>
+      <button class="modal-close" onclick="closeModal('modal-segnalazione')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Titolo</label><input class="form-input" type="text" placeholder="Descrizione breve…"></div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Tipo</label>
+          <select class="form-select"><option>Condotta</option><option>Corruzione</option><option>Efficienza</option><option>Altro</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Priorità</label>
+          <select class="form-select"><option>Normale</option><option>Alta</option><option>Urgente</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Descrizione Dettagliata</label><textarea class="form-textarea" style="min-height:120px" placeholder="Descrivi la segnalazione…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-segnalazione')">Annulla</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-segnalazione');showToast('Segnalazione inviata!','🚨')">Invia Segnalazione</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Agent Detail -->
+<div class="modal-overlay" id="modal-agente-detail">
+  <div class="modal" style="width:600px;max-width:96vw">
+    <div class="modal-header">
+      <div class="modal-icon" id="detail-icon">👮</div>
+      <div>
+        <div class="modal-title" id="detail-name">Marco Ferretti</div>
+        <div style="font-size:10px;color:var(--tx3);margin-top:2px" id="detail-grade">Maresciallo</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:7px;align-items:center">
+        <span class="badge" id="detail-status">Attivo</span>
+        <button class="modal-close" onclick="closeModal('modal-agente-detail')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <!-- Info grid -->
+      <div class="info-grid" style="padding:16px 20px;border-bottom:1px solid var(--bd2)">
+        <div class="info-cell"><span class="info-label">Grado</span><span class="info-value" id="d-grade">Maresciallo</span></div>
+        <div class="info-cell"><span class="info-label">CF</span><span class="info-value font-mono" style="font-size:11.5px">EST-001-MF</span></div>
+        <div class="info-cell"><span class="info-label">Discord</span><span class="info-value" style="color:var(--violet)">@marco.f</span></div>
+        <div class="info-cell"><span class="info-label">In Servizio Dal</span><span class="info-value">15 Gen 2025</span></div>
+        <div class="info-cell"><span class="info-label">Stato</span><span class="info-value">Attivo</span></div>
+        <div class="info-cell"><span class="info-label">Sanzione</span><span class="info-value" style="color:var(--tx3)">Nessuna</span></div>
+      </div>
+      <!-- Storico carriera -->
+      <div style="padding:14px 20px 0">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx4);margin-bottom:10px">Storico Carriera</div>
+        <div class="timeline" style="max-height:200px;overflow-y:auto">
+          <div class="tl-item"><div class="tl-dot" style="--dot-color:var(--azure)"></div><div class="tl-content"><div class="tl-event"><span class="badge badge-blue">Promozione</span> Sergente → <b style="color:var(--azure)">Maresciallo</b></div><div class="tl-meta">Eccellente comportamento · 22 Mar 2026 · Operatore: Q.Rossi</div></div></div>
+          <div class="tl-item"><div class="tl-dot" style="--dot-color:var(--azure)"></div><div class="tl-content"><div class="tl-event"><span class="badge badge-blue">Promozione</span> Caporale → <b style="color:var(--azure)">Sergente</b></div><div class="tl-meta">Review semestrale · 15 Set 2025 · Operatore: Q.Rossi</div></div></div>
+          <div class="tl-item"><div class="tl-dot" style="--dot-color:var(--teal)"></div><div class="tl-content"><div class="tl-event"><span class="badge badge-teal">Ingresso</span> → <b>Caporale</b></div><div class="tl-meta">Ingresso in organico · 15 Gen 2025</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm">Azione Disciplinare</button>
+      <button class="btn btn-sm">Modifica</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-promozione');closeModal('modal-agente-detail')">🔼 Promuovi / Degrada</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Promozione -->
+<div class="modal-overlay" id="modal-promozione">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon">🔼</div>
+      <div class="modal-title">Azione su Agente</div>
+      <button class="modal-close" onclick="closeModal('modal-promozione')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Tipo Azione</label>
+        <select class="form-select">
+          <option>Promozione</option><option>Degrado</option><option>Sanzione</option>
+          <option>Rimozione Sanzione</option><option>Sospensione</option><option>Licenziamento</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Grado Attuale</label><input class="form-input" type="text" value="Sergente" readonly style="opacity:.6"></div>
+        <div class="form-group"><label class="form-label">Nuovo Grado</label>
+          <select class="form-select"><option>Agente</option><option>Agente Scelto</option><option>Caporale</option><option selected>Maresciallo</option><option>Sergente</option><option>Ispettore</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Motivazione</label><textarea class="form-textarea" placeholder="Motivazione dell'azione…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-promozione')">Annulla</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-promozione');showToast('Azione registrata con successo!','✅')">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ── Navigation ──
+const pageMap = {
+  'dashboard': ['Dashboard', 'Panoramica Dipartimento'],
+  'agenti': ['Agenti', 'Gestione organico'],
+  'storico': ['Storico Azioni', 'Registro completo'],
+  'gerarchia': ['Gerarchia', 'Struttura dei gradi'],
+  'verbali': ['Verbali Operativi', 'Rapporti di servizio'],
+  'denunce': ['Denunce', 'Gestione pratiche'],
+  'segnalazioni': ['Segnalazioni', 'Gestione segnalazioni'],
+  'comunicati': ['Comunicati', 'Comunicazioni ufficiali'],
+  'pec': ['PEC / Messaggi', 'Comunicazioni esterne'],
+  'ai': ['Affari Interni', 'Sezione riservata'],
+  'cittadini': ['Portale Cittadini', 'Registro e fedine'],
+  'documentazione': ['Documentazione', 'Archivio documenti'],
+  'statistiche': ['Statistiche', 'Analisi dipartimento'],
+  'impostazioni': ['Impostazioni', 'Configurazione sistema'],
+  'profilo': ['Il Mio Profilo', 'Account personale'],
+};
+
+function showPage(name) {
+  // Deactivate all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + name);
+  if (page) page.classList.add('active');
+
+  // Update nav
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('onclick') && l.getAttribute('onclick').includes("'" + name + "'")) {
+      l.classList.add('active');
+    }
+  });
+
+  // Update topbar
+  const meta = pageMap[name] || [name, ''];
+  document.getElementById('tb-title').textContent = meta[0];
+  document.getElementById('tb-sub').textContent = meta[1];
+}
+
+// ── Modals ──
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+// Close on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ── Agent detail ──
+function openAgentDetail(name, grade, status) {
+  document.getElementById('detail-name').textContent = name;
+  document.getElementById('detail-grade').textContent = grade;
+  document.getElementById('d-grade').textContent = grade;
+  const statusEl = document.getElementById('detail-status');
+  statusEl.textContent = status;
+  statusEl.className = 'badge ' + (status === 'Attivo' ? 'badge-green' : status === 'Sospeso' ? 'badge-amber' : 'badge-violet');
+  // Initials
+  const parts = name.split(' ');
+  const initials = parts.map(p => p[0]).join('').slice(0, 2);
+  document.getElementById('detail-icon').textContent = initials;
+  openModal('modal-agente-detail');
+}
+
+// ── Agent filter ──
+function filterAgents(q) {
+  const rows = document.querySelectorAll('#agents-tbody tr');
+  q = q.toLowerCase();
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ── Toasts ──
+function showToast(msg, icon = '✅') {
+  const container = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ── Init ──
+showPage('dashboard');
+</script>
+</body>
+</html>
