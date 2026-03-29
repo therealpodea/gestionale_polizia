@@ -221,6 +221,7 @@ tbody tr:last-child td{border-bottom:none}
         <div class="emblem-sub">Gestionale Interno</div>
       </div>
     </div>
+    {% if user is defined and user %}
     {% if user.permission >= 100 %}
       {% if user.ruolo_principale == 'staff' or user.livello == 'staff' %}
       <div class="sb-rank" style="color:#ffd700;border-color:rgba(255,215,0,.25);background:rgba(255,215,0,.06)">⭐ STAFF</div>
@@ -280,6 +281,7 @@ tbody tr:last-child td{border-bottom:none}
         <div class="profile-status"></div>
       </a>
     </div>
+    {% endif %}{# end user is defined #}
   </aside>
   <div class="main">
     <div class="topbar">

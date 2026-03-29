@@ -1,11 +1,36 @@
-{% extends "base.html" %}
-{% block title %}Accesso Negato{% endblock %}
-{% block tb_title %}Accesso Negato{% endblock %}
-{% block content %}
-<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;text-align:center;gap:16px">
-  <div style="font-size:52px;opacity:.4">🔒</div>
-  <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--tx1)">Accesso Non Autorizzato</div>
-  <div style="font-size:13px;color:var(--tx3);max-width:380px;line-height:1.6">Non hai i permessi necessari per accedere a questa sezione del gestionale.</div>
-  <a href="/dashboard" class="btn primary" style="margin-top:8px">← Torna alla Dashboard</a>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accesso Negato — Polizia d'Estovia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:#03040c;color:#e8eeff;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center}
+:root{--royal:#1a3a8f;--azure:#3b72f0;--rose:#f04060;--tx1:#e8eeff;--tx2:#a0b4d8;--tx3:#4a6090;--tx4:#2a3a5a;--bd1:rgba(59,114,240,.12);--bd2:rgba(59,114,240,.06)}
+.bg{position:fixed;inset:0;z-index:0}
+.bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(240,64,96,.06),transparent 60%),radial-gradient(ellipse 50% 40% at 20% 80%,rgba(26,58,143,.1),transparent 50%),#03040c}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,114,240,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(59,114,240,.025) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 20%,transparent 70%)}
+.wrap{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px}
+.icon{font-size:64px;opacity:.3;margin-bottom:8px}
+.title{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--tx1)}
+.desc{font-size:14px;color:var(--tx3);max-width:400px;line-height:1.65;margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;background:linear-gradient(135deg,var(--royal),var(--azure));border:1px solid rgba(59,114,240,.4);color:#fff;text-decoration:none;transition:all .22s;box-shadow:0 4px 16px rgba(26,58,143,.3)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,58,143,.45)}
+.divider{width:40px;height:1px;background:var(--bd1);margin:8px 0}
+  </style>
+</head>
+<body>
+<div class="bg"><div class="bg-grad"></div><div class="bg-grid"></div></div>
+<div class="wrap">
+  <div class="icon">🔒</div>
+  <div class="title">Accesso Non Autorizzato</div>
+  <div class="divider"></div>
+  <div class="desc">Non hai i permessi necessari per accedere a questa sezione del gestionale.<br>Contatta un superiore se ritieni si tratti di un errore.</div>
+  <a href="/dashboard" class="btn">← Torna alla Dashboard</a>
 </div>
-{% endblock %}
+</body>
+</html>

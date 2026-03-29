@@ -1,13 +1,39 @@
-{% extends "cittadini/base_cittadini.html" %}
-{% block title %}Accesso Negato{% endblock %}
-{% block content %}
-<div class="page-sm" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px">
-  <div style="font-size:52px;opacity:.4">🔒</div>
-  <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--tx1)">Accesso Non Autorizzato</div>
-  <div style="font-size:13px;color:var(--tx3);max-width:380px;line-height:1.6">Non hai i permessi per visualizzare questa pagina. Effettua il login per continuare.</div>
-  <a href="/cittadini/login" class="fbtn discord" style="margin-top:8px">
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accesso Negato — Polizia d'Estovia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:#03040c;color:#e8eeff;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center}
+:root{--royal:#1a3a8f;--sapphire:#2152c8;--azure:#3b72f0;--tx1:#e8eeff;--tx3:#4a6090;--bd1:rgba(59,114,240,.12)}
+.bg{position:fixed;inset:0;z-index:0}
+.bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(26,58,143,.1),transparent 60%),#03040c}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,114,240,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(59,114,240,.025) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 20%,transparent 70%)}
+.wrap{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px}
+.icon{font-size:64px;opacity:.3;margin-bottom:8px}
+.title{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--tx1)}
+.desc{font-size:14px;color:var(--tx3);max-width:400px;line-height:1.65;margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;background:linear-gradient(135deg,#4a52c8,#5865f2);border:1px solid rgba(88,101,242,.4);color:#fff;text-decoration:none;transition:all .22s;box-shadow:0 4px 16px rgba(88,101,242,.25)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(88,101,242,.45)}
+.divider{width:40px;height:1px;background:var(--bd1);margin:8px 0}
+  </style>
+</head>
+<body>
+<div class="bg"><div class="bg-grad"></div><div class="bg-grid"></div></div>
+<div class="wrap">
+  <div class="icon">🔒</div>
+  <div class="title">Accesso Non Autorizzato</div>
+  <div class="divider"></div>
+  <div class="desc">Non hai i permessi per visualizzare questa pagina. Effettua il login con Discord per continuare.</div>
+  <a href="/cittadini/login" class="btn">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
     Accedi con Discord
   </a>
 </div>
-{% endblock %}
+</body>
+</html>
