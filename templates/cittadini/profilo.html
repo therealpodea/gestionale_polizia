@@ -6,10 +6,10 @@
 <div class="page-sm">
   <div style="padding:28px 0 20px">
     <div style="font-size:32px;margin-bottom:10px">👤</div>
-    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">
+    <h1 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:700;color:var(--tx1);margin-bottom:6px">
       {% if cittadino.cf %}Modifica Profilo{% else %}Completa il tuo Profilo{% endif %}
     </h1>
-    <p style="font-size:13px;color:var(--t3)">{% if not cittadino.cf %}Prima di accedere ai servizi, completa la tua scheda anagrafica{% else %}Aggiorna i tuoi dati personali{% endif %}</p>
+    <p style="font-size:13px;color:var(--tx3)">{% if not cittadino.cf %}Prima di accedere ai servizi, completa la tua scheda anagrafica{% else %}Aggiorna i tuoi dati personali{% endif %}</p>
   </div>
 
   {% if errore %}<div class="alert error">⚠️ {{ errore }}</div>{% endif %}
@@ -24,11 +24,11 @@
     <div class="card-head">
       <span>📋</span><h3>Scheda Anagrafica</h3>
       <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-        <div style="width:26px;height:26px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--blu),var(--blu3));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">
+        <div style="width:26px;height:26px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--royal),var(--azure));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">
           {% if cittadino.avatar_url %}<img src="{{ cittadino.avatar_url }}" style="width:100%;height:100%;object-fit:cover">
           {% else %}{{ (cittadino.nick or '?')[0] | upper }}{% endif %}
         </div>
-        <span style="font-size:12px;color:var(--t2)">@{{ cittadino.username }}</span>
+        <span style="font-size:12px;color:var(--tx2)">@{{ cittadino.username }}</span>
       </div>
     </div>
     <div style="padding:22px 24px">

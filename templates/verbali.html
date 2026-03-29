@@ -9,24 +9,24 @@
   <div class="card-head"><span>📝</span><h3>Archivio Verbali</h3><div class="ch-right"><span class="badge blue">{{ verbali|length }}</span></div></div>
   {% if verbali %}
   {% for v in verbali %}
-  <div style="padding:14px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+  <div style="padding:14px 20px;border-bottom:1px solid rgba(33,82,200,.05)">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
       <div style="flex:1">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">
-          <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:#e8f0ff">{{ v.titolo }}</span>
+          <span style="font-family:'DM Serif Display',serif;font-size:12px;font-weight:600;color:var(--tx1)">{{ v.titolo }}</span>
           {% if v.esito=='Positivo' %}<span class="badge green">✅ Positivo</span>
           {% elif v.esito=='Negativo' %}<span class="badge red">❌ Negativo</span>
           {% else %}<span class="badge blue">➖ Neutro</span>{% endif %}
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-bottom:8px">
-          <div style="font-size:11px;color:#3d5472">📍 <span style="color:#8ba8cc">{{ v.luogo }}</span></div>
-          <div style="font-size:11px;color:#3d5472">⏱ <span style="color:#8ba8cc">{{ v.data_ora }}</span></div>
-          {% if v.soggetti %}<div style="font-size:11px;color:#3d5472">👤 <span style="color:#8ba8cc">{{ v.soggetti }}</span></div>{% endif %}
-          {% if v.agenti_int %}<div style="font-size:11px;color:#3d5472">👮 <span style="color:#8ba8cc">{{ v.agenti_int }}</span></div>{% endif %}
+          <div style="font-size:11px;color:var(--tx4)">📍 <span style="color:var(--tx2)">{{ v.luogo }}</span></div>
+          <div style="font-size:11px;color:var(--tx4)">⏱ <span style="color:var(--tx2)">{{ v.data_ora }}</span></div>
+          {% if v.soggetti %}<div style="font-size:11px;color:var(--tx4)">👤 <span style="color:var(--tx2)">{{ v.soggetti }}</span></div>{% endif %}
+          {% if v.agenti_int %}<div style="font-size:11px;color:var(--tx4)">👮 <span style="color:var(--tx2)">{{ v.agenti_int }}</span></div>{% endif %}
         </div>
-        <div style="font-size:13px;color:#8ba8cc;line-height:1.5">{{ v.descrizione }}</div>
-        {% if v.note %}<div style="font-size:12px;color:#3d5472;margin-top:4px;font-style:italic">📎 {{ v.note }}</div>{% endif %}
-        <div style="font-size:11px;color:#3d5472;margin-top:6px">✍️ {{ v.autore }} · {{ v.data }}</div>
+        <div style="font-size:13px;color:var(--tx2);line-height:1.5">{{ v.descrizione }}</div>
+        {% if v.note %}<div style="font-size:12px;color:var(--tx4);margin-top:4px;font-style:italic">📎 {{ v.note }}</div>{% endif %}
+        <div style="font-size:11px;color:var(--tx4);margin-top:6px">✍️ {{ v.autore }} · {{ v.data }}</div>
       </div>
       {% if user.permission >= 50 %}
       <form method="post" action="/dashboard/verbali/elimina">
@@ -38,7 +38,7 @@
   </div>
   {% endfor %}
   {% else %}
-  <div style="padding:40px;text-align:center;font-style:italic;color:#3d5472">Nessun verbale depositato.</div>
+  <div style="padding:40px;text-align:center;font-style:italic;color:var(--tx4)">Nessun verbale depositato.</div>
   {% endif %}
 </div>
 

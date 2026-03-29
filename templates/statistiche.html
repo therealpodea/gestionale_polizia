@@ -15,7 +15,7 @@ canvas{max-height:220px}
   <div class="kpi green"><div class="kpi-icon">✅</div><div class="kpi-val">{{ attivi }}</div><div class="kpi-lbl">In Servizio</div></div>
   <div class="kpi warn"><div class="kpi-icon">⚠️</div><div class="kpi-val">{{ sospesi }}</div><div class="kpi-lbl">Sospesi</div></div>
   <div class="kpi purple"><div class="kpi-icon">🔼</div><div class="kpi-val">{{ tot_prom }}</div><div class="kpi-lbl">Promozioni</div></div>
-  <div class="kpi" style="border-color:rgba(245,158,11,.2)"><div class="kpi-icon">🚨</div><div class="kpi-val" style="color:#f59e0b">{{ tot_san }}</div><div class="kpi-lbl" style="color:rgba(245,158,11,.55)">Sanzioni</div></div>
+  <div class="kpi" style="border-color:rgba(245,158,11,.2)"><div class="kpi-icon">🚨</div><div class="kpi-val" style="color:var(--amber)">{{ tot_san }}</div><div class="kpi-lbl" style="color:rgba(245,158,11,.55)">Sanzioni</div></div>
 </div>
 
 <div class="grid-2 mt-4">
@@ -45,14 +45,14 @@ canvas{max-height:220px}
     <div style="padding:8px 0">
     {% if top_san %}
     {% for t in top_san %}
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
-      <div style="font-size:18px;font-weight:800;width:28px;text-align:center;color:rgba(59,142,234,.4)">{{ loop.index }}</div>
-      <div style="flex:1;font-size:14px;font-weight:600;color:#e8f0ff">{{ t._id }}</div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid rgba(33,82,200,.05)">
+      <div style="font-size:18px;font-weight:800;width:28px;text-align:center;color:rgba(59,114,240,.4)">{{ loop.index }}</div>
+      <div style="flex:1;font-size:14px;font-weight:600;color:var(--tx1)">{{ t._id }}</div>
       <span class="badge warn">{{ t.count }} sanzioni</span>
     </div>
     {% endfor %}
     {% else %}
-    <div style="padding:24px;text-align:center;color:#3d5472;font-style:italic">Nessuna sanzione registrata.</div>
+    <div style="padding:24px;text-align:center;color:var(--tx4);font-style:italic">Nessuna sanzione registrata.</div>
     {% endif %}
     </div>
   </div>
@@ -65,13 +65,13 @@ const chartDefaults = {
   plugins: {
     tooltip: {
       backgroundColor:'rgba(4,6,15,.95)',
-      borderColor:'rgba(59,142,234,.2)',
+      borderColor:'rgba(59,114,240,.2)',
       borderWidth:1,
-      titleFont:{family:"'Inter',sans-serif",size:11},
-      bodyFont:{family:"'Inter',sans-serif",size:11},
+      titleFont:{family:"'DM Sans',sans-serif",size:11},
+      bodyFont:{family:"'DM Sans',sans-serif",size:11},
       padding:10,
     },
-    legend:{labels:{color:'rgba(139,168,204,.7)',font:{family:"'Inter',sans-serif",size:10}}}
+    legend:{labels:{color:'rgba(139,168,204,.7)',font:{family:"'DM Sans',sans-serif",size:10}}}
   }
 };
 
@@ -81,14 +81,14 @@ new Chart(document.getElementById('chartTrend'),{
   data:{
     labels: {{ mesi_labels | tojson }},
     datasets:[
-      {label:'Promozioni',data:{{ mesi_prom | tojson }},borderColor:'#3b8eea',backgroundColor:'rgba(59,142,234,.08)',tension:.4,pointRadius:3,borderWidth:2},
-      {label:'Sanzioni',  data:{{ mesi_san  | tojson }},borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.08)',tension:.4,pointRadius:3,borderWidth:2},
+      {label:'Promozioni',data:{{ mesi_prom | tojson }},borderColor:'var(--azure)',backgroundColor:'rgba(59,114,240,.08)',tension:.4,pointRadius:3,borderWidth:2},
+      {label:'Sanzioni',  data:{{ mesi_san  | tojson }},borderColor:'var(--amber)',backgroundColor:'rgba(245,158,11,.08)',tension:.4,pointRadius:3,borderWidth:2},
     ]
   },
   options:{responsive:true,maintainAspectRatio:false,...chartDefaults,
     scales:{
-      x:{grid:{color:'rgba(59,142,234,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}}},
-      y:{grid:{color:'rgba(59,142,234,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}},beginAtZero:true}
+      x:{grid:{color:'rgba(59,114,240,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}}},
+      y:{grid:{color:'rgba(59,114,240,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}},beginAtZero:true}
     }
   }
 });
@@ -96,7 +96,7 @@ new Chart(document.getElementById('chartTrend'),{
 // Donut
 const donutData  = [{{ attivi }},{{ inprova }},{{ sospesi }},{{ congedati }}].filter(v=>v>0);
 const donutLbls  = ['In Servizio','In Prova','Sospesi','Congedati'];
-const donutCols  = ['#10b981','#06b6d4','#ef4444','#3d6490'];
+const donutCols  = ['var(--emerald)','var(--teal)','var(--rose)','#3d6490'];
 const tot = {{ attivi+inprova+sospesi+congedati }};
 const filtLbls   = donutLbls.filter((_,i)=>[{{ attivi }},{{ inprova }},{{ sospesi }},{{ congedati }}][i]>0);
 const filtCols   = donutCols.filter((_,i)=>[{{ attivi }},{{ inprova }},{{ sospesi }},{{ congedati }}][i]>0);
@@ -120,15 +120,15 @@ new Chart(document.getElementById('chartGradi'),{
     labels:topGradi.map(g=>g.length>18?g.substring(0,18)+'…':g),
     datasets:[{
       data:topGradi.map(g=>gradeCnt[g]),
-      backgroundColor:'rgba(59,142,234,.25)',
-      borderColor:'#3b8eea',
+      backgroundColor:'rgba(59,114,240,.25)',
+      borderColor:'var(--azure)',
       borderWidth:2,borderRadius:4,
     }]
   },
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,...chartDefaults,
     plugins:{...chartDefaults.plugins,legend:{display:false}},
     scales:{
-      x:{grid:{color:'rgba(59,142,234,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}},beginAtZero:true},
+      x:{grid:{color:'rgba(59,114,240,.06)'},ticks:{color:'rgba(139,168,204,.5)',font:{size:9}},beginAtZero:true},
       y:{grid:{display:false},ticks:{color:'rgba(139,168,204,.6)',font:{size:9}}}
     }
   }

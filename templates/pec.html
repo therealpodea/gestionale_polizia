@@ -10,42 +10,42 @@
 
   <!-- Cartelle -->
   <div class="card" style="padding:0;overflow:hidden;align-self:start">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--bdr2);font-size:10px;letter-spacing:2px;color:#3d5472;text-transform:uppercase">Cartelle</div>
+    <div style="padding:14px 16px;border-bottom:1px solid var(--bd2);font-size:10px;letter-spacing:2px;color:var(--tx4);text-transform:uppercase">Cartelle</div>
     {% for key, icon, label, count in [
       ('in',  '📥', 'In Arrivo', unread),
       ('out', '📤', 'Inviata',   0),
       ('bozze','📝','Bozze',     bozze|length)
     ] %}
-    <a href="/dashboard/pec?cartella={{ key }}" style="display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;text-decoration:none;background:{% if cartella==key %}rgba(0,82,180,.08){% else %}transparent{% endif %};border-left:3px solid {% if cartella==key %}var(--blu4){% else %}transparent{% endif %};transition:all .15s">
+    <a href="/dashboard/pec?cartella={{ key }}" style="display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;text-decoration:none;background:{% if cartella==key %}rgba(33,82,200,.06){% else %}transparent{% endif %};border-left:3px solid {% if cartella==key %}var(--sky){% else %}transparent{% endif %};transition:all .15s">
       <span>{{ icon }}</span>
-      <span style="font-size:11px;letter-spacing:.5px;color:{% if cartella==key %}var(--blu4){% else %}var(--t2){% endif %}">{{ label }}</span>
-      {% if count > 0 %}<span style="margin-left:auto;background:var(--blu2);color:#fff;border-radius:10px;padding:2px 7px;font-size:10px">{{ count }}</span>{% endif %}
+      <span style="font-size:11px;letter-spacing:.5px;color:{% if cartella==key %}var(--sky){% else %}var(--tx2){% endif %}">{{ label }}</span>
+      {% if count > 0 %}<span style="margin-left:auto;background:var(--sapphire);color:#fff;border-radius:10px;padding:2px 7px;font-size:10px">{{ count }}</span>{% endif %}
     </a>
     {% endfor %}
   </div>
 
   <!-- Lista messaggi -->
   <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
-    <div style="padding:13px 18px;border-bottom:1px solid var(--bdr2);font-size:10px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;flex-shrink:0">
+    <div style="padding:13px 18px;border-bottom:1px solid var(--bd2);font-size:10px;letter-spacing:2px;color:var(--tx4);text-transform:uppercase;flex-shrink:0">
       {% if cartella=='in' %}In Arrivo{% elif cartella=='out' %}Posta Inviata{% else %}Bozze{% endif %}
        · {{ lista|length }} messaggi
     </div>
     <div style="flex:1;overflow-y:auto">
       {% if lista %}
       {% for p in lista %}
-      <div onclick="openPecDetail({{ p | tojson | replace("'", "&#39;") }})" style="display:flex;flex-direction:column;gap:4px;padding:13px 18px;border-bottom:1px solid var(--bdr2);cursor:pointer;background:{% if not p.letta and cartella=='in' %}rgba(0,82,180,.04){% else %}transparent{% endif %};transition:background .15s" onmouseover="this.style.background='rgba(0,82,180,.04)'" onmouseout="this.style.background='{% if not p.letta and cartella=='in' %}rgba(0,82,180,.04){% else %}transparent{% endif %}'">
+      <div onclick="openPecDetail({{ p | tojson | replace("'", "&#39;") }})" style="display:flex;flex-direction:column;gap:4px;padding:13px 18px;border-bottom:1px solid var(--bd2);cursor:pointer;background:{% if not p.letta and cartella=='in' %}rgba(33,82,200,.04){% else %}transparent{% endif %};transition:background .15s" onmouseover="this.style.background='rgba(33,82,200,.04)'" onmouseout="this.style.background='{% if not p.letta and cartella=='in' %}rgba(33,82,200,.04){% else %}transparent{% endif %}'">
         <div style="display:flex;align-items:center;gap:8px">
-          {% if not p.letta and cartella=='in' %}<div style="width:7px;height:7px;border-radius:50%;background:var(--blu4);flex-shrink:0"></div>{% else %}<div style="width:7px"></div>{% endif %}
-          <span style="font-size:12px;font-weight:700;color:#e8f0ff">{% if cartella=='in' %}{{ p.mitt_nome }}{% else %}→ {{ p.dest_nome }}{% endif %}</span>
-          <span style="margin-left:auto;font-size:12px;color:#3d5472">{{ p.data }}</span>
+          {% if not p.letta and cartella=='in' %}<div style="width:7px;height:7px;border-radius:50%;background:var(--sky);flex-shrink:0"></div>{% else %}<div style="width:7px"></div>{% endif %}
+          <span style="font-size:12px;font-weight:700;color:var(--tx1)">{% if cartella=='in' %}{{ p.mitt_nome }}{% else %}→ {{ p.dest_nome }}{% endif %}</span>
+          <span style="margin-left:auto;font-size:12px;color:var(--tx4)">{{ p.data }}</span>
           {% if p.priorita=='urgente' %}<span class="badge red" style="font-size:9px;padding:1px 6px">URGENTE</span>{% endif %}
         </div>
-        <div style="font-size:12px;color:#8ba8cc;padding-left:15px">{{ p.oggetto }}</div>
-        <div style="font-size:12px;color:#3d5472;padding-left:15px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden">{{ p.corpo }}</div>
+        <div style="font-size:12px;color:var(--tx2);padding-left:15px">{{ p.oggetto }}</div>
+        <div style="font-size:12px;color:var(--tx4);padding-left:15px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden">{{ p.corpo }}</div>
       </div>
       {% endfor %}
       {% else %}
-      <div style="padding:50px;text-align:center;font-style:italic;color:#3d5472">Nessun messaggio</div>
+      <div style="padding:50px;text-align:center;font-style:italic;color:var(--tx4)">Nessun messaggio</div>
       {% endif %}
     </div>
   </div>
@@ -104,17 +104,17 @@
     </div>
     <div class="modal-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-        <div style="background:rgba(0,82,180,.04);border:1px solid var(--bdr2);border-radius:6px;padding:10px 12px">
-          <div style="font-size:9px;letter-spacing:1.5px;color:#3d5472;text-transform:uppercase;margin-bottom:3px">Da</div>
-          <div style="font-size:13px;color:#e8f0ff" id="det-da">—</div>
+        <div style="background:rgba(33,82,200,.04);border:1px solid var(--bd2);border-radius:6px;padding:10px 12px">
+          <div style="font-size:9px;letter-spacing:1.5px;color:var(--tx4);text-transform:uppercase;margin-bottom:3px">Da</div>
+          <div style="font-size:13px;color:var(--tx1)" id="det-da">—</div>
         </div>
-        <div style="background:rgba(0,82,180,.04);border:1px solid var(--bdr2);border-radius:6px;padding:10px 12px">
-          <div style="font-size:9px;letter-spacing:1.5px;color:#3d5472;text-transform:uppercase;margin-bottom:3px">A</div>
-          <div style="font-size:13px;color:#e8f0ff" id="det-a">—</div>
+        <div style="background:rgba(33,82,200,.04);border:1px solid var(--bd2);border-radius:6px;padding:10px 12px">
+          <div style="font-size:9px;letter-spacing:1.5px;color:var(--tx4);text-transform:uppercase;margin-bottom:3px">A</div>
+          <div style="font-size:13px;color:var(--tx1)" id="det-a">—</div>
         </div>
       </div>
-      <div style="font-size:11px;color:#3d5472;margin-bottom:12px" id="det-data"></div>
-      <div style="font-size:14px;color:#8ba8cc;line-height:1.7;white-space:pre-wrap;background:rgba(0,0,0,.15);border-radius:6px;padding:14px;border:1px solid var(--bdr2)" id="det-corpo">—</div>
+      <div style="font-size:11px;color:var(--tx4);margin-bottom:12px" id="det-data"></div>
+      <div style="font-size:14px;color:var(--tx2);line-height:1.7;white-space:pre-wrap;background:rgba(0,0,0,.15);border-radius:6px;padding:14px;border:1px solid var(--bd2)" id="det-corpo">—</div>
       <div class="form-actions" style="margin-top:14px">
         <button class="fbtn primary" id="det-rispondi">↩️ Rispondi</button>
         <form method="post" action="/dashboard/pec/leggi" id="form-leggi" style="display:none">

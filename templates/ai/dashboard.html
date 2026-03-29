@@ -11,8 +11,8 @@
 <!-- KPI -->
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px" class="ani">
   <div class="kpi" style="border-color:rgba(239,68,68,.2)">
-    <div class="kpi-icon" style="color:#ef4444">🚨</div>
-    <div class="kpi-val" style="color:#ef4444">{{ n_aperte }}</div>
+    <div class="kpi-icon" style="color:var(--rose)">🚨</div>
+    <div class="kpi-val" style="color:var(--rose)">{{ n_aperte }}</div>
     <div class="kpi-lbl" style="color:rgba(239,68,68,.5)">Aperte</div>
   </div>
   <div class="kpi blue">
@@ -26,8 +26,8 @@
     <div class="kpi-lbl">Chiuse</div>
   </div>
   <div class="kpi" style="border-color:rgba(139,92,246,.2)">
-    <div class="kpi-icon" style="color:#a78bfa">📦</div>
-    <div class="kpi-val" style="color:#a78bfa">{{ n_archivio }}</div>
+    <div class="kpi-icon" style="color:var(--violet)">📦</div>
+    <div class="kpi-val" style="color:var(--violet)">{{ n_archivio }}</div>
     <div class="kpi-lbl" style="color:rgba(139,92,246,.5)">Archiviate</div>
   </div>
 </div>
@@ -50,14 +50,14 @@
       <option value="normale" {% if priorita=='normale' %}selected{% endif %}>🔵 Normale</option>
     </select>
     <button type="submit" class="btn primary">Filtra</button>
-    <span style="margin-left:auto;font-size:9px;color:#3d5472;letter-spacing:1px">{{ segnalazioni|length }} risultati</span>
+    <span style="margin-left:auto;font-size:9px;color:var(--tx4);letter-spacing:1px">{{ segnalazioni|length }} risultati</span>
   </form>
 
   <!-- Lista segnalazioni -->
   {% if segnalazioni %}
   {% for s in segnalazioni %}
-  {% set col_prio = '#ef4444' if s.priorita=='urgente' else '#f59e0b' if s.priorita=='alta' else '#3b8eea' %}
-  {% set col_stato = '#ef4444' if s.stato=='aperta' else '#3b8eea' if s.stato=='in_corso' else '#10b981' if s.stato=='chiusa' else '#a78bfa' %}
+  {% set col_prio = 'var(--rose)' if s.priorita=='urgente' else 'var(--amber)' if s.priorita=='alta' else 'var(--azure)' %}
+  {% set col_stato = 'var(--rose)' if s.stato=='aperta' else 'var(--azure)' if s.stato=='in_corso' else 'var(--emerald)' if s.stato=='chiusa' else 'var(--violet)' %}
 
   <div style="border-bottom:1px solid rgba(239,68,68,.05);padding:0;transition:background .15s" onmouseover="this.style.background='rgba(239,68,68,.02)'" onmouseout="this.style.background=''">
     <div style="padding:14px 20px;display:flex;align-items:flex-start;gap:14px">
@@ -67,7 +67,7 @@
       <!-- Contenuto principale -->
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
-          <span style="font-size:13px;font-weight:700;color:#e8f0ff">
+          <span style="font-size:13px;font-weight:700;color:var(--tx1)">
             Segnalazione contro: <span style="color:#f87171">{{ s.agente_nome }}</span>
           </span>
           <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;letter-spacing:1px;font-weight:700">
@@ -81,20 +81,20 @@
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px 16px;margin-bottom:8px">
-          <div style="font-size:11px;color:#3d5472">📅 <span style="color:#8ba8cc">{{ s.data_episodio or s.data }}</span></div>
-          <div style="font-size:11px;color:#3d5472">📍 <span style="color:#8ba8cc">{{ s.luogo or '—' }}</span></div>
-          <div style="font-size:11px;color:#3d5472">📨 <span style="color:#8ba8cc">{{ s.timestamp }}</span></div>
+          <div style="font-size:11px;color:var(--tx4)">📅 <span style="color:var(--tx2)">{{ s.data_episodio or s.data }}</span></div>
+          <div style="font-size:11px;color:var(--tx4)">📍 <span style="color:var(--tx2)">{{ s.luogo or '—' }}</span></div>
+          <div style="font-size:11px;color:var(--tx4)">📨 <span style="color:var(--tx2)">{{ s.timestamp }}</span></div>
           {% if not s.anonima and s.segnalante_nome %}
-          <div style="font-size:11px;color:#3d5472">👤 <span style="color:#8ba8cc">{{ s.segnalante_nome }}</span></div>
+          <div style="font-size:11px;color:var(--tx4)">👤 <span style="color:var(--tx2)">{{ s.segnalante_nome }}</span></div>
           {% endif %}
         </div>
 
-        <div style="font-size:13px;color:#8ba8cc;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
+        <div style="font-size:13px;color:var(--tx2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
           {{ s.descrizione }}
         </div>
 
         {% if s.note_interne %}
-        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,82,180,.06);border-left:2px solid rgba(59,142,234,.3);border-radius:0 4px 4px 0;font-size:12px;color:#8ba8cc;font-style:italic">
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(33,82,200,.06);border-left:2px solid var(--bd1);border-radius:0 4px 4px 0;font-size:12px;color:var(--tx2);font-style:italic">
           📝 {{ s.note_interne[:80] }}{% if s.note_interne|length > 80 %}…{% endif %}
         </div>
         {% endif %}
@@ -105,7 +105,7 @@
         <a href="/dashboard/ai/{{ s._id }}" class="btn primary" style="font-size:11px;padding:6px 12px;white-space:nowrap">🔍 Gestisci</a>
         <form method="post" action="/dashboard/ai/stato">
           <input type="hidden" name="seg_id" value="{{ s._id }}">
-          <select name="stato" onchange="this.form.submit()" style="width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--bdr2);background:var(--bg3);color:#e8f0ff;font-family:'Inter',sans-serif;font-size:10px;cursor:pointer">
+          <select name="stato" onchange="this.form.submit()" style="width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--bd2);background:var(--bg-surface);color:var(--tx1);font-family:'DM Sans',sans-serif;font-size:10px;cursor:pointer">
             <option value="aperta"    {% if s.stato=='aperta'    %}selected{% endif %}>🔴 Aperta</option>
             <option value="in_corso"  {% if s.stato=='in_corso'  %}selected{% endif %}>🔵 In Istruttoria</option>
             <option value="chiusa"    {% if s.stato=='chiusa'    %}selected{% endif %}>✅ Chiusa</option>
@@ -120,8 +120,8 @@
   {% else %}
   <div style="padding:60px;text-align:center">
     <div style="font-size:40px;margin-bottom:12px">🔍</div>
-    <div style="font-size:15px;font-weight:600;color:#3d5472">Nessuna segnalazione trovata</div>
-    <div style="font-size:12px;color:#3d5472;margin-top:6px">{% if q or stato %}Prova a cambiare i filtri{% else %}Non sono ancora pervenute segnalazioni{% endif %}</div>
+    <div style="font-size:15px;font-weight:600;color:var(--tx4)">Nessuna segnalazione trovata</div>
+    <div style="font-size:12px;color:var(--tx4);margin-top:6px">{% if q or stato %}Prova a cambiare i filtri{% else %}Non sono ancora pervenute segnalazioni{% endif %}</div>
   </div>
   {% endif %}
 </div>

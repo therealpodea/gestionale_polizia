@@ -6,7 +6,7 @@
 
 {% block content %}
 <!-- Tabs stati -->
-<div style="display:flex;gap:2px;margin-bottom:18px;background:rgba(0,0,0,.2);border:1px solid var(--bdr2);border-radius:8px;padding:4px" class="ani">
+<div style="display:flex;gap:2px;margin-bottom:18px;background:rgba(0,0,0,.2);border:1px solid var(--bd2);border-radius:8px;padding:4px" class="ani">
   {% set tabs = [
     ('', 'Tutte', '📋', n_totale),
     ('aperta', 'Aperte', '🆕', n_aperte),
@@ -17,9 +17,9 @@
   ] %}
   {% for val, label, icon, count in tabs %}
   <a href="?stato={{ val }}" style="flex:1;padding:8px 6px;border-radius:6px;text-align:center;text-decoration:none;font-size:11px;font-weight:600;transition:all .18s;
-    {% if stato == val %}background:rgba(53,133,232,.15);color:var(--blu4);border:1px solid rgba(53,133,232,.2){% else %}color:var(--t3);border:1px solid transparent{% endif %}">
+    {% if stato == val %}background:rgba(59,114,240,.15);color:var(--sky);border:1px solid rgba(59,114,240,.2){% else %}color:var(--tx3);border:1px solid transparent{% endif %}">
     {{ icon }} {{ label }}
-    {% if count > 0 %}<span style="margin-left:4px;background:{% if stato==val %}rgba(53,133,232,.2){% else %}rgba(52,72,102,.2){% endif %};border-radius:10px;padding:1px 6px;font-size:9px">{{ count }}</span>{% endif %}
+    {% if count > 0 %}<span style="margin-left:4px;background:{% if stato==val %}rgba(59,114,240,.2){% else %}rgba(52,72,102,.2){% endif %};border-radius:10px;padding:1px 6px;font-size:9px">{{ count }}</span>{% endif %}
   </a>
   {% endfor %}
 </div>
@@ -36,43 +36,43 @@
       <option value="normale" {% if priorita=='normale' %}selected{% endif %}>🔵 Normale</option>
     </select>
     <button type="submit" class="btn primary">Filtra</button>
-    <span style="margin-left:auto;font-size:9px;color:var(--t3);letter-spacing:1px">{{ denunce|length }} pratiche</span>
+    <span style="margin-left:auto;font-size:9px;color:var(--tx3);letter-spacing:1px">{{ denunce|length }} pratiche</span>
   </form>
 
   {% if denunce %}
   {% for d in denunce %}
-  {% set col_stato = '#e03535' if d.stato=='aperta' else '#1560c8' if d.stato=='in_analisi' else '#e8970a' if d.stato=='info_richieste' else '#0ea572' if d.stato=='risolta' else '#7c4fd4' %}
+  {% set col_stato = '#e03535' if d.stato=='aperta' else 'var(--sapphire)' if d.stato=='in_analisi' else '#e8970a' if d.stato=='info_richieste' else '#0ea572' if d.stato=='risolta' else '#7c4fd4' %}
   {% set label_stato = 'Aperta' if d.stato=='aperta' else 'In Analisi' if d.stato=='in_analisi' else 'Info Richieste' if d.stato=='info_richieste' else 'Risolta' if d.stato=='risolta' else 'Archiviata' %}
-  {% set col_prio = '#e03535' if d.priorita=='urgente' else '#e8970a' if d.priorita=='alta' else '#3585e8' %}
+  {% set col_prio = '#e03535' if d.priorita=='urgente' else '#e8970a' if d.priorita=='alta' else 'var(--azure)' %}
 
-  <div style="border-bottom:1px solid rgba(53,133,232,.04);transition:background .15s" onmouseover="this.style.background='rgba(53,133,232,.02)'" onmouseout="this.style.background=''">
+  <div style="border-bottom:1px solid rgba(59,114,240,.04);transition:background .15s" onmouseover="this.style.background='rgba(59,114,240,.02)'" onmouseout="this.style.background=''">
     <div style="padding:14px 18px;display:flex;align-items:flex-start;gap:12px">
       <div style="width:3px;border-radius:2px;background:{{ col_prio }};align-self:stretch;flex-shrink:0;min-height:50px"></div>
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:6px">
-          <span style="font-size:13px;font-weight:700;color:var(--t1)">
-            Denuncia contro: <span style="color:var(--danger2)">{{ d.denunciato_nome }}</span>
-            {% if d.denunciato_cf %}<span style="font-size:10px;color:var(--t3);font-weight:400">({{ d.denunciato_cf }})</span>{% endif %}
+          <span style="font-size:13px;font-weight:700;color:var(--tx1)">
+            Denuncia contro: <span style="color:var(--rose)">{{ d.denunciato_nome }}</span>
+            {% if d.denunciato_cf %}<span style="font-size:10px;color:var(--tx3);font-weight:400">({{ d.denunciato_cf }})</span>{% endif %}
           </span>
           <span style="padding:2px 8px;border-radius:10px;background:{{ col_stato }};color:#fff;font-size:9px;font-weight:700;letter-spacing:.8px">{{ label_stato | upper }}</span>
           {% if d.priorita=='urgente' %}<span class="badge red">🔴 Urgente</span>
           {% elif d.priorita=='alta' %}<span class="badge warn">🟡 Alta</span>{% endif %}
           {% if d.risposta_agente %}<span class="badge blue">💬 Risposto</span>{% endif %}
         </div>
-        <div style="font-size:12px;color:var(--blu4);font-weight:600;margin-bottom:5px">⚖️ {{ d.capi_accusa }}</div>
+        <div style="font-size:12px;color:var(--sky);font-weight:600;margin-bottom:5px">⚖️ {{ d.capi_accusa }}</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:3px 14px;margin-bottom:6px">
-          <div style="font-size:11px;color:var(--t3)">📅 <span style="color:var(--t2)">{{ d.data_fatto }}</span></div>
-          <div style="font-size:11px;color:var(--t3)">📍 <span style="color:var(--t2)">{{ d.luogo or '—' }}</span></div>
-          <div style="font-size:11px;color:var(--t3)">👤 <span style="color:var(--t2)">{{ d.denunciante_nome }}</span></div>
-          <div style="font-size:11px;color:var(--t3)">📨 <span style="color:var(--t2)">{{ d.timestamp }}</span></div>
+          <div style="font-size:11px;color:var(--tx3)">📅 <span style="color:var(--tx2)">{{ d.data_fatto }}</span></div>
+          <div style="font-size:11px;color:var(--tx3)">📍 <span style="color:var(--tx2)">{{ d.luogo or '—' }}</span></div>
+          <div style="font-size:11px;color:var(--tx3)">👤 <span style="color:var(--tx2)">{{ d.denunciante_nome }}</span></div>
+          <div style="font-size:11px;color:var(--tx3)">📨 <span style="color:var(--tx2)">{{ d.timestamp }}</span></div>
         </div>
-        <div style="font-size:12px;color:var(--t3);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ d.descrizione }}</div>
+        <div style="font-size:12px;color:var(--tx3);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ d.descrizione }}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
         <a href="/dashboard/denunce/{{ d._id }}" class="btn primary" style="font-size:10px;padding:6px 12px;white-space:nowrap">📋 Gestisci</a>
         <form method="post" action="/dashboard/denunce/stato">
           <input type="hidden" name="denuncia_id" value="{{ d._id }}">
-          <select name="stato" onchange="this.form.submit()" style="width:100%;padding:5px 7px;border-radius:5px;border:1px solid var(--bdr2);background:var(--bg3);color:var(--t1);font-size:10px;font-family:'Inter',sans-serif;cursor:pointer">
+          <select name="stato" onchange="this.form.submit()" style="width:100%;padding:5px 7px;border-radius:5px;border:1px solid var(--bd2);background:var(--bg-surface);color:var(--tx1);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer">
             <option value="aperta" {% if d.stato=='aperta' %}selected{% endif %}>🆕 Aperta</option>
             <option value="in_analisi" {% if d.stato=='in_analisi' %}selected{% endif %}>🔍 In Analisi</option>
             <option value="info_richieste" {% if d.stato=='info_richieste' %}selected{% endif %}>💬 Info Richieste</option>
@@ -88,7 +88,7 @@
   {% else %}
   <div style="padding:60px;text-align:center">
     <div style="font-size:40px;margin-bottom:12px">⚖️</div>
-    <div style="font-size:14px;font-weight:600;color:var(--t3)">
+    <div style="font-size:14px;font-weight:600;color:var(--tx3)">
       {% if q or stato or priorita %}Nessuna denuncia con questi filtri{% else %}Nessuna denuncia ricevuta{% endif %}
     </div>
   </div>

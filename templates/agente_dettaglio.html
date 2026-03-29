@@ -17,16 +17,16 @@
 <!-- Scheda -->
 <div class="card ani">
   <div style="padding:24px;display:flex;align-items:flex-start;gap:22px">
-    <div style="width:72px;height:72px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;background:linear-gradient(135deg,#003d8f,#1a6dd4);border:2px solid rgba(59,142,234,.3);flex-shrink:0">
+    <div style="width:72px;height:72px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--navy),var(--sapphire));border:2px solid var(--bd1);flex-shrink:0">
       {{ agente.nome[0] if agente.nome else '?' }}{{ agente.cognome[0] if agente.cognome else '' }}
     </div>
     <div style="flex:1">
-      <div style="font-size:20px;font-weight:800;color:#e8f0ff">{{ agente.nome }} {{ agente.cognome }}</div>
-      <div style="font-size:12px;font-weight:700;color:#3b8eea;letter-spacing:2px;margin-top:3px">🎖️ {{ agente.grado }}</div>
+      <div style="font-size:20px;font-weight:800;color:var(--tx1)">{{ agente.nome }} {{ agente.cognome }}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--azure);letter-spacing:2px;margin-top:3px">🎖️ {{ agente.grado }}</div>
       <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px">
-        <div><div style="font-size:8px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;margin-bottom:2px">Discord</div><div style="font-size:14px;color:#a78bfa">@{{ agente.nick or agente.username }}</div></div>
-        <div><div style="font-size:8px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;margin-bottom:2px">CF</div><div style="font-size:11px;color:#3b8eea;letter-spacing:1px">{{ agente.cf or '—' }}</div></div>
-        <div><div style="font-size:8px;letter-spacing:2px;color:#3d5472;text-transform:uppercase;margin-bottom:2px">In servizio dal</div><div style="font-size:14px;color:#8ba8cc">{{ agente.data_ingresso or '—' }}</div></div>
+        <div><div style="font-size:8px;letter-spacing:2px;color:var(--tx4);text-transform:uppercase;margin-bottom:2px">Discord</div><div style="font-size:14px;color:var(--violet)">@{{ agente.nick or agente.username }}</div></div>
+        <div><div style="font-size:8px;letter-spacing:2px;color:var(--tx4);text-transform:uppercase;margin-bottom:2px">CF</div><div style="font-size:11px;color:var(--azure);letter-spacing:1px">{{ agente.cf or '—' }}</div></div>
+        <div><div style="font-size:8px;letter-spacing:2px;color:var(--tx4);text-transform:uppercase;margin-bottom:2px">In servizio dal</div><div style="font-size:14px;color:var(--tx2)">{{ agente.data_ingresso or '—' }}</div></div>
       </div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
@@ -38,7 +38,7 @@
     </div>
   </div>
   {% if agente.note %}
-  <div style="margin:0 24px 16px;padding:10px 14px;background:rgba(0,82,180,.04);border:1px solid rgba(0,82,180,.08);border-radius:8px;font-size:13px;color:#8ba8cc;font-style:italic">📝 {{ agente.note }}</div>
+  <div style="margin:0 24px 16px;padding:10px 14px;background:rgba(33,82,200,.04);border:1px solid rgba(33,82,200,.06);border-radius:8px;font-size:13px;color:var(--tx2);font-style:italic">📝 {{ agente.note }}</div>
   {% endif %}
 </div>
 
@@ -49,24 +49,24 @@
     {% if storico %}
     {% for s in storico %}
     <div class="timeline-item">
-      <div class="tl-dot" style="background:{% if s.tipo=='Promozione' %}#1a6dd4{% elif s.tipo=='Sanzione' %}#f59e0b{% elif s.tipo=='Degrado' or s.tipo=='Licenziamento' %}#ef4444{% elif s.tipo=='Ingresso' %}#06b6d4{% else %}#10b981{% endif %}"></div>
+      <div class="tl-dot" style="background:{% if s.tipo=='Promozione' %}var(--sapphire){% elif s.tipo=='Sanzione' %}var(--amber){% elif s.tipo=='Degrado' or s.tipo=='Licenziamento' %}var(--rose){% elif s.tipo=='Ingresso' %}var(--teal){% else %}var(--emerald){% endif %}"></div>
       <div>
         <div class="tl-text">
           {% if s.tipo=='Promozione' %}<span class="badge green">🔼 Promozione</span>
           {% elif s.tipo=='Degrado' %}<span class="badge red">🔽 Degrado</span>
           {% elif s.tipo=='Sanzione' %}<span class="badge warn">⚠️ Sanzione</span>
           {% elif s.tipo=='Rimozione Sanzione' %}<span class="badge green">✅ Rim. Sanzione</span>
-          {% elif s.tipo=='Ingresso' %}<span class="badge blue" style="color:#22d3ee;border-color:rgba(6,182,212,.2)">➕ Ingresso</span>
+          {% elif s.tipo=='Ingresso' %}<span class="badge blue" style="color:var(--teal);border-color:var(--teal-dim)">➕ Ingresso</span>
           {% elif s.tipo=='Licenziamento' %}<span class="badge red">⛔ Licenziamento</span>
           {% else %}<span class="badge blue">🔄 {{ s.tipo }}</span>{% endif %}
-          <span style="color:#8ba8cc;font-size:13px">{{ s.vecchio }} → <b>{{ s.nuovo }}</b></span>
+          <span style="color:var(--tx2);font-size:13px">{{ s.vecchio }} → <b>{{ s.nuovo }}</b></span>
         </div>
         <div class="tl-meta">{{ s.motivo }} · {{ s.data }} · op. {{ s.operatore }}</div>
       </div>
     </div>
     {% endfor %}
     {% else %}
-    <div style="padding:20px 0;font-style:italic;color:#3d5472">Nessuna azione registrata.</div>
+    <div style="padding:20px 0;font-style:italic;color:var(--tx4)">Nessuna azione registrata.</div>
     {% endif %}
   </div>
 </div>
@@ -75,7 +75,7 @@
 <div class="overlay" id="modal-azione">
   <div class="modal md">
     <div class="modal-head">
-      <div><div class="modal-title">NUOVA AZIONE</div><div style="font-size:12px;color:#3d5472;margin-top:2px">{{ agente.nome }} {{ agente.cognome }}</div></div>
+      <div><div class="modal-title">NUOVA AZIONE</div><div style="font-size:12px;color:var(--tx4);margin-top:2px">{{ agente.nome }} {{ agente.cognome }}</div></div>
       <button class="m-close" onclick="closeModal('modal-azione')">✕</button>
     </div>
     <div class="modal-body">
@@ -176,7 +176,7 @@
   <div class="modal sm">
     <div class="modal-head"><div class="modal-title">CONFERMA ELIMINAZIONE</div><button class="m-close" onclick="closeModal('modal-elimina')">✕</button></div>
     <div class="modal-body">
-      <div style="background:var(--danger-dim);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:12px;margin-bottom:16px;font-size:13px;color:#f87171">
+      <div style="background:var(--rose-dim);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:12px;margin-bottom:16px;font-size:13px;color:#f87171">
         Stai per eliminare <b>{{ agente.nome }} {{ agente.cognome }}</b> e tutto lo storico associato. Operazione irreversibile.
       </div>
       <form method="post" action="/dashboard/agenti/elimina">

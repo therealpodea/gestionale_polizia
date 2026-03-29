@@ -13,13 +13,13 @@
   <div class="card-head"><span>📢</span><h3>Comunicati del Dipartimento</h3><div class="ch-right"><span class="badge blue">{{ comunicati|length }}</span></div></div>
   {% if comunicati %}
   {% for c in comunicati %}
-  <div style="padding:14px 20px;border-bottom:1px solid rgba(0,82,180,.05)">
+  <div style="padding:14px 20px;border-bottom:1px solid rgba(33,82,200,.05)">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
-      {% if not c.letto %}<div style="width:7px;height:7px;border-radius:50%;background:#3b8eea;flex-shrink:0;box-shadow:0 0 8px rgba(59,142,234,.7)"></div>{% endif %}
+      {% if not c.letto %}<div style="width:7px;height:7px;border-radius:50%;background:var(--azure);flex-shrink:0;box-shadow:0 0 8px rgba(59,114,240,.7)"></div>{% endif %}
       {% if c.priorita=='urgente' %}<span class="badge red">🔴 URGENTE</span>
       {% elif c.priorita=='importante' %}<span class="badge warn">🟡 IMPORTANTE</span>
       {% else %}<span class="badge blue">🔵 INFO</span>{% endif %}
-      <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:#e8f0ff;flex:1">{{ c.titolo }}</span>
+      <span style="font-family:'DM Serif Display',serif;font-size:12px;font-weight:600;color:var(--tx1);flex:1">{{ c.titolo }}</span>
       {% if user.permission >= 50 %}
       <button class="btn" onclick="openEditModal('{{ c._id }}','{{ c.titolo|replace("'","\\'")|replace('"','\\"') }}',`{{ c.corpo|replace('`','\\`') }}`,'{{ c.priorita }}')">✏️</button>
       <form method="post" action="/dashboard/comunicati/elimina" style="display:inline">
@@ -28,12 +28,12 @@
       </form>
       {% endif %}
     </div>
-    <div style="font-size:14px;color:#8ba8cc;line-height:1.6;white-space:pre-wrap">{{ c.corpo }}</div>
+    <div style="font-size:14px;color:var(--tx2);line-height:1.6;white-space:pre-wrap">{{ c.corpo }}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
-      <div style="font-size:11px;color:#3d5472;font-style:italic">{{ c.data }} · {{ c.autore }} · Letto da {{ c.letto_da|length }} agenti</div>
+      <div style="font-size:11px;color:var(--tx4);font-style:italic">{{ c.data }} · {{ c.autore }} · Letto da {{ c.letto_da|length }} agenti</div>
       <form method="post" action="/dashboard/comunicati/visto" style="display:inline">
         <input type="hidden" name="comunicato_id" value="{{ c._id }}">
-        <button type="submit" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid {% if c.letto %}var(--green){% else %}var(--bdr){% endif %};background:{% if c.letto %}var(--green-dim){% else %}var(--bg3){% endif %};color:{% if c.letto %}var(--green2){% else %}var(--t3){% endif %};font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s">
+        <button type="submit" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid {% if c.letto %}var(--emerald){% else %}var(--bd1){% endif %};background:{% if c.letto %}var(--emerald-dim){% else %}var(--bg-surface){% endif %};color:{% if c.letto %}var(--emerald){% else %}var(--tx3){% endif %};font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s">
           👁️ {{ c.letto_da|length }} Visto
         </button>
       </form>
@@ -41,7 +41,7 @@
   </div>
   {% endfor %}
   {% else %}
-  <div style="padding:40px;text-align:center;font-style:italic;color:#3d5472">Nessun comunicato pubblicato.</div>
+  <div style="padding:40px;text-align:center;font-style:italic;color:var(--tx4)">Nessun comunicato pubblicato.</div>
   {% endif %}
 </div>
 

@@ -4,26 +4,26 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div style="position:relative;overflow:hidden;border-bottom:1px solid var(--bdr2);padding:80px 24px 70px">
+<div style="position:relative;overflow:hidden;border-bottom:1px solid var(--bd2);padding:80px 24px 70px">
   <!-- Background glow -->
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(0,64,153,.12) 0%,transparent 70%);pointer-events:none"></div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(33,82,200,.12) 0%,transparent 70%);pointer-events:none"></div>
 
   <div style="max-width:760px;margin:0 auto;text-align:center;position:relative;z-index:1">
     <!-- Logo animato -->
     <div style="display:inline-block;margin-bottom:28px;animation:float 4s ease-in-out infinite">
-      <img src="https://i.ibb.co/1GnGhNGr/logo-polizia-d-estovia-removebg-preview-1.png" style="width:96px;height:96px;border-radius:50%;border:3px solid rgba(53,133,232,.25);box-shadow:0 0 40px rgba(53,133,232,.2),0 0 80px rgba(0,48,128,.1)" alt="Logo">
+      <img src="https://i.ibb.co/1GnGhNGr/logo-polizia-d-estovia-removebg-preview-1.png" style="width:96px;height:96px;border-radius:50%;border:3px solid rgba(59,114,240,.25);box-shadow:0 0 40px rgba(59,114,240,.2),0 0 80px rgba(26,58,143,.1)" alt="Logo">
     </div>
 
-    <div style="display:inline-flex;align-items:center;gap:7px;padding:5px 16px;background:rgba(0,64,153,.1);border:1px solid rgba(53,133,232,.18);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blu4);margin-bottom:20px;display:flex;justify-content:center">
-      <span style="width:6px;height:6px;border-radius:50%;background:var(--blu4);animation:pulse 2s infinite"></span>
+    <div style="display:inline-flex;align-items:center;gap:7px;padding:5px 16px;background:rgba(33,82,200,.1);border:1px solid rgba(59,114,240,.18);border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--sky);margin-bottom:20px;display:flex;justify-content:center">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--sky);animation:pulse 2s infinite"></span>
       Portale Ufficiale
     </div>
 
-    <h1 class="ani" style="font-family:'Cinzel',serif;font-size:38px;font-weight:700;color:var(--t1);margin-bottom:14px;line-height:1.15">
-      Polizia <span style="background:linear-gradient(135deg,#3585e8,#60a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">d'Estovia</span>
+    <h1 class="ani" style="font-family:'DM Serif Display',serif;font-size:38px;font-weight:700;color:var(--tx1);margin-bottom:14px;line-height:1.15">
+      Polizia <span style="background:linear-gradient(135deg,var(--azure),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">d'Estovia</span>
     </h1>
-    <p class="ani ani-1" style="font-size:15px;color:var(--t2);margin-bottom:10px">Portale Servizi Digitali per i Cittadini</p>
-    <p class="ani ani-2" style="font-size:13px;color:var(--t3);max-width:520px;margin:0 auto 36px;line-height:1.7">Accedi ai servizi del Dipartimento: gestisci la tua fedina penale, presenta denunce e segnalazioni, consulta lo stato delle tue pratiche.</p>
+    <p class="ani ani-1" style="font-size:15px;color:var(--tx2);margin-bottom:10px">Portale Servizi Digitali per i Cittadini</p>
+    <p class="ani ani-2" style="font-size:13px;color:var(--tx3);max-width:520px;margin:0 auto 36px;line-height:1.7">Accedi ai servizi del Dipartimento: gestisci la tua fedina penale, presenta denunce e segnalazioni, consulta lo stato delle tue pratiche.</p>
 
     <div class="ani ani-3" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       {% if cittadino %}
@@ -39,7 +39,7 @@
     </div>
 
     {% if not cittadino %}
-    <p class="ani ani-4" style="font-size:11px;color:var(--t3);margin-top:14px">Devi essere membro del server Discord della Polizia d'Estovia per accedere</p>
+    <p class="ani ani-4" style="font-size:11px;color:var(--tx3);margin-top:14px">Devi essere membro del server Discord della Polizia d'Estovia per accedere</p>
     {% endif %}
   </div>
 </div>
@@ -47,14 +47,14 @@
 <div class="page">
   <!-- Banner benvenuto se loggato -->
   {% if cittadino %}
-  <div class="ani" style="background:linear-gradient(135deg,rgba(0,48,128,.12),rgba(21,96,200,.06));border:1px solid rgba(53,133,232,.15);border-radius:12px;padding:16px 20px;margin-bottom:28px;display:flex;align-items:center;gap:14px">
-    <div class="avatar" style="width:46px;height:46px;border:2px solid rgba(53,133,232,.2)">
+  <div class="ani" style="background:linear-gradient(135deg,rgba(26,58,143,.12),rgba(21,96,200,.06));border:1px solid rgba(59,114,240,.15);border-radius:12px;padding:16px 20px;margin-bottom:28px;display:flex;align-items:center;gap:14px">
+    <div class="avatar" style="width:46px;height:46px;border:2px solid rgba(59,114,240,.2)">
       {% if cittadino.avatar_url %}<img src="{{ cittadino.avatar_url }}" alt="">
       {% else %}<span style="font-size:18px">{{ (cittadino.nome or cittadino.nick or '?')[0]|upper }}</span>{% endif %}
     </div>
     <div style="flex:1">
-      <div style="font-size:15px;font-weight:700;color:var(--t1)">Benvenuto, {{ cittadino.nome or cittadino.nick }}{% if cittadino.cognome %} {{ cittadino.cognome }}{% endif %}</div>
-      <div style="font-size:12px;color:var(--t3);margin-top:2px">@{{ cittadino.username }} · Ultimo accesso {{ cittadino.ultimo_accesso or 'oggi' }}</div>
+      <div style="font-size:15px;font-weight:700;color:var(--tx1)">Benvenuto, {{ cittadino.nome or cittadino.nick }}{% if cittadino.cognome %} {{ cittadino.cognome }}{% endif %}</div>
+      <div style="font-size:12px;color:var(--tx3);margin-top:2px">@{{ cittadino.username }} · Ultimo accesso {{ cittadino.ultimo_accesso or 'oggi' }}</div>
     </div>
     {% if not cittadino.cf %}
     <a href="/cittadini/profilo" class="fbtn warn" style="font-size:11px;padding:7px 14px;flex-shrink:0">⚠️ Completa profilo</a>
@@ -63,56 +63,56 @@
   {% endif %}
 
   <!-- Servizi -->
-  <div style="font-family:'Cinzel',serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(53,133,232,.32);text-align:center;margin-bottom:24px" class="ani">Servizi disponibili</div>
+  <div style="font-family:'DM Serif Display',serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(59,114,240,.32);text-align:center;margin-bottom:24px" class="ani">Servizi disponibili</div>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:40px">
 
     <div class="service-card ani ani-1">
-      <div class="service-icon" style="background:linear-gradient(135deg,rgba(53,133,232,.15),rgba(21,96,200,.08))">📋</div>
+      <div class="service-icon" style="background:linear-gradient(135deg,rgba(59,114,240,.15),rgba(21,96,200,.08))">📋</div>
       <div class="service-title">Fedina Penale</div>
       <div class="service-desc">Consulta i tuoi precedenti penali, infrazioni e procedimenti a tuo carico nel registro ufficiale del Dipartimento.</div>
-      <a href="{% if cittadino %}/cittadini/fedina{% else %}/cittadini/login{% endif %}" class="service-link" style="color:var(--blu4)">Consulta <span>→</span></a>
+      <a href="{% if cittadino %}/cittadini/fedina{% else %}/cittadini/login{% endif %}" class="service-link" style="color:var(--sky)">Consulta <span>→</span></a>
     </div>
 
     <div class="service-card ani ani-2">
       <div class="service-icon" style="background:linear-gradient(135deg,rgba(157,114,245,.15),rgba(124,79,212,.08))">⚖️</div>
       <div class="service-title">Sporgi Denuncia</div>
       <div class="service-desc">Presenta una denuncia formale al Dipartimento. Fornisci tutti i dettagli dell'episodio per avviare il procedimento.</div>
-      <a href="/cittadini/denuncia" class="service-link" style="color:var(--purple2)">Denuncia <span>→</span></a>
+      <a href="/cittadini/denuncia" class="service-link" style="color:var(--violet)">Denuncia <span>→</span></a>
     </div>
 
     <div class="service-card ani ani-3">
       <div class="service-icon" style="background:linear-gradient(135deg,rgba(232,151,10,.12),rgba(232,151,10,.05))">🚨</div>
       <div class="service-title">Segnalazioni</div>
       <div class="service-desc">Segnala episodi o situazioni al Dipartimento. Ricevi un codice per tracciare lo stato della tua segnalazione.</div>
-      <a href="/cittadini/segnalazione" class="service-link" style="color:var(--warn2)">Segnala <span>→</span></a>
+      <a href="/cittadini/segnalazione" class="service-link" style="color:var(--amber)">Segnala <span>→</span></a>
     </div>
 
     <div class="service-card ani ani-4" style="border-color:rgba(224,53,53,.1)">
       <div class="service-icon" style="background:linear-gradient(135deg,rgba(224,53,53,.12),rgba(224,53,53,.05))">🔍</div>
       <div class="service-title">Affari Interni</div>
       <div class="service-desc">Segnala comportamenti scorretti da parte di agenti. Gestione riservata e confidenziale dall'Ufficio AI.</div>
-      <a href="/cittadini/affari-interni" class="service-link" style="color:var(--danger2)">Segnalazione riservata <span>→</span></a>
+      <a href="/cittadini/affari-interni" class="service-link" style="color:var(--rose)">Segnalazione riservata <span>→</span></a>
     </div>
 
     <div class="service-card ani" style="animation-delay:.35s">
       <div class="service-icon" style="background:linear-gradient(135deg,rgba(14,165,114,.12),rgba(14,165,114,.05))">🔎</div>
       <div class="service-title">Stato Pratiche</div>
       <div class="service-desc">Verifica lo stato delle tue denunce e segnalazioni tramite codice o accedendo al tuo profilo personale.</div>
-      <a href="/cittadini/stato-segnalazione" class="service-link" style="color:var(--green2)">Verifica <span>→</span></a>
+      <a href="/cittadini/stato-segnalazione" class="service-link" style="color:var(--emerald)">Verifica <span>→</span></a>
     </div>
 
     <div class="service-card ani" style="animation-delay:.42s">
-      <div class="service-icon" style="background:linear-gradient(135deg,rgba(53,133,232,.12),rgba(0,64,153,.05))">👤</div>
+      <div class="service-icon" style="background:linear-gradient(135deg,rgba(59,114,240,.12),rgba(33,82,200,.05))">👤</div>
       <div class="service-title">Il mio Profilo</div>
       <div class="service-desc">Gestisci il tuo profilo, la carta d'identità digitale e i tuoi documenti personali nel registro del Dipartimento.</div>
-      <a href="{% if cittadino %}/cittadini/profilo{% else %}/cittadini/login{% endif %}" class="service-link" style="color:var(--blu4)">Gestisci <span>→</span></a>
+      <a href="{% if cittadino %}/cittadini/profilo{% else %}/cittadini/login{% endif %}" class="service-link" style="color:var(--sky)">Gestisci <span>→</span></a>
     </div>
 
   </div>
 
   <!-- Info strip -->
-  <div class="ani" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr2);border:1px solid var(--bdr2);border-radius:12px;overflow:hidden">
+  <div class="ani" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd2);border:1px solid var(--bd2);border-radius:12px;overflow:hidden">
     {% for icon, title, desc in [
       ('⚖️', 'Diritti garantiti', 'Ogni cittadino ha diritto a presentare denunce e segnalazioni e ricevere risposta dal Dipartimento'),
       ('🔒', 'Riservatezza', 'Le segnalazioni agli Affari Interni sono trattate con massima riservatezza e discrezione'),
@@ -120,8 +120,8 @@
     ] %}
     <div style="padding:22px;background:rgba(2,4,14,.6);text-align:center">
       <div style="font-size:26px;margin-bottom:10px">{{ icon }}</div>
-      <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:5px">{{ title }}</div>
-      <div style="font-size:11px;color:var(--t3);line-height:1.55">{{ desc }}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--tx1);margin-bottom:5px">{{ title }}</div>
+      <div style="font-size:11px;color:var(--tx3);line-height:1.55">{{ desc }}</div>
     </div>
     {% endfor %}
   </div>

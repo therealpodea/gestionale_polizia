@@ -6,8 +6,8 @@
 <div class="page-sm">
   <div style="padding:28px 0 20px">
     <div style="font-size:36px;margin-bottom:10px">🚨</div>
-    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">Invia una Segnalazione</h1>
-    <p style="font-size:13px;color:var(--t3)">Segnala al Dipartimento episodi, situazioni o comportamenti che richiedono attenzione</p>
+    <h1 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:700;color:var(--tx1);margin-bottom:6px">Invia una Segnalazione</h1>
+    <p style="font-size:13px;color:var(--tx3)">Segnala al Dipartimento episodi, situazioni o comportamenti che richiedono attenzione</p>
   </div>
 
   {% if inviata %}
@@ -16,10 +16,10 @@
       <div style="font-size:15px;font-weight:700;margin-bottom:6px">✅ Segnalazione inviata con successo</div>
       <div style="font-size:13px">La tua segnalazione è stata ricevuta dal Dipartimento e sarà esaminata dagli agenti competenti.</div>
       {% if codice %}
-      <div style="margin-top:12px;padding:10px 14px;background:rgba(0,82,180,.1);border:1px solid rgba(59,142,234,.2);border-radius:6px">
-        <div style="font-size:11px;color:var(--t3);margin-bottom:4px">CODICE SEGNALAZIONE</div>
-        <div style="font-size:16px;font-weight:700;color:var(--blu4);letter-spacing:2px">{{ codice }}</div>
-        <div style="font-size:11px;color:var(--t3);margin-top:4px">Conserva questo codice per verificare lo stato della segnalazione</div>
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(33,82,200,.1);border:1px solid rgba(59,114,240,.2);border-radius:6px">
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:4px">CODICE SEGNALAZIONE</div>
+        <div style="font-size:16px;font-weight:700;color:var(--sky);letter-spacing:2px">{{ codice }}</div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Conserva questo codice per verificare lo stato della segnalazione</div>
       </div>
       {% endif %}
       <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
@@ -42,7 +42,7 @@
         <div class="section-title">Dati segnalante</div>
         <div class="form-row">
           <div class="form-group">
-            <label class="flbl">Nome e Cognome <span style="color:var(--danger2)">*</span></label>
+            <label class="flbl">Nome e Cognome <span style="color:var(--rose)">*</span></label>
             <input class="finput" name="nome" placeholder="Mario Rossi" required>
           </div>
           <div class="form-group">
@@ -59,7 +59,7 @@
         <div class="section-title">Dettagli segnalazione</div>
 
         <div class="form-group">
-          <label class="flbl">Titolo <span style="color:var(--danger2)">*</span></label>
+          <label class="flbl">Titolo <span style="color:var(--rose)">*</span></label>
           <input class="finput" name="titolo" placeholder="Breve descrizione dell'episodio" required>
         </div>
 
@@ -86,7 +86,7 @@
         </div>
 
         <div class="form-group">
-          <label class="flbl">Descrizione <span style="color:var(--danger2)">*</span></label>
+          <label class="flbl">Descrizione <span style="color:var(--rose)">*</span></label>
           <textarea class="ftextarea" name="corpo" rows="6" placeholder="Descrivi in dettaglio l'episodio..." required></textarea>
         </div>
 

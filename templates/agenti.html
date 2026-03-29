@@ -21,7 +21,7 @@
       {% endfor %}
     </select>
     <button type="submit" class="btn primary">Cerca</button>
-    <span style="margin-left:auto;font-size:9px;color:#3d5472;letter-spacing:1px">{{ agenti|length }} risultati</span>
+    <span style="margin-left:auto;font-size:9px;color:var(--tx4);letter-spacing:1px">{{ agenti|length }} risultati</span>
   </form>
   <table class="tbl">
     <thead><tr>
@@ -32,12 +32,12 @@
     {% for a in agenti %}
     <tr class="clickable" onclick="window.location='/dashboard/agenti/{{ a._id }}'">
       <td><div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#003d8f,#1a6dd4);flex-shrink:0">{{ a.nome[0] if a.nome else '?' }}{{ a.cognome[0] if a.cognome else '' }}</div>
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--navy),var(--sapphire));flex-shrink:0">{{ a.nome[0] if a.nome else '?' }}{{ a.cognome[0] if a.cognome else '' }}</div>
         <b style="font-size:12px;letter-spacing:.3px">{{ a.cognome }} {{ a.nome }}</b>
       </div></td>
-      <td style="color:#8ba8cc;font-size:12px;letter-spacing:1px">{{ a.cf or '—' }}</td>
-      <td style="color:#6aaeff;font-weight:600">@{{ a.nick or a.username }}</td>
-      <td style="font-size:11px;letter-spacing:1px;color:#3b8eea">{{ a.grado }}</td>
+      <td style="color:var(--tx2);font-size:12px;letter-spacing:1px">{{ a.cf or '—' }}</td>
+      <td style="color:var(--sky);font-weight:600">@{{ a.nick or a.username }}</td>
+      <td style="font-size:11px;letter-spacing:1px;color:var(--azure)">{{ a.grado }}</td>
       <td>{% if a.stato=='Attivo' %}<span class="badge green">● Attivo</span>
           {% elif a.stato=='Sospeso' %}<span class="badge red">● Sospeso</span>
           {% elif a.stato=='In Prova' %}<span class="badge warn">● In Prova</span>
@@ -46,7 +46,7 @@
           {% if a.sanzione=='SOSPENSIONE' %}<span class="badge red">🔴 {{ a.sanzione }}</span>
           {% else %}<span class="badge warn">🟠 {{ a.sanzione }}</span>{% endif %}
           {% else %}<span class="badge green">✅ Nessuna</span>{% endif %}</td>
-      <td style="color:#3d5472;font-size:12px;font-style:italic">{{ a.data_ingresso or '—' }}</td>
+      <td style="color:var(--tx4);font-size:12px;font-style:italic">{{ a.data_ingresso or '—' }}</td>
       <td onclick="event.stopPropagation()">
         <div style="display:flex;gap:4px">
           <a href="/dashboard/agenti/{{ a._id }}" class="btn">📋</a>
@@ -55,7 +55,7 @@
     </tr>
     {% endfor %}
     {% else %}
-    <tr><td colspan="8" style="text-align:center;padding:28px;font-style:italic;color:#3d5472">Nessun agente trovato.</td></tr>
+    <tr><td colspan="8" style="text-align:center;padding:28px;font-style:italic;color:var(--tx4)">Nessun agente trovato.</td></tr>
     {% endif %}
     </tbody>
   </table>

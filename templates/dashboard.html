@@ -5,44 +5,35 @@
 {% set active = 'dashboard' %}
 
 {% block content %}
-<!-- KPI -->
+<!-- KPI Grid -->
 <div class="kpi-grid ani">
-  <div class="kpi blue">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between">
-      <div>
-        <div class="kpi-icon">👮</div>
-        <div class="kpi-val">{{ agenti }}</div>
-        <div class="kpi-lbl">Organico Totale</div>
-      </div>
-      <div style="width:40px;height:40px;border-radius:10px;background:rgba(21,96,200,.15);display:flex;align-items:center;justify-content:center;font-size:20px">👮</div>
-    </div>
+  <div class="kpi-card kpi-blue">
+    <div class="kpi-accent"></div>
+    <div class="kpi-bg-icon">👮</div>
+    <div class="kpi-label">Organico Totale</div>
+    <div class="kpi-value">{{ agenti }}</div>
+    <div class="kpi-meta">agenti registrati</div>
   </div>
-  <div class="kpi green">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between">
-      <div>
-        <div class="kpi-val">{{ attivi }}</div>
-        <div class="kpi-lbl">In Servizio</div>
-      </div>
-      <div style="width:40px;height:40px;border-radius:10px;background:rgba(14,165,114,.12);display:flex;align-items:center;justify-content:center;font-size:20px">✅</div>
-    </div>
+  <div class="kpi-card kpi-green">
+    <div class="kpi-accent"></div>
+    <div class="kpi-bg-icon">✅</div>
+    <div class="kpi-label">In Servizio</div>
+    <div class="kpi-value">{{ attivi }}</div>
+    <div class="kpi-meta">agenti attivi</div>
   </div>
-  <div class="kpi warn">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between">
-      <div>
-        <div class="kpi-val">{{ sospesi }}</div>
-        <div class="kpi-lbl">Sospesi</div>
-      </div>
-      <div style="width:40px;height:40px;border-radius:10px;background:rgba(232,151,10,.12);display:flex;align-items:center;justify-content:center;font-size:20px">⚠️</div>
-    </div>
+  <div class="kpi-card kpi-amber">
+    <div class="kpi-accent"></div>
+    <div class="kpi-bg-icon">⚠️</div>
+    <div class="kpi-label">Sospesi</div>
+    <div class="kpi-value">{{ sospesi }}</div>
+    <div class="kpi-meta">in sospensione</div>
   </div>
-  <div class="kpi purple">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between">
-      <div>
-        <div class="kpi-val">{{ promozioni }}</div>
-        <div class="kpi-lbl">Promozioni Tot.</div>
-      </div>
-      <div style="width:40px;height:40px;border-radius:10px;background:rgba(124,79,212,.12);display:flex;align-items:center;justify-content:center;font-size:20px">🔼</div>
-    </div>
+  <div class="kpi-card kpi-violet">
+    <div class="kpi-accent"></div>
+    <div class="kpi-bg-icon">🔼</div>
+    <div class="kpi-label">Promozioni Tot.</div>
+    <div class="kpi-value">{{ promozioni }}</div>
+    <div class="kpi-meta">promozioni effettuate</div>
   </div>
 </div>
 
@@ -50,37 +41,44 @@
   <!-- Ultime azioni -->
   <div class="card ani" style="animation-delay:.05s">
     <div class="card-head">
-      <span>📋</span><h3>Ultime Azioni</h3>
-      <div class="ch-right"><a href="/dashboard/storico" class="btn">Vedi tutte →</a></div>
+      <div class="card-head-icon">📋</div>
+      <h3>Ultime Azioni</h3>
+      <div class="ch-right"><a href="/dashboard/storico" class="btn btn-sm">Vedi tutte →</a></div>
     </div>
     {% if ultime_azioni %}
     {% for a in ultime_azioni %}
-    {% set col = '#1560c8' if a.tipo=='Promozione' else '#e8970a' if a.tipo=='Sanzione' else '#e03535' if a.tipo in ['Degrado','Licenziamento'] else '#0596b8' %}
-    <div style="display:flex;gap:10px;padding:10px 18px;border-bottom:1px solid rgba(53,133,232,.04);transition:background .15s" onmouseover="this.style.background='rgba(53,133,232,.03)'" onmouseout="this.style.background=''">
-      <div style="width:3px;border-radius:2px;background:{{ col }};flex-shrink:0;border-radius:2px"></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;color:var(--t1)"><b style="color:var(--blu4)">{{ a.agente_nome }}</b> — {{ a.tipo }}: <span style="color:var(--t2)">{{ a.vecchio }}</span> → <b>{{ a.nuovo }}</b></div>
-        <div style="font-size:10px;color:var(--t3);margin-top:2px;font-style:italic">{{ a.motivo }} · {{ a.data }}</div>
+    {% if a.tipo == 'Promozione' %}{% set col = 'var(--sapphire)' %}
+    {% elif a.tipo == 'Sanzione' %}{% set col = 'var(--amber)' %}
+    {% elif a.tipo in ['Degrado','Licenziamento'] %}{% set col = 'var(--rose)' %}
+    {% else %}{% set col = 'var(--teal)' %}{% endif %}
+    <div class="feed-item">
+      <div class="feed-accent" style="background:{{ col }}"></div>
+      <div class="feed-body">
+        <div class="feed-main"><b>{{ a.agente_nome }}</b> — {{ a.tipo }}: <span style="color:var(--tx3)">{{ a.vecchio }}</span> → <b style="color:var(--tx1)">{{ a.nuovo }}</b></div>
+        <div class="feed-sub">{{ a.motivo }} · {{ a.data }}</div>
       </div>
     </div>
     {% endfor %}
     {% else %}
-    <div style="padding:24px;color:var(--t3);font-style:italic;text-align:center;font-size:12px">Nessuna azione registrata.</div>
+    <div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Nessuna azione registrata.</div></div>
     {% endif %}
   </div>
 
   <!-- Distribuzione gradi -->
   <div class="card ani" style="animation-delay:.08s">
-    <div class="card-head"><span>📊</span><h3>Distribuzione Gradi</h3></div>
-    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+    <div class="card-head">
+      <div class="card-head-icon">📊</div>
+      <h3>Distribuzione Gradi</h3>
+    </div>
+    <div class="stat-bar">
     {% for g in gradi | reverse %}
     {% if grade_count[g] > 0 %}
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="font-size:11px;color:var(--t2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ g }}</div>
-      <div style="flex:1;height:5px;background:rgba(53,133,232,.07);border-radius:4px;overflow:hidden">
-        <div style="height:100%;background:linear-gradient(90deg,var(--blu3),var(--blu4));border-radius:4px;width:{{ (grade_count[g] / agenti * 100) | int }}%;transition:width .6s ease"></div>
+    <div class="stat-row">
+      <div class="stat-name">{{ g }}</div>
+      <div class="stat-track">
+        <div class="stat-fill" style="width:{{ (grade_count[g] / agenti * 100) | int }}%"></div>
       </div>
-      <div style="font-size:12px;font-weight:700;width:22px;text-align:right;color:var(--blu4)">{{ grade_count[g] }}</div>
+      <div class="stat-count">{{ grade_count[g] }}</div>
     </div>
     {% endif %}
     {% endfor %}
@@ -90,24 +88,28 @@
 
 <!-- Comunicati recenti -->
 <div class="card ani mt-4" style="animation-delay:.12s">
-  <div class="card-head"><span>📢</span><h3>Ultimi Comunicati</h3><div class="ch-right"><a href="/dashboard/comunicati" class="btn">Vedi tutti →</a></div></div>
+  <div class="card-head">
+    <div class="card-head-icon">📢</div>
+    <h3>Ultimi Comunicati</h3>
+    <div class="ch-right"><a href="/dashboard/comunicati" class="btn btn-sm">Vedi tutti →</a></div>
+  </div>
   {% if ultimi_com %}
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0">
+  <div class="comms-grid">
   {% for c in ultimi_com %}
-  <div style="padding:14px 18px;border-right:1px solid rgba(53,133,232,.04);border-bottom:1px solid rgba(53,133,232,.04)">
-    <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+  <div class="comm-item">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">
       {% if c.priorita == 'urgente' %}<span class="badge red">🔴 Urgente</span>
       {% elif c.priorita == 'importante' %}<span class="badge warn">🟡 Importante</span>
       {% else %}<span class="badge blue">🔵 Info</span>{% endif %}
-      <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">{{ c.titolo }}</span>
+      <span style="font-family:'DM Serif Display',serif;font-size:12px;color:var(--tx1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">{{ c.titolo }}</span>
     </div>
-    <div style="font-size:12px;color:var(--t2);line-height:1.5">{{ c.corpo[:80] }}{% if c.corpo|length > 80 %}…{% endif %}</div>
-    <div style="font-size:10px;color:var(--t3);margin-top:6px">{{ c.data }}</div>
+    <div style="font-size:12px;color:var(--tx2);line-height:1.55">{{ c.corpo[:90] }}{% if c.corpo|length > 90 %}…{% endif %}</div>
+    <div style="font-size:10px;color:var(--tx4);margin-top:8px">{{ c.data }}</div>
   </div>
   {% endfor %}
   </div>
   {% else %}
-  <div style="padding:20px;color:var(--t3);font-style:italic;text-align:center;font-size:12px">Nessun comunicato.</div>
+  <div class="empty"><div class="empty-icon">📢</div><div class="empty-text">Nessun comunicato pubblicato.</div></div>
   {% endif %}
 </div>
 {% endblock %}

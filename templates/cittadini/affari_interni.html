@@ -6,8 +6,8 @@
 <div class="page-sm">
   <div style="padding:28px 0 20px">
     <div style="font-size:36px;margin-bottom:10px">🔍</div>
-    <h1 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px">Segnalazione Affari Interni</h1>
-    <p style="font-size:13px;color:var(--t3)">Segnala comportamenti scorretti da parte di agenti del Dipartimento</p>
+    <h1 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:700;color:var(--tx1);margin-bottom:6px">Segnalazione Affari Interni</h1>
+    <p style="font-size:13px;color:var(--tx3)">Segnala comportamenti scorretti da parte di agenti del Dipartimento</p>
   </div>
 
   {% if inviata %}
@@ -16,7 +16,7 @@
       <div style="font-size:15px;font-weight:700;margin-bottom:6px">✅ Segnalazione inviata con successo</div>
       <div style="font-size:13px">La tua segnalazione è stata ricevuta dall'Ufficio Affari Interni e sarà esaminata con la massima riservatezza.</div>
       {% if anonima %}
-      <div style="margin-top:10px;font-size:12px;color:var(--green2)">🎭 La tua segnalazione è stata inviata in forma anonima.</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--emerald)">🎭 La tua segnalazione è stata inviata in forma anonima.</div>
       {% endif %}
       <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
         <a href="/cittadini/affari-interni" class="fbtn primary" style="font-size:12px;padding:8px 18px">📤 Invia altra segnalazione</a>
@@ -44,8 +44,8 @@
         <div class="toggle-wrap" onclick="toggleAnonima()" id="toggle-wrap">
           <div class="toggle" id="toggle-btn"></div>
           <div>
-            <div style="font-size:13px;font-weight:600;color:var(--t1)" id="toggle-label">Segnalazione nominativa</div>
-            <div style="font-size:11px;color:var(--t3)">Clicca per passare a segnalazione anonima</div>
+            <div style="font-size:13px;font-weight:600;color:var(--tx1)" id="toggle-label">Segnalazione nominativa</div>
+            <div style="font-size:11px;color:var(--tx3)">Clicca per passare a segnalazione anonima</div>
           </div>
           <span class="badge blue" id="toggle-badge" style="margin-left:auto">Nominativa</span>
         </div>
@@ -75,7 +75,7 @@
         <div class="section-title">Agente segnalato</div>
         <div class="form-row">
           <div class="form-group">
-            <label class="flbl">Nome Agente <span style="color:var(--danger2)">*</span></label>
+            <label class="flbl">Nome Agente <span style="color:var(--rose)">*</span></label>
             <input class="finput" name="agente_nome" placeholder="Nome dell'agente" required>
           </div>
           <div class="form-group">
@@ -94,18 +94,18 @@
             <input class="finput" name="data_episodio" type="date">
           </div>
           <div class="form-group">
-            <label class="flbl">Luogo <span style="color:var(--danger2)">*</span></label>
+            <label class="flbl">Luogo <span style="color:var(--rose)">*</span></label>
             <input class="finput" name="luogo" placeholder="Es. Via Roma, zona centrale" required>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="flbl">Titolo segnalazione <span style="color:var(--danger2)">*</span></label>
+          <label class="flbl">Titolo segnalazione <span style="color:var(--rose)">*</span></label>
           <input class="finput" name="titolo" placeholder="Breve descrizione dell'episodio" required>
         </div>
 
         <div class="form-group">
-          <label class="flbl">Descrizione dettagliata <span style="color:var(--danger2)">*</span></label>
+          <label class="flbl">Descrizione dettagliata <span style="color:var(--rose)">*</span></label>
           <textarea class="ftextarea" name="descrizione" rows="6" placeholder="Descrivi in dettaglio l'episodio, il comportamento scorretto e le circostanze..." required></textarea>
         </div>
 
